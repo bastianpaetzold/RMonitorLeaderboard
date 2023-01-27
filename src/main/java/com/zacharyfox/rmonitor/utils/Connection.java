@@ -12,6 +12,8 @@ import java.net.Socket;
 public class Connection extends Socket
 {
 	private BufferedReader clientReader;
+	
+	private boolean closed = false;
 
 	public Connection(String ip, int port) throws Exception
 	{
@@ -22,7 +24,10 @@ public class Connection extends Socket
 	@Override
 	public void close() throws IOException
 	{
-		if (clientReader != null) clientReader.close();
+		if (clientReader != null && !closed) {
+			closed = true;
+			clientReader.close();
+		}
 		super.close();
 	}
 

@@ -26,7 +26,7 @@ public class CompInfoTest
 
 		assertEquals("1234BE", message.getRegNumber());
 		assertEquals("12X", message.getNumber());
-		assertEquals(52474, message.getTransNumber());
+		assertEquals("52474", message.getTransNumber());
 		assertEquals("John", message.getFirstName());
 		assertEquals("Johnson", message.getLastName());
 		assertEquals("USA", message.getNationality());
@@ -44,7 +44,7 @@ public class CompInfoTest
 
 		assertEquals("1234BE", message.getRegNumber());
 		assertEquals("12X", message.getNumber());
-		assertEquals(0, message.getTransNumber());
+		assertEquals(null, message.getTransNumber());
 		assertEquals("John", message.getFirstName());
 		assertEquals("Johnson", message.getLastName());
 		assertEquals("USA", message.getNationality());

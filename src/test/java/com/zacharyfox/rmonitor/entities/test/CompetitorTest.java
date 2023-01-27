@@ -114,8 +114,8 @@ public class CompetitorTest
 
 				if ("transNumber".equals(evt.getPropertyName())) {
 					transNumberFired = true;
-					assertEquals(54321, evt.getNewValue());
-					assertEquals(54321, competitor.getTransNumber());
+					assertEquals("54321", evt.getNewValue());
+					assertEquals("54321", competitor.getTransNumber());
 				}
 
 				if ("firstName".equals(evt.getPropertyName())) {
