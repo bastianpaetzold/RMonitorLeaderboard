@@ -2,7 +2,7 @@ package com.zacharyfox.rmonitor.leaderboard.frames;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.prefs.Preferences;
+import java.util.Properties;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -10,26 +10,26 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import net.miginfocom.swing.MigLayout;
-
-import org.ini4j.IniPreferences;
-
 import com.zacharyfox.rmonitor.utils.JsonServer;
+
+import net.miginfocom.swing.MigLayout;
 
 public class ServerFrame extends JFrame implements ActionListener
 {
+	private static final String PROP_PORT = "jsonServer.port";
+	
 	public JButton startStop;
 	public JTextField port;
 	private final JLabel portLabel;
 	private static ServerFrame instance;
 	private static final long serialVersionUID = 3848021032174790659L;
-	private Preferences connectPrefs;
+	private Properties properties;
 	private static JsonServer jsonServer;
 	private MainFrame mainFrame;
 
 	private ServerFrame(MainFrame mainFrame)
 	{
-		connectPrefs = new IniPreferences(mainFrame.getIni()).node("JsonServer");
+		properties = mainFrame.getIni();
 		getContentPane().setLayout(new MigLayout("", "[][grow]", "[][]"));
 		setBounds(100, 100, 400, 150);
 		
@@ -38,7 +38,7 @@ public class ServerFrame extends JFrame implements ActionListener
 		getContentPane().add(portLabel, "cell 0 0,alignx trailing");
 
 		port = new JTextField();
-		port.setText(connectPrefs.get("Port", "8080"));
+		port.setText(properties.getProperty(PROP_PORT, "8080"));
 		getContentPane().add(port, "cell 1 0,growx");
 		port.setColumns(10);
 
@@ -52,7 +52,7 @@ public class ServerFrame extends JFrame implements ActionListener
 
 	public Integer getPort()
 	{
-		connectPrefs.put("Port",port.getText());
+		properties.setProperty(PROP_PORT,port.getText());
 		return Integer.parseInt(port.getText());
 	}
 

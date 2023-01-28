@@ -1,8 +1,6 @@
 package com.zacharyfox.rmonitor.leaderboard.frames;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.prefs.Preferences;
+import java.util.Properties;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -10,12 +8,13 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import org.ini4j.IniPreferences;
-
 import net.miginfocom.swing.MigLayout;
 
 public class ConnectFrame extends JFrame
 {
+	private static final String PROP_IP = "connect.ip";
+	private static final String PROP_PORT = "connect.port";
+
 	public JButton connectButton;
 	public JTextField ip;
 	public JTextField port;
@@ -23,11 +22,12 @@ public class ConnectFrame extends JFrame
 	private final JLabel portLabel;
 	private static ConnectFrame instance;
 	private static final long serialVersionUID = 3848021032174790659L;
-	private Preferences connectPrefs;
+
+	private Properties properties;
 
 	private ConnectFrame(MainFrame mainFrame)
 	{
-		connectPrefs = new IniPreferences(mainFrame.getIni()).node("Connect");
+		properties = mainFrame.getIni();
 		getContentPane().setLayout(new MigLayout("", "[][grow]", "[][][]"));
 
 		ipLabel = new JLabel("Scoreboard IP:");
@@ -36,7 +36,7 @@ public class ConnectFrame extends JFrame
 		setBounds(100, 100, 400, 150);
 
 		ip = new JTextField();
-		ip.setText(connectPrefs.get("IP", "127.0.0.1"));
+		ip.setText(properties.getProperty(PROP_IP, "127.0.0.1"));
 		getContentPane().add(ip, "cell 1 0,growx");
 		ip.setColumns(10);
 
@@ -45,7 +45,7 @@ public class ConnectFrame extends JFrame
 		getContentPane().add(portLabel, "cell 0 1,alignx trailing");
 
 		port = new JTextField();
-		port.setText(connectPrefs.get("Port", "50000"));
+		port.setText(properties.getProperty(PROP_PORT, "50000"));
 		getContentPane().add(port, "cell 1 1,growx");
 		port.setColumns(10);
 
@@ -57,13 +57,13 @@ public class ConnectFrame extends JFrame
 
 	public String getIP()
 	{
-		connectPrefs.put("IP",ip.getText());
+		properties.setProperty(PROP_IP,ip.getText());
 		return ip.getText();
 	}
 
 	public Integer getPort()
 	{
-		connectPrefs.put("Port",port.getText());
+		properties.setProperty(PROP_PORT,port.getText());
 		return Integer.parseInt(port.getText());
 	}
 

@@ -1,14 +1,14 @@
 package com.zacharyfox.rmonitor.utils.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.zacharyfox.rmonitor.utils.Connection;
 
@@ -42,6 +42,7 @@ public class ConnectionTest
 
 		Connection connection = new Connection("localhost", 12345);
 
+		
 		assertTrue(connection.isConnected());
 		assertEquals("Testing line 1", connection.readLine());
 		assertEquals("Testing line 2", connection.readLine());

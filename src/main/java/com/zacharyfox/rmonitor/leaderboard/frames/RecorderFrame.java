@@ -9,9 +9,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 
-import net.miginfocom.swing.MigLayout;
-
 import com.zacharyfox.rmonitor.utils.Recorder;
+
+import net.miginfocom.swing.MigLayout;
 
 public class RecorderFrame extends JFrame implements ActionListener
 {

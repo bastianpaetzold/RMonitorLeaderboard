@@ -31,7 +31,7 @@ public class LeaderBoard
 			{
 				try {
 				
-					MainFrame window = new MainFrame("LeaderBoard.ini");
+					MainFrame window = new MainFrame("LeaderBoard.properties");
 					window.setVisible(true);
 					ConnectFrame newFrame = ConnectFrame.getInstance(window);
 					newFrame.setVisible(true);

@@ -3,21 +3,22 @@ package com.zacharyfox.rmonitor.leaderboard.frames;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.prefs.Preferences;
+import java.util.Properties;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
 
-import org.ini4j.IniPreferences;
+import com.zacharyfox.rmonitor.utils.Player;
 
 import net.miginfocom.swing.MigLayout;
 
-import com.zacharyfox.rmonitor.utils.Player;
-
 public class PlayerFrame extends JFrame implements ActionListener
 {
+	private static final String PROP_LAST_FILE = "player.lastFile";
+	private static final String PROP_SPEEDUP = "player.speedup";
+	
 	private JFileChooser chooser;
 	private final MainFrame mainFrame;
 	private final JTextField playerFile;
@@ -29,20 +30,20 @@ public class PlayerFrame extends JFrame implements ActionListener
 	private static PlayerFrame instance;
 	private static Player player;
 	private static final long serialVersionUID = -9179041103033981780L;
-	private Preferences playerPrefs;
+	private Properties properties;
 
 	private PlayerFrame(MainFrame mainFrame)
 	{
 		this.mainFrame = mainFrame;
-		
-		playerPrefs = new IniPreferences(mainFrame.getIni()).node("Player");
+
+		properties = mainFrame.getIni();
 		
 		getContentPane().setLayout(new MigLayout("", "[grow][][][][]", "[][]"));
 		setBounds(100, 100, 600, 150);
 
 		playerFile = new JTextField();
 		getContentPane().add(playerFile, "cell 0 0,growx");
-		playerFile.setText(playerPrefs.get("LastFile", ""));
+		playerFile.setText(properties.getProperty(PROP_LAST_FILE, ""));
 		playerFile.setColumns(10);
 
 		selectFileButton = new JButton("Open");
@@ -51,7 +52,7 @@ public class PlayerFrame extends JFrame implements ActionListener
 
 		playerSpeedup = new JTextField();
 		getContentPane().add(playerSpeedup, "cell 2 0");
-		playerSpeedup.setText(playerPrefs.get("Speedup", "2"));
+		playerSpeedup.setText(properties.getProperty(PROP_SPEEDUP, "2"));
 		playerSpeedup.setColumns(3);
 
 		startStop = new JButton("Start");
@@ -76,11 +77,11 @@ public class PlayerFrame extends JFrame implements ActionListener
 	{
 		if (evt.getActionCommand().equals("Open")) {
 			chooser = new JFileChooser();
-			chooser.setSelectedFile(new File(playerPrefs.get("LastFile", "leaderboard-recording.txt")));
+			chooser.setSelectedFile(new File(properties.getProperty(PROP_LAST_FILE, "leaderboard-recording.txt")));
 
 			if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 				playerFile.setText(chooser.getSelectedFile().toString());
-				playerPrefs.put("LastFile", chooser.getSelectedFile().toString());
+				properties.setProperty(PROP_LAST_FILE, chooser.getSelectedFile().toString());
 				startStop.setEnabled(true);
 			}
 		} else if (evt.getActionCommand().equals("Start")) {
@@ -90,7 +91,7 @@ public class PlayerFrame extends JFrame implements ActionListener
 			selectFileButton.setEnabled(false);
 			player = new Player(playerFile.getText());
 			player.setPlayerSpeedup(Integer.parseInt(playerSpeedup.getText()));
-			playerPrefs.put("Speedup", playerSpeedup.getText());
+			properties.setProperty(PROP_SPEEDUP, playerSpeedup.getText());
 			player.execute();
 
 		} else if (evt.getActionCommand().equals("Stop")) {

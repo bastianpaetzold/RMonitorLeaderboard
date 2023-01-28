@@ -14,10 +14,12 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
-import java.util.prefs.Preferences;
+import java.util.Properties;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -25,20 +27,17 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.ini4j.IniPreferences;
-
 import com.zacharyfox.rmonitor.entities.Race;
 import com.zacharyfox.rmonitor.entities.Race.FlagState;
 import com.zacharyfox.rmonitor.utils.Duration;
-
-import javax.swing.JLabel;
-import javax.swing.JCheckBox;
 
 public class LapCounterFrame extends JFrame {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 7957459184007408065L;
+
+	private static final String PROP_LAP_SWITCH_DELAY = "lapCounter.lapSwitchDelay";
 
 	private static LapCounterFrame instance;
 	private final MainFrame mainFrame;
@@ -55,7 +54,7 @@ public class LapCounterFrame extends JFrame {
 	private Duration lastLapCountChangeTime;
 	private int lapSwitchDelay;
 	private boolean countLapsUp;
-	private Preferences lapCounterPrefs;
+	private Properties properties;
 	
 	private static final String TIME_FORMAT = "HH:mm:ss";
 	public static final SimpleDateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT, Locale.getDefault());
@@ -74,6 +73,7 @@ public class LapCounterFrame extends JFrame {
 	private JLabel lblDelay;
 	private JTextField tfDelay;
 	private JCheckBox chckbxCountUpwards;
+
 	
 	
 	/**
@@ -81,8 +81,8 @@ public class LapCounterFrame extends JFrame {
 	 */
 	public LapCounterFrame(final MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
-		lapCounterPrefs = new IniPreferences(mainFrame.getIni()).node("LapCounter");
-		lapSwitchDelay = Integer.parseInt(lapCounterPrefs.get("LapSwitchDelay", "5"));
+		properties = mainFrame.getIni();
+		lapSwitchDelay = Integer.parseInt(properties.getProperty(PROP_LAP_SWITCH_DELAY, "5"));
 		countLapsUp = false;
 		lastLapsComplete = -1;
 		
@@ -187,7 +187,7 @@ public class LapCounterFrame extends JFrame {
 				            		if (!Integer.toString(lapSwitchDelay).equals(tfDelay.getText())){
 				            		
 				            			lapSwitchDelay = Integer.parseInt(tfDelay.getText());
-				            			lapCounterPrefs.put("LapSwitchDelay", tfDelay.getText());
+				            			properties.setProperty(PROP_LAP_SWITCH_DELAY, tfDelay.getText());
 				            			mainFrame.storeIniFile();
 				            		}
 				            	} 

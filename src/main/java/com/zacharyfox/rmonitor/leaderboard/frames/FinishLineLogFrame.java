@@ -30,11 +30,11 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
-import net.miginfocom.swing.MigLayout;
-
 import com.zacharyfox.rmonitor.leaderboard.FinishLineLogTable;
 import com.zacharyfox.rmonitor.leaderboard.FinishlineLogTableModel;
 import com.zacharyfox.rmonitor.utils.Duration;
+
+import net.miginfocom.swing.MigLayout;
 
 public class FinishLineLogFrame extends JFrame implements ActionListener
 {

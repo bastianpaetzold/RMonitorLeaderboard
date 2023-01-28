@@ -9,11 +9,11 @@ import javax.swing.JLabel;
 import javax.swing.JSeparator;
 import javax.swing.WindowConstants;
 
-import net.miginfocom.swing.MigLayout;
-
 import com.zacharyfox.rmonitor.entities.Competitor;
 import com.zacharyfox.rmonitor.entities.RaceClass;
 import com.zacharyfox.rmonitor.utils.Estimator;
+
+import net.miginfocom.swing.MigLayout;
 
 public class EstimatorFrame extends JFrame
 {

@@ -16,9 +16,13 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
-import java.io.FileReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Properties;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -34,10 +38,6 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
-import net.miginfocom.swing.MigLayout;
-
-import org.ini4j.Ini;
-
 import com.zacharyfox.rmonitor.entities.Race;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardMenuBar;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardTable;
@@ -47,6 +47,8 @@ import com.zacharyfox.rmonitor.leaderboard.Worker;
 import com.zacharyfox.rmonitor.utils.Duration;
 import com.zacharyfox.rmonitor.utils.Estimator;
 import com.zacharyfox.rmonitor.utils.Recorder;
+
+import net.miginfocom.swing.MigLayout;
 
 public class MainFrame extends JFrame implements ActionListener, RaceProvider
 {
@@ -72,26 +74,23 @@ public class MainFrame extends JFrame implements ActionListener, RaceProvider
 	private final JPanel titleBar;
 	private final JLabel trackName;
 	private Worker worker;
-	private Ini  ini;
-	private String iniFilename;
+	private Properties properties;
+	private Path propertiesPath;
 
 	private static final long serialVersionUID = -743830529485841322L;
 
 	public MainFrame(String iniFilename)
 	{
-		this.iniFilename = iniFilename;
-		ini = new Ini();
-		try {
-			File inifile = new File(iniFilename);
-			if(!inifile.exists()) {
-				inifile.createNewFile();
+		propertiesPath = Paths.get(iniFilename);
+		properties = new Properties();
+		if (Files.exists(propertiesPath)) {
+			try (Reader reader = Files.newBufferedReader(propertiesPath)) {
+				properties.load(reader);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			ini.load(new FileReader(inifile));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-		
 
 		
 		Font systemLabelFont = UIManager.getFont("Label.font");
@@ -227,9 +226,8 @@ public class MainFrame extends JFrame implements ActionListener, RaceProvider
 	}
 	
 	public void storeIniFile(){
-		try {
-			File file = new File(iniFilename);
-			ini.store(file);
+		try (BufferedWriter writer = Files.newBufferedWriter(propertiesPath)){
+			properties.store(writer, null);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -385,8 +383,8 @@ public class MainFrame extends JFrame implements ActionListener, RaceProvider
 		}
 	}
 	
-	public Ini getIni(){
-		return ini;
+	public Properties getIni(){
+		return properties;
 	}
 	
 	

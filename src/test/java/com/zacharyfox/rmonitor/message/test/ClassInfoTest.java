@@ -1,8 +1,8 @@
 package com.zacharyfox.rmonitor.message.test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.zacharyfox.rmonitor.message.ClassInfo;
 
@@ -17,7 +17,7 @@ public class ClassInfoTest
 
 		ClassInfo message = new ClassInfo(tokens);
 
-		assertEquals("Class ID 5", 5, message.getUniqueId());
-		assertEquals("Class Description is Formula 300", "Formula 300", message.getDescription());
+		assertEquals( 5, message.getUniqueId(), "Class ID 5");
+		assertEquals( "Formula 300", message.getDescription(), "Class Description is Formula 300");
 	}
 }

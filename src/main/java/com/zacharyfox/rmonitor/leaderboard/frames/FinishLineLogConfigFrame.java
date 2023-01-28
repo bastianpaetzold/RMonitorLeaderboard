@@ -2,7 +2,7 @@ package com.zacharyfox.rmonitor.leaderboard.frames;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.prefs.Preferences;
+import java.util.Properties;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -12,23 +12,21 @@ import javax.swing.SwingConstants;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.ini4j.IniPreferences;
-
 public class FinishLineLogConfigFrame extends JFrame implements ActionListener
 {
+	private static final String PROP_ROW_HEIGHT = "finishLineLog.rowHeight";
+	
 	public JButton startButton;
 	public JTextField rowHeight;
 	private final JLabel rowHeightLabel;
 	private static FinishLineLogConfigFrame instance;
 	private static final long serialVersionUID = 3848021032174790659L;
-	private Preferences finishLineLogPrefs;
+	private Properties properties;
 	private MainFrame mainFrame;
 	
-
-
 	private FinishLineLogConfigFrame(MainFrame mainFrame)
 	{
-		finishLineLogPrefs = new IniPreferences(mainFrame.getIni()).node("FinishLineLog");
+		properties = mainFrame.getIni();
 		getContentPane().setLayout(new MigLayout("", "[][grow]", "[][]"));
 		setBounds(100, 100, 400, 150);
 		
@@ -37,7 +35,7 @@ public class FinishLineLogConfigFrame extends JFrame implements ActionListener
 		getContentPane().add(rowHeightLabel, "cell 0 0,alignx trailing");
 
 		rowHeight = new JTextField();
-		rowHeight.setText(finishLineLogPrefs.get("RowHeight", "24"));
+		rowHeight.setText(properties.getProperty(PROP_ROW_HEIGHT, "24"));
 		getContentPane().add(rowHeight, "cell 1 0,growx");
 		rowHeight.setColumns(5);
 
@@ -53,7 +51,7 @@ public class FinishLineLogConfigFrame extends JFrame implements ActionListener
 
 	public Integer getRowHeight()
 	{
-		finishLineLogPrefs.put("RowHeight",rowHeight.getText());
+		properties.setProperty(PROP_ROW_HEIGHT,rowHeight.getText());
 		return Integer.parseInt(rowHeight.getText());
 	}
 

@@ -10,27 +10,22 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
-			<version>9.4.3.v20170317</version>
+			<version>10.0.13</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-			<version>2.6.2</version>
+			<version>2.10.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.miglayout</groupId>
 			<artifactId>miglayout-swing</artifactId>
-			<version>4.1</version>
+			<version>11.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.ini4j</groupId>
-			<artifactId>ini4j</artifactId>
-			<version>0.5.4</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.12</version>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<version>5.9.2</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -63,6 +58,29 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jlink-plugin</artifactId>
+				<version>3.1.0</version>
+				<extensions>true</extensions>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jlink</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<classifier>jlink</classifier>
+					<launcher>launch_loaderboard=com.zacharyfox.rmonitor.leaderboard/com.zacharyfox.rmonitor.leaderboard.LeaderBoard</launcher>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M8</version>
 			</plugin>
 		</plugins>
 	</build>
