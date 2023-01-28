@@ -68,7 +68,7 @@ public class FinishLineLogConfigFrame extends JFrame implements ActionListener
 	public void actionPerformed(ActionEvent evt)
 	{
 		if (evt.getActionCommand().equals("Start")) {
-			FinishLineLogFrame newFrame = new FinishLineLogFrame(mainFrame, getRowHeight());
+			FinishLineLogFrame newFrame = new FinishLineLogFrame(getRowHeight());
 			newFrame.setVisible(true);
 			//startButton.setText("Stop");
 			mainFrame.storeIniFile();

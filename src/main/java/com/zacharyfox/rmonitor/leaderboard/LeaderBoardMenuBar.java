@@ -118,7 +118,7 @@ public class LeaderBoardMenuBar extends JMenuBar
 			@Override
 			public void actionPerformed(ActionEvent evt)
 			{
-				StartSignalFrame newFrame = StartSignalFrame.getInstance(mainFrame);
+				StartSignalFrame newFrame = StartSignalFrame.getInstance();
 				newFrame.setVisible(true);
 			}
 		});

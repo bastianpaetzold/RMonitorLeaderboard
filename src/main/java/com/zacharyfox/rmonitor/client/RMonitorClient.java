@@ -28,10 +28,10 @@ public class RMonitorClient {
 	private State currentState;
 	private List<BiConsumer<State, State>> listenerList;
 
-	private Race race;
+	private Race currentRace;
 	private Recorder recorder;
 	private Estimator estimator;
-	
+
 	public enum State {
 		STARTED, RUNNING, STOPPED
 	}
@@ -42,6 +42,7 @@ public class RMonitorClient {
 
 		listenerList = new ArrayList<>();
 		currentState = State.STOPPED;
+		currentRace = new Race();
 	}
 
 	public static RMonitorClient getInstance() {
@@ -62,7 +63,7 @@ public class RMonitorClient {
 
 	private void run() {
 		updateCurrentState(State.STARTED);
-		race = new Race();
+		currentRace = new Race();
 
 		try (Socket socket = new Socket(host, port)) {
 			updateCurrentState(State.RUNNING);
@@ -87,16 +88,14 @@ public class RMonitorClient {
 	}
 
 	private synchronized void processMessage(String message) {
-		if (race != null) {
-			race.update(Factory.getMessage(message));
-
-			if (estimator != null) {
-				estimator.update(race);
-			}
-		}
+		currentRace.update(Factory.getMessage(message));
 
 		if (recorder != null) {
 			recorder.push(message);
+		}
+		
+		if (estimator != null) {
+			estimator.update(currentRace);
 		}
 	}
 
@@ -134,9 +133,9 @@ public class RMonitorClient {
 	public void setPort(int port) {
 		this.port = port;
 	}
-	
+
 	public Race getRace() {
-		return race;
+		return currentRace;
 	}
 
 	public synchronized void setRecorder(Recorder recorder) {
@@ -146,7 +145,7 @@ public class RMonitorClient {
 	public synchronized void setEstimator(Estimator estimator) {
 		this.estimator = estimator;
 	}
-	
+
 	public State getCurrentState() {
 		return currentState;
 	}

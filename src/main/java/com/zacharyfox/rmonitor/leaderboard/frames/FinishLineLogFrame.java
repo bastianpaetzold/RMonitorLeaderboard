@@ -30,6 +30,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
+import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.leaderboard.FinishLineLogTable;
 import com.zacharyfox.rmonitor.leaderboard.FinishlineLogTableModel;
 import com.zacharyfox.rmonitor.utils.Duration;
@@ -49,7 +50,6 @@ public class FinishLineLogFrame extends JFrame implements ActionListener
 	private final JLabel timeToGo;
 	private final JPanel titleBar;
 	private final JLabel trackName;
-	private MainFrame mainFrame;
 	
 	private final PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
 		@Override
@@ -61,10 +61,8 @@ public class FinishLineLogFrame extends JFrame implements ActionListener
 
 	private static final long serialVersionUID = -743830529485841322L;
 
-	public FinishLineLogFrame(MainFrame mainFrame, int rowHeight)
+	public FinishLineLogFrame(int rowHeight)
 	{
-		this.mainFrame = mainFrame;
-
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		Font systemLabelFont = UIManager.getFont("Label.font");
@@ -138,7 +136,7 @@ public class FinishLineLogFrame extends JFrame implements ActionListener
 		resultsTablePanel.add(finishLineLogTable.getTableHeader(),BorderLayout.NORTH);
 		resultsTablePanel.add(finishLineLogTable,BorderLayout.CENTER);
 		
-		mainFrame.getRace().addPropertyChangeListener(propertyChangeListener);
+		RMonitorClient.getInstance().getRace().addPropertyChangeListener(propertyChangeListener);
 
 	}
 

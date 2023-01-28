@@ -27,6 +27,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.entities.Race;
 import com.zacharyfox.rmonitor.entities.Race.FlagState;
 import com.zacharyfox.rmonitor.utils.Duration;
@@ -40,10 +41,8 @@ public class LapCounterFrame extends JFrame {
 	private static final String PROP_LAP_SWITCH_DELAY = "lapCounter.lapSwitchDelay";
 
 	private static LapCounterFrame instance;
-	private final MainFrame mainFrame;
-	
-	static GraphicsDevice device = GraphicsEnvironment
-	        .getLocalGraphicsEnvironment().getScreenDevices()[0];
+
+	static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField tfLaps;
@@ -55,14 +54,13 @@ public class LapCounterFrame extends JFrame {
 	private int lapSwitchDelay;
 	private boolean countLapsUp;
 	private Properties properties;
-	
+
 	private static final String TIME_FORMAT = "HH:mm:ss";
 	public static final SimpleDateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT, Locale.getDefault());
 
 	private final PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
 		@Override
-		public void propertyChange(PropertyChangeEvent evt)
-		{
+		public void propertyChange(PropertyChangeEvent evt) {
 			updateDisplay(evt);
 		}
 	};
@@ -74,33 +72,32 @@ public class LapCounterFrame extends JFrame {
 	private JTextField tfDelay;
 	private JCheckBox chckbxCountUpwards;
 
-	
-	
 	/**
 	 * Create the dialog.
 	 */
 	public LapCounterFrame(final MainFrame mainFrame) {
-		this.mainFrame = mainFrame;
 		properties = mainFrame.getIni();
 		lapSwitchDelay = Integer.parseInt(properties.getProperty(PROP_LAP_SWITCH_DELAY, "5"));
 		countLapsUp = false;
 		lastLapsComplete = -1;
-		
+
 		mainFrame.storeIniFile();
-		
+
 		setBounds(100, 100, 1446, 840);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		
+
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
 		{
 			tfLaps = new JTextField();
-			Font theFont = new Font("Tahoma", Font.PLAIN, (int) (getHeight()*.85));//400
-		    //System.out.println("Font Height of " + Integer.toString((int) (getHeight()*.8)) + " = " + Integer.toString( tfLaps.getFontMetrics(theFont).getHeight()));
-			//System.out.println("Frame Height = " + Integer.toString( getHeight()));
-			
+			Font theFont = new Font("Tahoma", Font.PLAIN, (int) (getHeight() * .85));// 400
+			// System.out.println("Font Height of " + Integer.toString((int)
+			// (getHeight()*.8)) + " = " + Integer.toString(
+			// tfLaps.getFontMetrics(theFont).getHeight()));
+			// System.out.println("Frame Height = " + Integer.toString( getHeight()));
+
 			tfLaps.setFont(theFont);
 			tfLaps.setEditable(false);
 			tfLaps.setHorizontalAlignment(SwingConstants.CENTER);
@@ -111,9 +108,9 @@ public class LapCounterFrame extends JFrame {
 			tfLaps.setColumns(3);
 
 		}
-		
-		contentPanel.addComponentListener(new resizeListener());
-		
+
+		contentPanel.addComponentListener(new ResizeListener());
+
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setBackground(Color.BLACK);
@@ -126,11 +123,11 @@ public class LapCounterFrame extends JFrame {
 				cancelButton.setBackground(Color.BLACK);
 				cancelButton.setForeground(Color.RED);
 				cancelButton.setActionCommand("Cancel");
-				cancelButton.addActionListener(new ActionListener (){
+				cancelButton.addActionListener(new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent evt) {
 						instance.setVisible(false);
-						mainFrame.getRace().removePropertyChangeListener(propertyChangeListener);
+						RMonitorClient.getInstance().getRace().removePropertyChangeListener(propertyChangeListener);
 						instance.dispose();
 						instance = null;
 					}
@@ -179,121 +176,120 @@ public class LapCounterFrame extends JFrame {
 						chckbxCountUpwards.setSelected(countLapsUp);
 						infoPanel.add(chckbxCountUpwards);
 					}
-					
+
 					tfDelay.getDocument().addDocumentListener(new DocumentListener() {
-				            @Override
-				            public void insertUpdate(DocumentEvent e) {
-				            	if (tfDelay.getText().matches("\\d+")){
-				            		if (!Integer.toString(lapSwitchDelay).equals(tfDelay.getText())){
-				            		
-				            			lapSwitchDelay = Integer.parseInt(tfDelay.getText());
-				            			properties.setProperty(PROP_LAP_SWITCH_DELAY, tfDelay.getText());
-				            			mainFrame.storeIniFile();
-				            		}
-				            	} 
-				            }
-				            @Override public void removeUpdate(DocumentEvent e) { } // do nothing
-				            @Override public void changedUpdate(DocumentEvent e) { } // do nothing
-			        });
+						@Override
+						public void insertUpdate(DocumentEvent e) {
+							if (tfDelay.getText().matches("\\d+")) {
+								if (!Integer.toString(lapSwitchDelay).equals(tfDelay.getText())) {
+
+									lapSwitchDelay = Integer.parseInt(tfDelay.getText());
+									properties.setProperty(PROP_LAP_SWITCH_DELAY, tfDelay.getText());
+									mainFrame.storeIniFile();
+								}
+							}
+						}
+
+						@Override
+						public void removeUpdate(DocumentEvent e) {
+						} // do nothing
+
+						@Override
+						public void changedUpdate(DocumentEvent e) {
+						} // do nothing
+					});
 				}
 			}
-	
+
 		}
-		
-		
+
 		lastLapCountChangeTime = new Duration();
 		lastLapCount = 0;
-		
-		mainFrame.getRace().addPropertyChangeListener(propertyChangeListener);
-		
+
+		RMonitorClient.getInstance().getRace().addPropertyChangeListener(propertyChangeListener);
+
 	}
 
-	
-	class resizeListener extends ComponentAdapter {
-        public void componentResized(ComponentEvent e) {
-            //Recalculate the variable you mentioned
-        	Font theFont = new Font("Tahoma", Font.PLAIN, (int) (e.getComponent().getHeight()*.85));//400
-		    //System.out.println("Font Height of " + Integer.toString((int) (getHeight()*.8)) + " = " + Integer.toString( tfLaps.getFontMetrics(theFont).getHeight()));
-			//System.out.println("Size changed to " + Integer.toString( e.getComponent().getHeight()));
-			
+	class ResizeListener extends ComponentAdapter {
+		@Override
+		public void componentResized(ComponentEvent e) {
+			// Recalculate the variable you mentioned
+			Font theFont = new Font("Tahoma", Font.PLAIN, (int) (e.getComponent().getHeight() * .85));// 400
+			// System.out.println("Font Height of " + Integer.toString((int)
+			// (getHeight()*.8)) + " = " + Integer.toString(
+			// tfLaps.getFontMetrics(theFont).getHeight()));
+			// System.out.println("Size changed to " + Integer.toString(
+			// e.getComponent().getHeight()));
+
 			tfLaps.setFont(theFont);
-			//tfLaps.setText(Integer.toString((int) (e.getComponent().getHeight()*.85)));
-        }
-	}		
-	
+			// tfLaps.setText(Integer.toString((int) (e.getComponent().getHeight()*.85)));
+		}
+	}
+
 	public void addCancelButtonListener(ActionListener listener) {
 		cancelButton.addActionListener(listener);
-	  }
+	}
 
-	
-	public void updateDisplay(PropertyChangeEvent evt){
-		
-		if (evt.getPropertyName().equals("lapsToGo") ) {
+	public void updateDisplay(PropertyChangeEvent evt) {
+		Duration elapsedTime = RMonitorClient.getInstance().getRace().getElapsedTime();
+		if (evt.getPropertyName().equals("lapsToGo")) {
 			lastLapCount = ((int) evt.getNewValue());
-			lastLapCountChangeTime = mainFrame.getRace().getElapsedTime();
+			lastLapCountChangeTime = elapsedTime;
 		}
-		
-		if (evt.getPropertyName().equals("lapsComplete") ) {
+
+		if (evt.getPropertyName().equals("lapsComplete")) {
 			lastLapsComplete = ((int) evt.getNewValue());
-			lastLapCountChangeTime = mainFrame.getRace().getElapsedTime();
+			lastLapCountChangeTime = elapsedTime;
 		}
-		
-		if (evt.getPropertyName().equals("lapsToGo") || evt.getPropertyName().equals("elapsedTime") || evt.getPropertyName().equals("lapsComplete") ) {
-			tfElapsedTime.setText(mainFrame.getRace().getElapsedTime().toString());
-			int secondsSinceLastLapCountUpdate = mainFrame.getRace().getElapsedTime().toInt()-lastLapCountChangeTime.toInt();
-			
-			Race.FlagState currentFlagState = mainFrame.getRace().getCurrentFlagState();
-			
+
+		if (evt.getPropertyName().equals("lapsToGo") || evt.getPropertyName().equals("elapsedTime")
+				|| evt.getPropertyName().equals("lapsComplete")) {
+			tfElapsedTime.setText(elapsedTime.toString());
+			int secondsSinceLastLapCountUpdate = elapsedTime.toInt() - lastLapCountChangeTime.toInt();
+
+			Race.FlagState currentFlagState = RMonitorClient.getInstance().getRace().getCurrentFlagState();
+
 			// Display lastLapsComplete or lastLapCount dependent on checkbox
-			if (chckbxCountUpwards.isSelected()){
-				if (lastLapsComplete >= 0){
+			if (chckbxCountUpwards.isSelected()) {
+				if (lastLapsComplete >= 0) {
 					tfLaps.setText(Integer.toString(lastLapsComplete));
 				} else {
 					tfLaps.setText("-");
 				}
-			}else{
-			
+			} else {
+
 				// For Purple the LapToGo are shown instantly
-				if ( currentFlagState == Race.FlagState.PURPLE || currentFlagState == Race.FlagState.NONE){
-					if (lastLapCount > 0){
+				if (currentFlagState == Race.FlagState.PURPLE || currentFlagState == Race.FlagState.NONE) {
+					if (lastLapCount > 0) {
 						tfLaps.setText(Integer.toString(lastLapCount));
 					} else {
 						tfLaps.setText("-");
 					}
-				// for other flags we show the Laps to GO only after the lapSwitchDelay
-				} else if (secondsSinceLastLapCountUpdate > lapSwitchDelay ){
-					
-					
-					if (lastLapCount > 0){
-						tfLaps.setText(Integer.toString(lastLapCount-1));
+					// for other flags we show the Laps to GO only after the lapSwitchDelay
+				} else if (secondsSinceLastLapCountUpdate > lapSwitchDelay) {
+
+					if (lastLapCount > 0) {
+						tfLaps.setText(Integer.toString(lastLapCount - 1));
 					} else {
-						if (currentFlagState == Race.FlagState.NONE) {
-							tfLaps.setText("-");
-						} else {
-							tfLaps.setText("0");
-						}
+						tfLaps.setText("0");
 					}
 				}
 			}
 		}
-			
-		if (evt.getPropertyName().equals("currentFlagState")){
+
+		if (evt.getPropertyName().equals("currentFlagState")) {
 			setFlagColor((FlagState) evt.getNewValue());
-			tfElapsedTime.setText(mainFrame.getRace().getElapsedTime().toString());
-			
-			//After switch to green we have to trigger the decrease the lap counter
-			if ((FlagState) evt.getNewValue() == Race.FlagState.GREEN){
-				lastLapCountChangeTime = mainFrame.getRace().getElapsedTime();
+			tfElapsedTime.setText(elapsedTime.toString());
+
+			// After switch to green we have to trigger the decrease the lap counter
+			if ((FlagState) evt.getNewValue() == Race.FlagState.GREEN) {
+				lastLapCountChangeTime = elapsedTime;
 			}
 		}
-			
-				
-	
-		
 	}
 
-	private void setFlagColor(Race.FlagState flagState){
-		switch (flagState){
+	private void setFlagColor(Race.FlagState flagState) {
+		switch (flagState) {
 		case RED:
 			tfFlag.setBackground(Color.red);
 			break;
@@ -307,7 +303,7 @@ public class LapCounterFrame extends JFrame {
 			tfFlag.setBackground(Color.LIGHT_GRAY);
 			break;
 		case PURPLE:
-			tfFlag.setBackground(new Color(98,0,255));
+			tfFlag.setBackground(new Color(98, 0, 255));
 			break;
 		default:
 			tfFlag.setBackground(Color.BLACK);
@@ -315,9 +311,7 @@ public class LapCounterFrame extends JFrame {
 
 	}
 
-
-	public static LapCounterFrame getInstance(MainFrame mainFrame)
-	{
+	public static LapCounterFrame getInstance(MainFrame mainFrame) {
 		if (instance == null) {
 			instance = new LapCounterFrame(mainFrame);
 		}
@@ -325,5 +319,4 @@ public class LapCounterFrame extends JFrame {
 		return instance;
 	}
 
-	
 }

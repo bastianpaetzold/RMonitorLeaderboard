@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.entities.Competitor;
 import com.zacharyfox.rmonitor.entities.Race;
 import com.zacharyfox.rmonitor.entities.Race.FlagState;
@@ -34,7 +35,6 @@ public class StartSignalFrame extends JFrame {
 	private static final long serialVersionUID = 7957459184007408065L;
 	
 	private static StartSignalFrame instance;
-	private final MainFrame mainFrame;
 		
 	static GraphicsDevice device = GraphicsEnvironment
 	        .getLocalGraphicsEnvironment().getScreenDevices()[0];
@@ -56,8 +56,9 @@ public class StartSignalFrame extends JFrame {
 	/**
 	 * Create the dialog.
 	 */
-	public StartSignalFrame(final MainFrame mainFrame) {
-		this.mainFrame = mainFrame;
+	public StartSignalFrame() {
+		Race race = RMonitorClient.getInstance().getRace();
+		
 		setBounds(100, 100, 698, 590);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
 		getContentPane().setLayout(new BorderLayout());
@@ -72,11 +73,7 @@ public class StartSignalFrame extends JFrame {
 				
 			tfRaceName.setFont(new Font("Tahoma", Font.PLAIN, 80));
 			contentPanel.add(tfRaceName, BorderLayout.NORTH);
-			if (mainFrame.getRace() != null){
-				tfRaceName.setText(mainFrame.getRace().getRaceName());
-			} else {
-				tfRaceName.setText("");
-			}
+			tfRaceName.setText(race.getRaceName());
 
 			tfRaceName.setColumns(50);
 		}
@@ -93,9 +90,7 @@ public class StartSignalFrame extends JFrame {
 			
 			tfFlag.setColumns(20);
 			
-			if (mainFrame.getRace() != null){
-				setFlagColor(mainFrame.getRace().getCurrentFlagState());
-			}
+			setFlagColor(race.getCurrentFlagState());
 		}
 		{
 			tfRaceTime = new JTextField();
@@ -124,7 +119,7 @@ public class StartSignalFrame extends JFrame {
 					@Override
 					public void actionPerformed(ActionEvent evt) {
 						instance.setVisible(false);
-						mainFrame.getRace().removePropertyChangeListener(propertyChangeListener);
+						race.removePropertyChangeListener(propertyChangeListener);
 						instance.dispose();
 						instance = null;
 						
@@ -136,7 +131,7 @@ public class StartSignalFrame extends JFrame {
 			}
 		}
 		
-		mainFrame.getRace().addPropertyChangeListener(propertyChangeListener);
+		race.addPropertyChangeListener(propertyChangeListener);
 		
 	}
 
@@ -163,7 +158,7 @@ public class StartSignalFrame extends JFrame {
 		}
 		
 		if (evt.getPropertyName().equals("competitorsVersion")) {
-			if (mainFrame.getRace().getCurrentFlagState() == Race.FlagState.PURPLE) {
+			if (RMonitorClient.getInstance().getRace().getCurrentFlagState() == Race.FlagState.PURPLE) {
 				tfFlag.setText(getCompetitorsString(Competitor.getInstances().values()) );
 			}
 		}
@@ -206,10 +201,10 @@ public class StartSignalFrame extends JFrame {
 
 	}
 	
-	public static StartSignalFrame getInstance(MainFrame mainFrame)
+	public static StartSignalFrame getInstance()
 	{
 		if (instance == null) {
-			instance = new StartSignalFrame(mainFrame);
+			instance = new StartSignalFrame();
 		}
 
 		return instance;

@@ -11,11 +11,9 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.Reader;
@@ -39,18 +37,16 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
 import com.zacharyfox.rmonitor.client.RMonitorClient;
-import com.zacharyfox.rmonitor.entities.Race;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardMenuBar;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardTable;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardTableModel;
-import com.zacharyfox.rmonitor.leaderboard.RaceProvider;
 import com.zacharyfox.rmonitor.utils.Duration;
 import com.zacharyfox.rmonitor.utils.Estimator;
 import com.zacharyfox.rmonitor.utils.Recorder;
 
 import net.miginfocom.swing.MigLayout;
 
-public class MainFrame extends JFrame implements RaceProvider {
+public class MainFrame extends JFrame {
 	private final JLabel elapsedTime;
 	private Estimator estimator;
 	private final JPanel flagColor;
@@ -62,7 +58,6 @@ public class MainFrame extends JFrame implements RaceProvider {
 	private final JLabel lblNewLabel_2;
 	private final LeaderBoardTable leaderBoardTable;
 	private final LeaderBoardMenuBar menuBar;
-	private Race race;
 	private Recorder recorder;
 	private final JScrollPane resultsScrollPane;
 	private final JPanel resultsTablePanel;
@@ -195,13 +190,7 @@ public class MainFrame extends JFrame implements RaceProvider {
 				if (recorder != null) {
 					client.setRecorder(recorder);
 				}
-				race = client.getRace();
-				race.addPropertyChangeListener(new PropertyChangeListener() {
-					@Override
-					public void propertyChange(PropertyChangeEvent evt) {
-						updateDisplay(evt);
-					}
-				});
+				client.getRace().addPropertyChangeListener(this::updateDisplay);
 
 				menuBar.enableStartSignalMenu();
 				menuBar.enableLapCounterMenu();
@@ -325,10 +314,6 @@ public class MainFrame extends JFrame implements RaceProvider {
 			flagColor_3.setBackground(new Color(255, 255, 255));
 			flagColor_4.setBackground(new Color(0, 0, 0));
 		}
-	}
-
-	public Race getRace() {
-		return race;
 	}
 
 	private void updateDisplay(PropertyChangeEvent evt) {
