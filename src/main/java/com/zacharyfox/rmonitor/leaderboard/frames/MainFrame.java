@@ -38,20 +38,19 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
+import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.entities.Race;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardMenuBar;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardTable;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardTableModel;
 import com.zacharyfox.rmonitor.leaderboard.RaceProvider;
-import com.zacharyfox.rmonitor.leaderboard.Worker;
 import com.zacharyfox.rmonitor.utils.Duration;
 import com.zacharyfox.rmonitor.utils.Estimator;
 import com.zacharyfox.rmonitor.utils.Recorder;
 
 import net.miginfocom.swing.MigLayout;
 
-public class MainFrame extends JFrame implements ActionListener, RaceProvider
-{
+public class MainFrame extends JFrame implements RaceProvider {
 	private final JLabel elapsedTime;
 	private Estimator estimator;
 	private final JPanel flagColor;
@@ -73,14 +72,12 @@ public class MainFrame extends JFrame implements ActionListener, RaceProvider
 	private final JLabel timeToGo;
 	private final JPanel titleBar;
 	private final JLabel trackName;
-	private Worker worker;
 	private Properties properties;
 	private Path propertiesPath;
 
 	private static final long serialVersionUID = -743830529485841322L;
 
-	public MainFrame(String iniFilename)
-	{
+	public MainFrame(String iniFilename) {
 		propertiesPath = Paths.get(iniFilename);
 		properties = new Properties();
 		if (Files.exists(propertiesPath)) {
@@ -92,7 +89,6 @@ public class MainFrame extends JFrame implements ActionListener, RaceProvider
 			}
 		}
 
-		
 		Font systemLabelFont = UIManager.getFont("Label.font");
 		this.setBounds(100, 100, 870, 430);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -188,45 +184,41 @@ public class MainFrame extends JFrame implements ActionListener, RaceProvider
 		menuBar.disableStartSignalMenu();
 		menuBar.disableLapCounterMenu();
 		this.setJMenuBar(menuBar);
-	}
 
-	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		if (e.getActionCommand().equals("Connect")) {
-			race = new Race();
-			race.addPropertyChangeListener(new PropertyChangeListener() {
-				@Override
-				public void propertyChange(PropertyChangeEvent evt)
-				{
-					updateDisplay(evt);
+		RMonitorClient client = RMonitorClient.getInstance();
+		client.addStateChangeListener((oldState, newState) -> {
+			switch (newState) {
+			case STARTED:
+				break;
+
+			case RUNNING:
+				if (recorder != null) {
+					client.setRecorder(recorder);
 				}
-			});
-			ConnectFrame.getInstance(this).getIP();
-			ConnectFrame.getInstance(this).getPort();
-			storeIniFile();
-			
-			worker = new Worker(ConnectFrame.getInstance(this), race);
-			
-			if (recorder != null) {
-				worker.setRecorder(recorder);
-			}
-			menuBar.enableStartSignalMenu();
-			menuBar.enableLapCounterMenu();
-			menuBar.enableFinishLineLogMenu();
-			worker.execute();
-		} else if (e.getActionCommand().equals("Disconnect")) {
-			menuBar.disableStartSignalMenu();
-			menuBar.disableLapCounterMenu();
-			menuBar.disableFinishLineLogMenu();
-			worker.cancel(true);
-		}
+				race = client.getRace();
+				race.addPropertyChangeListener(new PropertyChangeListener() {
+					@Override
+					public void propertyChange(PropertyChangeEvent evt) {
+						updateDisplay(evt);
+					}
+				});
 
-		return;
+				menuBar.enableStartSignalMenu();
+				menuBar.enableLapCounterMenu();
+				menuBar.enableFinishLineLogMenu();
+				break;
+
+			case STOPPED:
+				menuBar.disableStartSignalMenu();
+				menuBar.disableLapCounterMenu();
+				menuBar.disableFinishLineLogMenu();
+				break;
+			}
+		});
 	}
-	
-	public void storeIniFile(){
-		try (BufferedWriter writer = Files.newBufferedWriter(propertiesPath)){
+
+	public void storeIniFile() {
+		try (BufferedWriter writer = Files.newBufferedWriter(propertiesPath)) {
 			properties.store(writer, null);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
@@ -234,8 +226,7 @@ public class MainFrame extends JFrame implements ActionListener, RaceProvider
 		}
 	}
 
-	public void goFullScreen()
-	{
+	public void goFullScreen() {
 		final Cursor oldCursor = getContentPane().getCursor();
 		final Rectangle oldBounds = getBounds();
 		final GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -243,7 +234,7 @@ public class MainFrame extends JFrame implements ActionListener, RaceProvider
 		if (gd.isFullScreenSupported()) {
 			try {
 				setCursor(getToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB),
-					new Point(0, 0), "null"));
+						new Point(0, 0), "null"));
 				dispose();
 				menuBar.setVisible(false);
 				setUndecorated(true);
@@ -259,8 +250,7 @@ public class MainFrame extends JFrame implements ActionListener, RaceProvider
 					private static final long serialVersionUID = -2399289576909037389L;
 
 					@Override
-					public void actionPerformed(ActionEvent evt)
-					{
+					public void actionPerformed(ActionEvent evt) {
 						actionMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, true));
 						MainFrame.this.setCursor(oldCursor);
 						gd.setFullScreenWindow(null);
@@ -283,36 +273,31 @@ public class MainFrame extends JFrame implements ActionListener, RaceProvider
 		}
 	}
 
-	public void removeEstimator()
-	{
+	public void removeEstimator() {
 		this.estimator = null;
-		worker.removeEstimator();
+		RMonitorClient.getInstance().setEstimator(null);
 	}
 
-	public void removeRecorder()
-	{
+	public void removeRecorder() {
 		this.recorder = null;
-		worker.removeRecorder();
+		RMonitorClient.getInstance().setRecorder(null);
 	}
 
-	public void setEstimator(Estimator estimator)
-	{
+	public void setEstimator(Estimator estimator) {
 		if (this.estimator == null) {
 			this.estimator = estimator;
-			worker.setEstimator(estimator);
+			RMonitorClient.getInstance().setEstimator(estimator);
 		}
 	}
 
-	public void setRecorder(Recorder recorder)
-	{
+	public void setRecorder(Recorder recorder) {
 		if (this.recorder == null) {
 			this.recorder = recorder;
-			worker.setRecorder(recorder);
+			RMonitorClient.getInstance().setRecorder(recorder);
 		}
 	}
 
-	private void setFlagColor(String status)
-	{
+	private void setFlagColor(String status) {
 		// TODO: this is expedient, but not elegant.
 		if (status.equals("Green")) {
 			flagColor_1.setBackground(new Color(0, 150, 0));
@@ -342,12 +327,11 @@ public class MainFrame extends JFrame implements ActionListener, RaceProvider
 		}
 	}
 
-	public Race getRace(){
+	public Race getRace() {
 		return race;
 	}
-	
-	private void updateDisplay(PropertyChangeEvent evt)
-	{
+
+	private void updateDisplay(PropertyChangeEvent evt) {
 		if (evt.getPropertyName().equals("raceName")) {
 			runName.setText((String) evt.getNewValue());
 		}
@@ -364,7 +348,6 @@ public class MainFrame extends JFrame implements ActionListener, RaceProvider
 			timeToGo.setText(String.valueOf(((int) evt.getNewValue())));
 		}
 
-		
 		if (evt.getPropertyName().equals("competitorsVersion")) {
 			((LeaderBoardTableModel) leaderBoardTable.getModel()).updateData();
 		}
@@ -382,10 +365,9 @@ public class MainFrame extends JFrame implements ActionListener, RaceProvider
 			// trackLength.setText(evt.getNewValue().toString());
 		}
 	}
-	
-	public Properties getIni(){
+
+	public Properties getIni() {
 		return properties;
 	}
-	
-	
+
 }
