@@ -9,23 +9,26 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingWorker;
 
-import com.zacharyfox.rmonitor.config.ConfigurationManager;
 import com.zacharyfox.rmonitor.utils.JsonServer;
+import com.zacharyfox.rmonitor.utils.JsonServer.State;
 
 import net.miginfocom.swing.MigLayout;
 
 public class ServerFrame extends JFrame {
-	private static final String PROP_PORT = "jsonServer.port";
+
+	private static final long serialVersionUID = 3848021032174790659L;
+
+	private static final String ACTION_START = "Start";
+	private static final String ACTION_STOP = "Stop";
 
 	private JButton startStop;
 	private JTextField portField;
-	private final JLabel portLabel;
+	private JLabel portLabel;
+
 	private static ServerFrame instance;
-	private static final long serialVersionUID = 3848021032174790659L;
-	private JsonServer jsonServer;
 
 	private ServerFrame() {
-		ConfigurationManager configManager = ConfigurationManager.getInstance();
+		JsonServer jsonServer = JsonServer.getInstance();
 
 		getContentPane().setLayout(new MigLayout("", "[][grow]", "[][]"));
 		setBounds(100, 100, 400, 150);
@@ -35,36 +38,53 @@ public class ServerFrame extends JFrame {
 		getContentPane().add(portLabel, "cell 0 0,alignx trailing");
 
 		portField = new JTextField();
-		portField.setText(configManager.getConfig(PROP_PORT, Integer.toString(JsonServer.DEFAULT_PORT)));
+		portField.setText(Integer.toString(jsonServer.getPort()));
 		getContentPane().add(portField, "cell 1 0,growx");
 		portField.setColumns(10);
 
-		startStop = new JButton("Start");
+		startStop = new JButton();
 		startStop.setHorizontalAlignment(SwingConstants.RIGHT);
-		startStop.addActionListener(this::handleStartStopAction);
+		startStop.addActionListener(this::handlerServerAction);
 		getContentPane().add(startStop, "cell 1 1,alignx right");
+		jsonServer.addStateChangeListener((oldState, newState) -> handleServerState(newState));
+		handleServerState(jsonServer.getCurrentState());
 	}
 
-	private void handleStartStopAction(ActionEvent evt) {
-		if (evt.getActionCommand().equals("Start")) {
-			startStop.setText("Stop");
+	private void handleServerState(State state) {
+		switch (state) {
+		case STARTED, RUNNING:
+			startStop.setText(ACTION_STOP);
+			break;
 
-			int port = Integer.parseInt(portField.getText());
-			ConfigurationManager.getInstance().setConfig(PROP_PORT, port);
+		case STOPPED:
+			startStop.setText(ACTION_START);
+			break;
 
-			jsonServer = new JsonServer();
-			jsonServer.setPort(port);
+		default:
+			break;
+		}
+	}
+
+	private void handlerServerAction(ActionEvent evt) {
+		switch (evt.getActionCommand()) {
+		case ACTION_START:
+			JsonServer server = JsonServer.getInstance();
+			server.setPort(Integer.parseInt(portField.getText()));
 			new SwingWorker<Void, Void>() {
 				@Override
 				protected Void doInBackground() throws Exception {
-					jsonServer.start();
+					server.start();
 					return null;
 				}
 			}.execute();
-		} else if (evt.getActionCommand().equals("Stop")) {
-			jsonServer.stop();
-			jsonServer = null;
-			startStop.setText("Start");
+			break;
+
+		case ACTION_STOP:
+			JsonServer.getInstance().stop();
+			break;
+
+		default:
+			break;
 		}
 	}
 

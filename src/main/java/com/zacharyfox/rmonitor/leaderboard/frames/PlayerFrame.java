@@ -61,9 +61,7 @@ public class PlayerFrame extends JFrame {
 		pauseResume.addActionListener(this::handlePlayerAction);
 		getContentPane().add(pauseResume, "cell 4 0");
 
-		player.addStateChangeListener((oldState, newState) -> {
-			handlePlayerState(newState);
-		});
+		player.addStateChangeListener((oldState, newState) -> handlePlayerState(newState));
 		handlePlayerState(player.getCurrentState());
 	}
 

@@ -74,7 +74,7 @@ public class LeaderBoard implements Callable<Integer> {
 		 ConfigurationManager.getInstance().loadConfig();
 
 		if (serverGroup != null && serverGroup.start) {
-			JsonServer server = new JsonServer();
+			JsonServer server = JsonServer.getInstance();
 			serverGroup.host.ifPresent(server::setHost);
 			serverGroup.port.ifPresent(server::setPort);
 			server.start();

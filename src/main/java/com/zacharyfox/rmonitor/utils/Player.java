@@ -122,7 +122,7 @@ public class Player {
 		return currentState == State.RUNNING;
 	}
 
-	public void stop() {
+	public synchronized void stop() {
 		try {
 			if (clientSocket != null) {
 				clientSocket.close();
@@ -138,7 +138,7 @@ public class Player {
 		}
 	}
 
-	public void pause() {
+	public synchronized void pause() {
 		if (currentState == State.RUNNING) {
 			updateCurrentState(State.PAUSED);
 		} else {
@@ -146,7 +146,7 @@ public class Player {
 		}
 	}
 
-	public void resume() {
+	public synchronized void resume() {
 		if (currentState == State.PAUSED) {
 			updateCurrentState(State.RUNNING);
 			pauseRequested = false;
