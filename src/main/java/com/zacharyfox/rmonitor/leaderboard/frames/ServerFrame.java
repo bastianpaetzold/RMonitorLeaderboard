@@ -24,7 +24,6 @@ public class ServerFrame extends JFrame  {
 	private static final long serialVersionUID = 3848021032174790659L;
 	private Properties properties;
 	private JsonServer jsonServer;
-	private MainFrame mainFrame;
 
 	private ServerFrame(MainFrame mainFrame) {
 		properties = mainFrame.getIni();
@@ -36,7 +35,7 @@ public class ServerFrame extends JFrame  {
 		getContentPane().add(portLabel, "cell 0 0,alignx trailing");
 
 		port = new JTextField();
-		port.setText(properties.getProperty(PROP_PORT, "8080"));
+		port.setText(properties.getProperty(PROP_PORT, Integer.toString(JsonServer.DEFAULT_PORT)));
 		getContentPane().add(port, "cell 1 0,growx");
 		port.setColumns(10);
 
@@ -44,7 +43,6 @@ public class ServerFrame extends JFrame  {
 		startStop.setHorizontalAlignment(SwingConstants.RIGHT);
 		startStop.addActionListener(this::handleStartStopAction);
 		getContentPane().add(startStop, "cell 1 1,alignx right");
-		this.mainFrame = mainFrame;
 	}
 
 	public Integer getPort() {
@@ -63,7 +61,8 @@ public class ServerFrame extends JFrame  {
 	private void handleStartStopAction(ActionEvent evt) {
 		if (evt.getActionCommand().equals("Start")) {
 			startStop.setText("Stop");
-			jsonServer = new JsonServer(getPort());
+			jsonServer = new JsonServer();
+			jsonServer.setPort(getPort());
 			new SwingWorker<Void, Void>() {
 				@Override
 				protected Void doInBackground() throws Exception {

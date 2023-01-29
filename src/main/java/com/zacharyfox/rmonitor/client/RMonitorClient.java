@@ -56,7 +56,6 @@ public class RMonitorClient {
 	public synchronized void start() {
 		if (currentState == State.STOPPED) {
 			thread = new Thread(this::run);
-			thread.setDaemon(true);
 			thread.start();
 		}
 	}
@@ -101,11 +100,6 @@ public class RMonitorClient {
 
 	public void stop() {
 		thread.interrupt();
-	}
-
-	public void stopAndWait() throws InterruptedException {
-		stop();
-		thread.join();
 	}
 
 	private void updateCurrentState(State newState) {

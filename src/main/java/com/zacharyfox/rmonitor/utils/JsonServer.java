@@ -1,6 +1,7 @@
 package com.zacharyfox.rmonitor.utils;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,16 +17,27 @@ import com.zacharyfox.rmonitor.entities.Race;
 import com.zacharyfox.rmonitor.entities.RaceTO;
 
 public class JsonServer {
+
+	public static final String DEFAULT_HOST = "127.0.0.1";
+	public static final int DEFAULT_PORT = 8080;
+
+	private String host;
+	private int port;
+
 	private Server jettyServer;
 
-	public JsonServer(int port) {
-		jettyServer = new Server(port);
-		jettyServer.setHandler(new JsonHandler());
+	public JsonServer() {
+		this(DEFAULT_HOST, DEFAULT_PORT);
+	}
+
+	public JsonServer(String host, int port) {
+		this.host = host;
+		this.port = port;
 	}
 
 	public void start() {
 		try {
-			jettyServer.start();
+			getJettyServer().start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -33,10 +45,27 @@ public class JsonServer {
 
 	public void stop() {
 		try {
-			jettyServer.stop();
+			getJettyServer().stop();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private synchronized Server getJettyServer() {
+		if (jettyServer == null) {
+			jettyServer = new Server(new InetSocketAddress(host, port));
+			jettyServer.setHandler(new JsonHandler());
+		}
+
+		return jettyServer;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
 	}
 
 	private class JsonHandler extends AbstractHandler {
