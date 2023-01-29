@@ -16,9 +16,41 @@ In addition to the swing application, this repository contains library packages 
 Building the Application
 ------------------------
 
-// TODO
+Requirements:
+- Java 17
+- Maven 3
 
-LIbrary Packages
+Running
+
+```
+mvn clean package
+```
+
+produces beside others the following two files in the  _target_  directory:
+
+- leaderboard-*.jar: Executable standalone JAR (requires Java 17 to run).
+- leaderboard-*-jlink.zip: A so-called  _Java Run-Time Image_  (doesn't require Java to run). It is platform dependent and therefore only runs on the platform it was build for.
+
+Running the Application
+------------------------
+
+### Standalone JAR
+
+Requirements:
+- Java 17
+
+The standalone JAR can be executed directly using Java, either via the GUI (depends on your OS) or via the following command:
+
+```
+java -jar leaderboard.jar
+```
+
+### Java Run-Time Image
+
+The image is just a zip file containing a directory structure that contains everything to run the application (no external Java required). Extract it somewhere and run the launcher script located in the  _bin_  directory. The name might differ depending on the OS it was build for. E.g. on Windows it is called  *launch_loaderboard.bat*.
+
+
+Library Packages
 ----------------
 
 ### com.zacharyfox.rmonitor.entities
