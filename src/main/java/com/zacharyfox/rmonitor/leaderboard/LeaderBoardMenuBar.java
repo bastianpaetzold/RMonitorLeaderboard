@@ -53,7 +53,7 @@ public class LeaderBoardMenuBar extends JMenuBar
 			@Override
 			public void actionPerformed(ActionEvent evt)
 			{
-				ConnectFrame newFrame = ConnectFrame.getInstance(mainFrame);
+				ConnectFrame newFrame = ConnectFrame.getInstance();
 				newFrame.setVisible(true);
 			}
 		});
@@ -95,7 +95,7 @@ public class LeaderBoardMenuBar extends JMenuBar
 			@Override
 			public void actionPerformed(ActionEvent evt)
 			{
-				PlayerFrame newFrame = PlayerFrame.getInstance(mainFrame);
+				PlayerFrame newFrame = PlayerFrame.getInstance();
 				newFrame.setVisible(true);
 			}
 		});
@@ -129,7 +129,7 @@ public class LeaderBoardMenuBar extends JMenuBar
 			@Override
 			public void actionPerformed(ActionEvent evt)
 			{
-				LapCounterFrame newFrame = LapCounterFrame.getInstance(mainFrame);
+				LapCounterFrame newFrame = LapCounterFrame.getInstance();
 				newFrame.setVisible(true);
 			}
 		});
@@ -141,7 +141,7 @@ public class LeaderBoardMenuBar extends JMenuBar
 			@Override
 			public void actionPerformed(ActionEvent evt)
 			{
-				FinishLineLogConfigFrame newFrame = FinishLineLogConfigFrame.getInstance(mainFrame);
+				FinishLineLogConfigFrame newFrame = FinishLineLogConfigFrame.getInstance();
 				newFrame.setVisible(true);
 			}
 		});
@@ -152,7 +152,7 @@ public class LeaderBoardMenuBar extends JMenuBar
 			@Override
 			public void actionPerformed(ActionEvent evt)
 			{
-				ServerFrame newFrame = ServerFrame.getInstance(mainFrame);
+				ServerFrame newFrame = ServerFrame.getInstance();
 				newFrame.setVisible(true);
 			}
 		});

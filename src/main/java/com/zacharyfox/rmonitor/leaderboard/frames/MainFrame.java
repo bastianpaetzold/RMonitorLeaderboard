@@ -14,13 +14,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.Reader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Properties;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -67,23 +60,10 @@ public class MainFrame extends JFrame {
 	private final JLabel timeToGo;
 	private final JPanel titleBar;
 	private final JLabel trackName;
-	private Properties properties;
-	private Path propertiesPath;
 
 	private static final long serialVersionUID = -743830529485841322L;
 
-	public MainFrame(String iniFilename) {
-		propertiesPath = Paths.get(iniFilename);
-		properties = new Properties();
-		if (Files.exists(propertiesPath)) {
-			try (Reader reader = Files.newBufferedReader(propertiesPath)) {
-				properties.load(reader);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
+	public MainFrame() {
 		Font systemLabelFont = UIManager.getFont("Label.font");
 		this.setBounds(100, 100, 870, 430);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -204,15 +184,6 @@ public class MainFrame extends JFrame {
 				break;
 			}
 		});
-	}
-
-	public void storeIniFile() {
-		try (BufferedWriter writer = Files.newBufferedWriter(propertiesPath)) {
-			properties.store(writer, null);
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 	}
 
 	public void goFullScreen() {
@@ -350,9 +321,4 @@ public class MainFrame extends JFrame {
 			// trackLength.setText(evt.getNewValue().toString());
 		}
 	}
-
-	public Properties getIni() {
-		return properties;
-	}
-
 }

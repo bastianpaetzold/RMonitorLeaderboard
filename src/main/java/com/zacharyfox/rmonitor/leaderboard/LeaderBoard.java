@@ -1,14 +1,17 @@
 package com.zacharyfox.rmonitor.leaderboard;
 
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import javax.swing.UIManager;
 
 import com.zacharyfox.rmonitor.client.RMonitorClient;
+import com.zacharyfox.rmonitor.config.ConfigurationManager;
 import com.zacharyfox.rmonitor.leaderboard.frames.ConnectFrame;
 import com.zacharyfox.rmonitor.leaderboard.frames.MainFrame;
 import com.zacharyfox.rmonitor.utils.JsonServer;
+import com.zacharyfox.rmonitor.utils.Player;
 
 import picocli.CommandLine;
 import picocli.CommandLine.ArgGroup;
@@ -51,8 +54,39 @@ public class LeaderBoard implements Callable<Integer> {
 		Optional<Integer> port;
 	}
 
+	@ArgGroup(exclusive = false)
+	private PlayerGroup playerGroup;
+
+	static class PlayerGroup {
+
+		@Option(names = { "-p", "--start-player" }, required = true, description = "Start the player.")
+		boolean start;
+
+		@Option(names = "--player-port", description = "Port on which the player should listen for client connections.")
+		Optional<Integer> port;
+
+		@Option(names = "--player-file", required = true, description = "Path to the file which the player should use.")
+		Optional<Path> path;
+	}
+
 	@Override
 	public Integer call() throws Exception {
+		 ConfigurationManager.getInstance().loadConfig();
+
+		if (serverGroup != null && serverGroup.start) {
+			JsonServer server = new JsonServer();
+			serverGroup.host.ifPresent(server::setHost);
+			serverGroup.port.ifPresent(server::setPort);
+			server.start();
+		}
+		
+		if (playerGroup != null && playerGroup.start) {
+			Player player = Player.getInstance();
+			playerGroup.port.ifPresent(player::setPort);
+			playerGroup.path.ifPresent(player::setFilePath);
+			player.start();
+		}
+
 		if (headless || (clientGroup != null && clientGroup.start)) {
 			RMonitorClient client = RMonitorClient.getInstance();
 			if (clientGroup != null) {
@@ -60,13 +94,6 @@ public class LeaderBoard implements Callable<Integer> {
 				clientGroup.port.ifPresent(client::setPort);
 			}
 			client.start();
-		}
-
-		if (serverGroup != null && serverGroup.start) {
-			JsonServer server = new JsonServer();
-			serverGroup.host.ifPresent(server::setHost);
-			serverGroup.port.ifPresent(server::setPort);
-			server.start();
 		}
 
 		if (!headless) {
@@ -87,9 +114,9 @@ public class LeaderBoard implements Callable<Integer> {
 		}
 
 		try {
-			MainFrame window = new MainFrame("LeaderBoard.properties");
+			MainFrame window = new MainFrame();
 			window.setVisible(true);
-			ConnectFrame newFrame = ConnectFrame.getInstance(window);
+			ConnectFrame newFrame = ConnectFrame.getInstance();
 			newFrame.setVisible(true);
 		} catch (Exception e) {
 			e.printStackTrace();

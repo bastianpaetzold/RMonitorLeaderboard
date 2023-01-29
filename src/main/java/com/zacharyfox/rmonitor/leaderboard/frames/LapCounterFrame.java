@@ -14,7 +14,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
-import java.util.Properties;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -28,14 +27,13 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import com.zacharyfox.rmonitor.client.RMonitorClient;
+import com.zacharyfox.rmonitor.config.ConfigurationManager;
 import com.zacharyfox.rmonitor.entities.Race;
 import com.zacharyfox.rmonitor.entities.Race.FlagState;
 import com.zacharyfox.rmonitor.utils.Duration;
 
 public class LapCounterFrame extends JFrame {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 7957459184007408065L;
 
 	private static final String PROP_LAP_SWITCH_DELAY = "lapCounter.lapSwitchDelay";
@@ -53,17 +51,11 @@ public class LapCounterFrame extends JFrame {
 	private Duration lastLapCountChangeTime;
 	private int lapSwitchDelay;
 	private boolean countLapsUp;
-	private Properties properties;
 
 	private static final String TIME_FORMAT = "HH:mm:ss";
 	public static final SimpleDateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT, Locale.getDefault());
 
-	private final PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
-		@Override
-		public void propertyChange(PropertyChangeEvent evt) {
-			updateDisplay(evt);
-		}
-	};
+	private final PropertyChangeListener propertyChangeListener = this::updateDisplay;
 	private JTextField tfElapsedTime;
 	private JTextField tfFlag;
 	private JPanel infoPanel;
@@ -75,13 +67,12 @@ public class LapCounterFrame extends JFrame {
 	/**
 	 * Create the dialog.
 	 */
-	public LapCounterFrame(final MainFrame mainFrame) {
-		properties = mainFrame.getIni();
-		lapSwitchDelay = Integer.parseInt(properties.getProperty(PROP_LAP_SWITCH_DELAY, "5"));
+	public LapCounterFrame() {
+		ConfigurationManager configManager = ConfigurationManager.getInstance();
+		
+		lapSwitchDelay = Integer.parseInt(configManager.getConfig(PROP_LAP_SWITCH_DELAY, "5"));
 		countLapsUp = false;
 		lastLapsComplete = -1;
-
-		mainFrame.storeIniFile();
 
 		setBounds(100, 100, 1446, 840);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -184,8 +175,7 @@ public class LapCounterFrame extends JFrame {
 								if (!Integer.toString(lapSwitchDelay).equals(tfDelay.getText())) {
 
 									lapSwitchDelay = Integer.parseInt(tfDelay.getText());
-									properties.setProperty(PROP_LAP_SWITCH_DELAY, tfDelay.getText());
-									mainFrame.storeIniFile();
+									configManager.setConfig(PROP_LAP_SWITCH_DELAY, tfDelay.getText());
 								}
 							}
 						}
@@ -311,9 +301,9 @@ public class LapCounterFrame extends JFrame {
 
 	}
 
-	public static LapCounterFrame getInstance(MainFrame mainFrame) {
+	public static LapCounterFrame getInstance() {
 		if (instance == null) {
-			instance = new LapCounterFrame(mainFrame);
+			instance = new LapCounterFrame();
 		}
 
 		return instance;
