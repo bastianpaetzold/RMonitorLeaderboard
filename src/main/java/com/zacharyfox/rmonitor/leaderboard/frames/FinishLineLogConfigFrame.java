@@ -1,7 +1,6 @@
 package com.zacharyfox.rmonitor.leaderboard.frames;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -13,14 +12,20 @@ import com.zacharyfox.rmonitor.config.ConfigurationManager;
 
 import net.miginfocom.swing.MigLayout;
 
-public class FinishLineLogConfigFrame extends JFrame implements ActionListener {
+public class FinishLineLogConfigFrame extends JFrame {
+
+	private static final long serialVersionUID = -4798150755306654896L;
+
 	private static final String PROP_ROW_HEIGHT = "finishLineLog.rowHeight";
+
+	private static final String ACTION_START = "Start";
+	private static final String ACTION_STOP = "Stop";
+
+	private static FinishLineLogConfigFrame instance;
 
 	private JButton startButton;
 	private JTextField rowHeight;
-	private final JLabel rowHeightLabel;
-	private static FinishLineLogConfigFrame instance;
-	private static final long serialVersionUID = 3848021032174790659L;
+	private JLabel rowHeightLabel;
 
 	private FinishLineLogConfigFrame() {
 		ConfigurationManager configManager = ConfigurationManager.getInstance();
@@ -37,22 +42,28 @@ public class FinishLineLogConfigFrame extends JFrame implements ActionListener {
 		getContentPane().add(rowHeight, "cell 1 0,growx");
 		rowHeight.setColumns(5);
 
-		startButton = new JButton("Start");
+		startButton = new JButton(ACTION_START);
 		startButton.setHorizontalAlignment(SwingConstants.RIGHT);
-		startButton.addActionListener(this);
+		startButton.addActionListener(this::handleAction);
 		getContentPane().add(startButton, "cell 1 1,alignx right");
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent evt) {
-		if (evt.getActionCommand().equals("Start")) {
+	private void handleAction(ActionEvent evt) {
+		switch (evt.getActionCommand()) {
+		case ACTION_START:
 			int height = Integer.parseInt(rowHeight.getText());
 			ConfigurationManager.getInstance().setConfig(PROP_ROW_HEIGHT, height);
 			FinishLineLogFrame newFrame = new FinishLineLogFrame(height);
 			newFrame.setVisible(true);
 			this.setVisible(false);
-		} else if (evt.getActionCommand().equals("Stop")) {
-			startButton.setText("Start");
+			break;
+
+		case ACTION_STOP:
+			startButton.setText(ACTION_START);
+			break;
+
+		default:
+			break;
 		}
 	}
 
@@ -60,7 +71,7 @@ public class FinishLineLogConfigFrame extends JFrame implements ActionListener {
 		if (instance == null) {
 			instance = new FinishLineLogConfigFrame();
 		}
-	
+
 		return instance;
 	}
 

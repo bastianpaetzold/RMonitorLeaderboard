@@ -5,17 +5,16 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -29,6 +28,7 @@ import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.WindowConstants;
 
 import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.leaderboard.FinishLineLogTable;
@@ -37,11 +37,13 @@ import com.zacharyfox.rmonitor.utils.Duration;
 
 import net.miginfocom.swing.MigLayout;
 
-public class FinishLineLogFrame extends JFrame implements ActionListener
-{
+public class FinishLineLogFrame extends JFrame {
+
+	private static final long serialVersionUID = -8775231053258225843L;
+
 	private final JLabel elapsedTime;
-	private final JLabel lblNewLabel_1;
-	private final JLabel lblNewLabel_2;
+	private final JLabel lblNewLabel1;
+	private final JLabel lblNewLabel2;
 	private final FinishLineLogTable finishLineLogTable;
 	private final JPanel resultsTablePanel;
 	private final JLabel runName;
@@ -50,21 +52,10 @@ public class FinishLineLogFrame extends JFrame implements ActionListener
 	private final JLabel timeToGo;
 	private final JPanel titleBar;
 	private final JLabel trackName;
-	
-	private final PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
-		@Override
-		public void propertyChange(PropertyChangeEvent evt)
-		{
-			updateDisplay(evt);
-		}
-	};
 
-	private static final long serialVersionUID = -743830529485841322L;
+	public FinishLineLogFrame(int rowHeight) {
+		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-	public FinishLineLogFrame(int rowHeight)
-	{
-		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		
 		Font systemLabelFont = UIManager.getFont("Label.font");
 		this.setBounds(100, 100, 870, 430);
 		this.getContentPane().setLayout(new MigLayout("", "[grow][grow]", "[][10:10:10][][][grow]"));
@@ -91,30 +82,29 @@ public class FinishLineLogFrame extends JFrame implements ActionListener
 		getContentPane().add(timeBar, "cell 0 3 2 1,growx");
 		timeBar.setLayout(new MigLayout("", "[][grow]50[][grow]", "[]"));
 
-		lblNewLabel_1 = new JLabel("Elapsed:");
-		lblNewLabel_1.setHorizontalTextPosition(JLabel.RIGHT);
-		lblNewLabel_1.setHorizontalAlignment(JLabel.RIGHT);
-		timeBar.add(lblNewLabel_1, "cell 1 0");
+		lblNewLabel1 = new JLabel("Elapsed:");
+		lblNewLabel1.setHorizontalTextPosition(SwingConstants.RIGHT);
+		lblNewLabel1.setHorizontalAlignment(SwingConstants.RIGHT);
+		timeBar.add(lblNewLabel1, "cell 1 0");
 
-		lblNewLabel_2 = new JLabel("To Go:");
-		lblNewLabel_2.setHorizontalAlignment(JLabel.RIGHT);
-		timeBar.add(lblNewLabel_2, "cell 3 0");
+		lblNewLabel2 = new JLabel("To Go:");
+		lblNewLabel2.setHorizontalAlignment(SwingConstants.RIGHT);
+		timeBar.add(lblNewLabel2, "cell 3 0");
 
 		elapsedTime = new JLabel(new Duration().toString());
-		elapsedTime.setHorizontalTextPosition(JLabel.LEFT);
-		elapsedTime.setHorizontalAlignment(JLabel.LEFT);
+		elapsedTime.setHorizontalTextPosition(SwingConstants.LEFT);
+		elapsedTime.setHorizontalAlignment(SwingConstants.LEFT);
 		elapsedTime.setFont(new Font(systemLabelFont.getName(), Font.BOLD, systemLabelFont.getSize() + 3));
 		timeBar.add(elapsedTime, "cell 2 0");
 
 		timeToGo = new JLabel(new Duration().toString());
-		timeToGo.setHorizontalTextPosition(JLabel.LEFT);
-		timeToGo.setHorizontalAlignment(JLabel.LEFT);
+		timeToGo.setHorizontalTextPosition(SwingConstants.LEFT);
+		timeToGo.setHorizontalAlignment(SwingConstants.LEFT);
 		timeToGo.setFont(new Font(systemLabelFont.getName(), Font.BOLD, systemLabelFont.getSize() + 3));
 		timeBar.add(timeToGo, "cell 4 0");
 
 		resultsTablePanel = new JPanel();
 		getContentPane().add(resultsTablePanel, "cell 0 4 2 1,grow");
-//		resultsTablePanel.setLayout(new GridLayout(1, 0, 0, 0));
 		resultsTablePanel.setLayout(new BorderLayout());
 		finishLineLogTable = new FinishLineLogTable(rowHeight);
 		finishLineLogTable.setIntercellSpacing(new Dimension(10, 1));
@@ -133,44 +123,14 @@ public class FinishLineLogFrame extends JFrame implements ActionListener
 		finishLineLogTable.getTableHeader().setOpaque(false);
 		finishLineLogTable.getTableHeader().setBackground(Color.BLACK);
 		finishLineLogTable.getTableHeader().setForeground(Color.YELLOW);
-		resultsTablePanel.add(finishLineLogTable.getTableHeader(),BorderLayout.NORTH);
-		resultsTablePanel.add(finishLineLogTable,BorderLayout.CENTER);
-		
-		RMonitorClient.getInstance().getRace().addPropertyChangeListener(propertyChangeListener);
+		resultsTablePanel.add(finishLineLogTable.getTableHeader(), BorderLayout.NORTH);
+		resultsTablePanel.add(finishLineLogTable, BorderLayout.CENTER);
+
+		RMonitorClient.getInstance().getRace().addPropertyChangeListener(this::updateDisplay);
 
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		if (e.getActionCommand().equals("Connect")) {
-/*			race = new Race();
-			race.addPropertyChangeListener(new PropertyChangeListener() {
-				@Override
-				public void propertyChange(PropertyChangeEvent evt)
-				{
-					updateDisplay(evt);
-				}
-			});
-			ConnectFrame.getInstance(this).getIP();
-			ConnectFrame.getInstance(this).getPort();
-			storeIniFile();
-			
-			worker = new Worker(ConnectFrame.getInstance(this), race);
-			
-			if (recorder != null) {
-				worker.setRecorder(recorder);
-			}
-			worker.execute();*/
-		} else if (e.getActionCommand().equals("Disconnect")) {
-			//worker.cancel(true);
-		}
-
-		return;
-	}
-	
-	public void goFullScreen()
-	{
+	public void goFullScreen() {
 		final Cursor oldCursor = getContentPane().getCursor();
 		final Rectangle oldBounds = getBounds();
 		final GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -178,7 +138,7 @@ public class FinishLineLogFrame extends JFrame implements ActionListener
 		if (gd.isFullScreenSupported()) {
 			try {
 				setCursor(getToolkit().createCustomCursor(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB),
-					new Point(0, 0), "null"));
+						new Point(0, 0), "null"));
 				dispose();
 				setUndecorated(true);
 				pack();
@@ -193,8 +153,7 @@ public class FinishLineLogFrame extends JFrame implements ActionListener
 					private static final long serialVersionUID = -2399289576909037389L;
 
 					@Override
-					public void actionPerformed(ActionEvent evt)
-					{
+					public void actionPerformed(ActionEvent evt) {
 						actionMap.remove(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, true));
 						FinishLineLogFrame.this.setCursor(oldCursor);
 						gd.setFullScreenWindow(null);
@@ -208,18 +167,12 @@ public class FinishLineLogFrame extends JFrame implements ActionListener
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
-			/*
-			 * finally { gd.setFullScreenWindow(null); }
-			 */
 		} else {
-			setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
+			setExtendedState(getExtendedState() | Frame.MAXIMIZED_BOTH);
 		}
 	}
 
-
-	
-	private void updateDisplay(PropertyChangeEvent evt)
-	{
+	private void updateDisplay(PropertyChangeEvent evt) {
 		if (evt.getPropertyName().equals("raceName")) {
 			runName.setText((String) evt.getNewValue());
 		}
@@ -236,11 +189,9 @@ public class FinishLineLogFrame extends JFrame implements ActionListener
 			timeToGo.setText(String.valueOf(((int) evt.getNewValue())));
 		}
 
-		
 		if (evt.getPropertyName().equals("competitorsVersion")) {
 			((FinishlineLogTableModel) finishLineLogTable.getModel()).updateData();
 		}
-
 
 		if (evt.getPropertyName().equals("trackName")) {
 			trackName.setText(evt.getNewValue().toString());
@@ -248,10 +199,6 @@ public class FinishLineLogFrame extends JFrame implements ActionListener
 
 		if (evt.getPropertyName().equals("trackLength")) {
 			// TODO: Handle Track Length
-			// trackLength.setText(evt.getNewValue().toString());
 		}
 	}
-	
-	
-	
 }

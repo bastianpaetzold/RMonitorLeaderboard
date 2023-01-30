@@ -2,7 +2,6 @@ package com.zacharyfox.rmonitor.leaderboard.frames;
 
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -15,8 +14,10 @@ import com.zacharyfox.rmonitor.utils.Estimator;
 
 import net.miginfocom.swing.MigLayout;
 
-public class EstimatorFrame extends JFrame
-{
+public class EstimatorFrame extends JFrame {
+	
+	private static final long serialVersionUID = -1784686632807846422L;
+	
 	private final JLabel estimatedLapsAvg;
 	private final JLabel estimatedLapsBest;
 	private final JLabel estimatedTimeAvg;
@@ -34,11 +35,10 @@ public class EstimatorFrame extends JFrame
 	private final JLabel scheduledTime;
 	private final JSeparator separator = new JSeparator();
 	private final JLabel topThree;
-	private static EstimatorFrame instance;
-	private static final long serialVersionUID = 207100859328952666L;
 
-	private EstimatorFrame(MainFrame mainFrame)
-	{
+	private static EstimatorFrame instance;
+
+	private EstimatorFrame(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
 
 		getContentPane().setLayout(new MigLayout("", "[grow][]", "[100.00,grow][][][][][]"));
@@ -85,13 +85,7 @@ public class EstimatorFrame extends JFrame
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
 		estimator = new Estimator();
-		estimator.addPropertyChangeListener(new PropertyChangeListener() {
-			@Override
-			public void propertyChange(PropertyChangeEvent evt)
-			{
-				updateDisplay(evt);
-			}
-		});
+		estimator.addPropertyChangeListener(this::updateDisplay);
 
 		estimatedLapsBest.setText(Integer.toString(estimator.getEstimatedLapsBest()));
 		estimatedTimeBest.setText(" @ " + estimator.getEstimatedTimeBest().toString());
@@ -105,33 +99,26 @@ public class EstimatorFrame extends JFrame
 		this.mainFrame.setEstimator(estimator);
 	}
 
-	public JLabel getEstimatedLapsByBest()
-	{
-		return estimatedLapsBest;
-	}
+	private String getTopThreeText() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("<html><body>");
 
-	public void setEstimatedLaps(int laps)
-	{
-		estimatedLapsBest.setText(Integer.toString(laps));
-	}
-
-	private String getTopThreeText()
-	{
-		String text = "<html><body>";
-		int i;
-		for (i = 1; i <= 3; i++) {
+		for (int i = 1; i <= 3; i++) {
 			Competitor comp = Competitor.getByPosition(i);
 			if (comp != null) {
-				text = text + comp.getNumber() + " " + RaceClass.getClassName(comp.getClassId()) + "<br />";
+				builder.append(comp.getNumber());
+				builder.append(" ");
+				builder.append(RaceClass.getClassName(comp.getClassId()));
+				builder.append("<br />");
 			}
 		}
 
-		text = text + "</body></html>";
-		return text;
+		builder.append("</body></html>");
+
+		return builder.toString();
 	}
 
-	private void updateDisplay(PropertyChangeEvent evt)
-	{
+	private void updateDisplay(PropertyChangeEvent evt) {
 		if (evt.getPropertyName().equals("estimatedLapsBest")) {
 			estimatedLapsBest.setText((String) evt.getNewValue());
 		}
@@ -163,8 +150,7 @@ public class EstimatorFrame extends JFrame
 		topThree.setText(this.getTopThreeText());
 	}
 
-	public static EstimatorFrame getInstance(MainFrame mainFrame)
-	{
+	public static EstimatorFrame getInstance(MainFrame mainFrame) {
 		if (instance == null) {
 			instance = new EstimatorFrame(mainFrame);
 		}
