@@ -43,6 +43,8 @@ public class RMonitorClient {
 		listenerList = new ArrayList<>();
 		currentState = State.STOPPED;
 		currentRace = new Race();
+		
+		recorder = Recorder.getInstance();
 	}
 
 	public static RMonitorClient getInstance() {
@@ -88,10 +90,7 @@ public class RMonitorClient {
 
 	private synchronized void processMessage(String message) {
 		currentRace.update(Factory.getMessage(message));
-
-		if (recorder != null) {
-			recorder.push(message);
-		}
+		recorder.push(message);
 		
 		if (estimator != null) {
 			estimator.update(currentRace);
@@ -130,10 +129,6 @@ public class RMonitorClient {
 
 	public Race getRace() {
 		return currentRace;
-	}
-
-	public synchronized void setRecorder(Recorder recorder) {
-		this.recorder = recorder;
 	}
 
 	public synchronized void setEstimator(Estimator estimator) {

@@ -35,7 +35,6 @@ import com.zacharyfox.rmonitor.leaderboard.LeaderBoardTable;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardTableModel;
 import com.zacharyfox.rmonitor.utils.Duration;
 import com.zacharyfox.rmonitor.utils.Estimator;
-import com.zacharyfox.rmonitor.utils.Recorder;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -51,7 +50,6 @@ public class MainFrame extends JFrame {
 	private final JLabel lblNewLabel_2;
 	private final LeaderBoardTable leaderBoardTable;
 	private final LeaderBoardMenuBar menuBar;
-	private Recorder recorder;
 	private final JScrollPane resultsScrollPane;
 	private final JPanel resultsTablePanel;
 	private final JLabel runName;
@@ -167,9 +165,6 @@ public class MainFrame extends JFrame {
 				break;
 
 			case RUNNING:
-				if (recorder != null) {
-					client.setRecorder(recorder);
-				}
 				client.getRace().addPropertyChangeListener(this::updateDisplay);
 
 				menuBar.enableStartSignalMenu();
@@ -238,22 +233,10 @@ public class MainFrame extends JFrame {
 		RMonitorClient.getInstance().setEstimator(null);
 	}
 
-	public void removeRecorder() {
-		this.recorder = null;
-		RMonitorClient.getInstance().setRecorder(null);
-	}
-
 	public void setEstimator(Estimator estimator) {
 		if (this.estimator == null) {
 			this.estimator = estimator;
 			RMonitorClient.getInstance().setEstimator(estimator);
-		}
-	}
-
-	public void setRecorder(Recorder recorder) {
-		if (this.recorder == null) {
-			this.recorder = recorder;
-			RMonitorClient.getInstance().setRecorder(recorder);
 		}
 	}
 

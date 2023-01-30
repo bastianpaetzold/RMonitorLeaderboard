@@ -82,7 +82,7 @@ public class LeaderBoardMenuBar extends JMenuBar
 			@Override
 			public void actionPerformed(ActionEvent evt)
 			{
-				RecorderFrame newFrame = RecorderFrame.getInstance(mainFrame);
+				RecorderFrame newFrame = RecorderFrame.getInstance();
 				newFrame.setVisible(true);
 			}
 		});

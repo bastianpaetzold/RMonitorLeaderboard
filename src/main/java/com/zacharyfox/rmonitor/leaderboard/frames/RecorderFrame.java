@@ -1,8 +1,7 @@
 package com.zacharyfox.rmonitor.leaderboard.frames;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
+import java.nio.file.Paths;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -10,73 +9,94 @@ import javax.swing.JFrame;
 import javax.swing.JTextField;
 
 import com.zacharyfox.rmonitor.utils.Recorder;
+import com.zacharyfox.rmonitor.utils.Recorder.State;
 
 import net.miginfocom.swing.MigLayout;
 
-public class RecorderFrame extends JFrame implements ActionListener
-{
-	private JFileChooser chooser;
-	private final MainFrame mainFrame;
-	private Recorder recorder;
+public class RecorderFrame extends JFrame {
+
+	private static final String ACTION_SAVE_AS = "Save As";
+	private static final String ACTION_START = "Start";
+	private static final String ACTION_STOP = "Stop";
+
 	private final JTextField recorderFile;
 	private final JButton selectFileButton;
 	private final JButton startStop;
 	private static RecorderFrame instance;
 	private static final long serialVersionUID = -9179041103033981780L;
 
-	private RecorderFrame(MainFrame mainFrame)
-	{
-		this.mainFrame = mainFrame;
+	private RecorderFrame() {
+		Recorder recorder = Recorder.getInstance();
 
 		getContentPane().setLayout(new MigLayout("", "[grow][][]", "[][]"));
 		setBounds(100, 100, 400, 150);
 
 		recorderFile = new JTextField();
+		recorderFile.setText(recorder.getPath().toString());
 		getContentPane().add(recorderFile, "cell 0 0,growx");
 		recorderFile.setColumns(10);
 
-		selectFileButton = new JButton("Save As");
-		selectFileButton.addActionListener(this);
+		selectFileButton = new JButton(ACTION_SAVE_AS);
+		selectFileButton.addActionListener(this::handleRecorderAction);
 		getContentPane().add(selectFileButton, "cell 1 0");
 
-		startStop = new JButton("Start");
-		startStop.setEnabled(false);
-		startStop.addActionListener(this);
+		startStop = new JButton(ACTION_START);
+		startStop.setEnabled(true);
+		startStop.addActionListener(this::handleRecorderAction);
 		getContentPane().add(startStop, "cell 2 0");
+		
+		recorder.addStateChangeListener((oldState, newState) -> handleRecorderState(newState));
+		handleRecorderState(recorder.getCurrentState());
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent evt)
-	{
-		if (evt.getActionCommand().equals("Save As")) {
-			chooser = new JFileChooser();
-			chooser.setSelectedFile(new File("leaderboard-recording.txt"));
-
-			if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-				recorderFile.setText(chooser.getSelectedFile().toString());
-				startStop.setEnabled(true);
-			}
-		} else if (evt.getActionCommand().equals("Start")) {
-			startStop.setText("Stop");
+	private void handleRecorderState(State state) {
+		switch (state) {
+		case STARTED:
+			startStop.setText(ACTION_STOP);
 			recorderFile.setEnabled(false);
 			selectFileButton.setEnabled(false);
-			recorder = new Recorder(recorderFile.getText());
-			mainFrame.setRecorder(recorder);
+			break;
 
-		} else if (evt.getActionCommand().equals("Stop")) {
-			mainFrame.removeRecorder();
-			recorder.close();
-			startStop.setText("Start");
+		case STOPPED:
+			startStop.setText(ACTION_START);
 			recorderFile.setEnabled(true);
 			selectFileButton.setEnabled(true);
+			break;
 
+		default:
+			break;
 		}
 	}
 
-	public static RecorderFrame getInstance(MainFrame mainFrame)
-	{
+	private void handleRecorderAction(ActionEvent evt) {
+		Recorder recorder = Recorder.getInstance();
+
+		switch (evt.getActionCommand()) {
+		case ACTION_SAVE_AS:
+			JFileChooser chooser = new JFileChooser();
+			chooser.setSelectedFile(recorder.getPath().toFile());
+			if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+				recorderFile.setText(chooser.getSelectedFile().toString());
+			}
+			break;
+
+		case ACTION_START:
+			recorder.setPath(Paths.get(recorderFile.getText()));
+			recorder.start();
+			break;
+
+		case ACTION_STOP:
+			recorder.stop();
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	public static RecorderFrame getInstance() {
 		if (instance == null) {
-			instance = new RecorderFrame(mainFrame);
+			instance = new RecorderFrame();
 		}
 
 		return instance;

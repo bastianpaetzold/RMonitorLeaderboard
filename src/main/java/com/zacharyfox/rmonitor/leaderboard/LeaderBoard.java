@@ -12,6 +12,7 @@ import com.zacharyfox.rmonitor.leaderboard.frames.ConnectFrame;
 import com.zacharyfox.rmonitor.leaderboard.frames.MainFrame;
 import com.zacharyfox.rmonitor.utils.JsonServer;
 import com.zacharyfox.rmonitor.utils.Player;
+import com.zacharyfox.rmonitor.utils.Recorder;
 
 import picocli.CommandLine;
 import picocli.CommandLine.ArgGroup;
@@ -65,7 +66,19 @@ public class LeaderBoard implements Callable<Integer> {
 		@Option(names = "--player-port", description = "Port on which the player should listen for client connections.")
 		Optional<Integer> port;
 
-		@Option(names = "--player-file", required = true, description = "Path to the file which the player should use.")
+		@Option(names = "--player-file", required = true, description = "Path to the file which the player should use to read messages from.")
+		Optional<Path> path;
+	}
+	
+	@ArgGroup(exclusive = false)
+	private RecorderGroup recorderGroup;
+
+	static class RecorderGroup {
+
+		@Option(names = { "-r", "--start-recorder" }, required = true, description = "Start the Recorder.")
+		boolean start;
+
+		@Option(names = "--recorder-file", required = true, description = "Path to the file which the recorder should use to write messages into.")
 		Optional<Path> path;
 	}
 
@@ -85,6 +98,12 @@ public class LeaderBoard implements Callable<Integer> {
 			playerGroup.port.ifPresent(player::setPort);
 			playerGroup.path.ifPresent(player::setFilePath);
 			player.start();
+		}
+		
+		if (recorderGroup != null && recorderGroup.start) {
+			Recorder recorder = Recorder.getInstance();
+			recorderGroup.path.ifPresent(recorder::setPath);
+			recorder.start();
 		}
 
 		if (headless || (clientGroup != null && clientGroup.start)) {
