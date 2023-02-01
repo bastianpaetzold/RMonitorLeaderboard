@@ -2,6 +2,7 @@ package com.zacharyfox.rmonitor.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -100,7 +101,7 @@ public class Player {
 	}
 
 	private void run() {
-		try (BufferedReader reader = Files.newBufferedReader(filePath, fileEncoding)) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(Files.newInputStream(filePath), fileEncoding))) {
 			updateCurrentState(State.STARTED);
 
 			if (awaitConnection()) {
