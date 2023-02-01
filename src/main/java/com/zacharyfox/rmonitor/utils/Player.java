@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.UnsupportedCharsetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -16,13 +19,23 @@ import com.zacharyfox.rmonitor.config.ConfigurationManager;
 
 public class Player {
 
-	private static final int DEFAULT_PORT = 50000;
-	private static final String PROP_LAST_FILE = "player.lastFile";
-	private static final String PROP_SPEEDUP = "player.speedup";
+	public static final int DEFAULT_PORT = 50000;
+	public static final String DEFAULT_SPEEDUP = "2";
+	public static final String DEFAULT_FILE_PATH = "";
+	public static final String DEFAULT_FILE_ENCODING = Charset.defaultCharset().name();
+	public static final String DEFAULT_STREAM_ENCODING = Charset.defaultCharset().name();
 
-	private int port = DEFAULT_PORT;
-	private Path filePath;
+	private static final String PROP_PORT = "player.port";
+	private static final String PROP_SPEEDUP = "player.speedup";
+	private static final String PROP_FILE_PATH = "player.file";
+	private static final String PROP_FILE_ENCODING = "player.file.encoding";
+	private static final String PROP_STREAM_ENCODING = "player.stream.encoding";
+
+	private int port;
 	private int speedup = 2;
+	private Path filePath;
+	private Charset fileEncoding;
+	private Charset streamEncoding;
 
 	private Thread thread;
 	private State currentState;
@@ -52,8 +65,31 @@ public class Player {
 		listenerList = new ArrayList<>();
 
 		configManager = ConfigurationManager.getInstance();
-		filePath = Paths.get(configManager.getConfig(PROP_LAST_FILE, ""));
-		speedup = Integer.parseInt(configManager.getConfig(PROP_SPEEDUP, "2"));
+		port = configManager.getConfig(PROP_PORT, DEFAULT_PORT);
+		speedup = Integer.parseInt(configManager.getConfig(PROP_SPEEDUP, DEFAULT_SPEEDUP));
+		filePath = Paths.get(configManager.getConfig(PROP_FILE_PATH, DEFAULT_FILE_PATH));
+
+		String fileEncodingString = configManager.getConfig(PROP_FILE_ENCODING, DEFAULT_FILE_ENCODING);
+		try {
+			fileEncoding = Charset.forName(fileEncodingString);
+		} catch (IllegalCharsetNameException e) {
+			System.err.println("Illegal charset defined as player file encoding: " + fileEncodingString);
+			fileEncoding = Charset.defaultCharset();
+		} catch (UnsupportedCharsetException e) {
+			System.err.println("Unsupported charset defined as player file encoding: " + fileEncodingString);
+			fileEncoding = Charset.defaultCharset();
+		}
+
+		String streamEncodingString = configManager.getConfig(PROP_STREAM_ENCODING, DEFAULT_STREAM_ENCODING);
+		try {
+			streamEncoding = Charset.forName(streamEncodingString);
+		} catch (IllegalCharsetNameException e) {
+			System.err.println("Illegal charset defined as player stream encoding: " + streamEncodingString);
+			streamEncoding = Charset.defaultCharset();
+		} catch (UnsupportedCharsetException e) {
+			System.err.println("Unsupported charset defined as player stream encoding: " + streamEncodingString);
+			streamEncoding = Charset.defaultCharset();
+		}
 	}
 
 	public synchronized void start() {
@@ -64,11 +100,11 @@ public class Player {
 	}
 
 	private void run() {
-		try (BufferedReader reader = Files.newBufferedReader(filePath)) {
+		try (BufferedReader reader = Files.newBufferedReader(filePath, fileEncoding)) {
 			updateCurrentState(State.STARTED);
 
 			if (awaitConnection()) {
-				PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+				PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true, streamEncoding);
 
 				if (pauseRequested) {
 					pauseRequested = false;
@@ -163,7 +199,7 @@ public class Player {
 				System.err.println("Player file is not valid or readable: " + filePath.toString());
 			}
 		}
-		
+
 		return startable;
 	}
 
@@ -200,7 +236,7 @@ public class Player {
 
 	public void setFilePath(Path filePath) {
 		this.filePath = filePath;
-		configManager.setConfig(PROP_LAST_FILE, filePath.toString());
+		configManager.setConfig(PROP_FILE_PATH, filePath.toString());
 	}
 
 	public int getPort() {
@@ -209,6 +245,17 @@ public class Player {
 
 	public void setPort(int port) {
 		this.port = port;
+		configManager.setConfig(PROP_PORT, port);
+	}
+
+	public void setFileEncoding(Charset fileEncoding) {
+		this.fileEncoding = fileEncoding;
+		configManager.setConfig(PROP_FILE_ENCODING, fileEncoding.name());
+	}
+
+	public void setStreamEncoding(Charset streamEncoding) {
+		this.streamEncoding = streamEncoding;
+		configManager.setConfig(PROP_FILE_ENCODING, streamEncoding.name());
 	}
 
 	public State getCurrentState() {

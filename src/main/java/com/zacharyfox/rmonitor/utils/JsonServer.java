@@ -22,10 +22,11 @@ import com.zacharyfox.rmonitor.entities.RaceTO;
 
 public class JsonServer {
 
-	public static final String DEFAULT_HOST = "127.0.0.1";
+	public static final String DEFAULT_HOST = "0.0.0.0";
 	public static final int DEFAULT_PORT = 8080;
 
-	private static final String PROP_PORT = "jsonServer.port";
+	private static final String PROP_HOST = "server.host";
+	private static final String PROP_PORT = "server.port";
 
 	private String host;
 	private int port;
@@ -54,7 +55,7 @@ public class JsonServer {
 		listenerList = new ArrayList<>();
 
 		configManager = ConfigurationManager.getInstance();
-		host = DEFAULT_HOST;
+		host = configManager.getConfig(PROP_HOST, DEFAULT_HOST);
 		port = configManager.getConfig(PROP_PORT, DEFAULT_PORT);
 	}
 

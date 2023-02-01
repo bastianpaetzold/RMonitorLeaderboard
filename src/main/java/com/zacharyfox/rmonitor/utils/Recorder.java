@@ -2,6 +2,9 @@ package com.zacharyfox.rmonitor.utils;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.UnsupportedCharsetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -9,14 +12,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-public class Recorder {
+import com.zacharyfox.rmonitor.config.ConfigurationManager;
 
-	private Path path;
+public class Recorder {
+	
+	public static final String DEFAULT_FILE_PATH = "";
+	public static final String DEFAULT_FILE_ENCODING = Charset.defaultCharset().name();
+
+	private static final String PROP_FILE_PATH = "recorder.file";
+	private static final String PROP_FILE_ENCODING = "recorder.file.encoding";
+
+	private Path filePath;
+	private Charset encoding;
+	
 	private BufferedWriter writer;
 	private long startTime = 0;
 
 	private State currentState;
 	private List<BiConsumer<State, State>> listenerList;
+	private ConfigurationManager configManager;
 
 	public enum State {
 		STARTED, STOPPED
@@ -36,13 +50,25 @@ public class Recorder {
 		currentState = State.STOPPED;
 		listenerList = new ArrayList<>();
 
-		path = Paths.get("");
+		configManager = ConfigurationManager.getInstance();
+		filePath = Paths.get(configManager.getConfig(PROP_FILE_PATH, DEFAULT_FILE_PATH));
+
+		String encodingString = configManager.getConfig(PROP_FILE_ENCODING, DEFAULT_FILE_ENCODING);
+		try {
+			encoding = Charset.forName(encodingString);
+		} catch (IllegalCharsetNameException e) {
+			System.err.println("Illegal charset defined as client stream encoding: " + encodingString);
+			encoding = Charset.defaultCharset();
+		} catch (UnsupportedCharsetException e) {
+			System.err.println("Unsupported charset defined as client stream encoding: " + encodingString);
+			encoding = Charset.defaultCharset();
+		}
 	}
 
 	public synchronized void start() {
 		if (currentState == State.STOPPED) {
 			try {
-				writer = Files.newBufferedWriter(path);
+				writer = Files.newBufferedWriter(filePath, encoding);
 				updateCurrentState(State.STARTED);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -101,11 +127,17 @@ public class Recorder {
 		return currentState;
 	}
 
-	public Path getPath() {
-		return path;
+	public Path getFilePath() {
+		return filePath;
 	}
 
-	public void setPath(Path path) {
-		this.path = path;
+	public void setFilePath(Path filePath) {
+		this.filePath = filePath;
+		configManager.setConfig(PROP_FILE_PATH, filePath.toString());
+	}
+	
+	public void setEncoding(Charset encoding) {
+		this.encoding = encoding;
+		configManager.setConfig(PROP_FILE_ENCODING, encoding.name());
 	}
 }

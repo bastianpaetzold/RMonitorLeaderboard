@@ -32,7 +32,7 @@ public class RecorderFrame extends JFrame {
 		setBounds(100, 100, 400, 150);
 
 		recorderFile = new JTextField();
-		recorderFile.setText(recorder.getPath().toString());
+		recorderFile.setText(recorder.getFilePath().toString());
 		getContentPane().add(recorderFile, "cell 0 0,growx");
 		recorderFile.setColumns(10);
 
@@ -74,14 +74,14 @@ public class RecorderFrame extends JFrame {
 		switch (evt.getActionCommand()) {
 		case ACTION_SAVE_AS:
 			JFileChooser chooser = new JFileChooser();
-			chooser.setSelectedFile(recorder.getPath().toFile());
+			chooser.setSelectedFile(recorder.getFilePath().toFile());
 			if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
 				recorderFile.setText(chooser.getSelectedFile().toString());
 			}
 			break;
 
 		case ACTION_START:
-			recorder.setPath(Paths.get(recorderFile.getText()));
+			recorder.setFilePath(Paths.get(recorderFile.getText()));
 			recorder.start();
 			break;
 
