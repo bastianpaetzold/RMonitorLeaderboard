@@ -2,6 +2,7 @@ package com.zacharyfox.rmonitor.utils;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.time.Duration;
 
 import com.zacharyfox.rmonitor.entities.Competitor;
 import com.zacharyfox.rmonitor.entities.Race;
@@ -11,24 +12,24 @@ public class Estimator {
 	private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 	private int estimatedLapsAvg = 0;
 	private int estimatedLapsBest = 0;
-	private Duration estimatedTimeAvg = new Duration(0);
-	private Duration estimatedTimeBest = new Duration(0);
+	private Duration estimatedTimeAvg = Duration.ZERO;
+	private Duration estimatedTimeBest = Duration.ZERO;
 	private int lapsComplete = 0;
 	private int lapsToGo = 0;
 	private int scheduledLaps = 0;
 
-	private Duration scheduledTime = new Duration(0);
-	
+	private Duration scheduledTime = Duration.ZERO;
+
 	private static Estimator instance;
-	
+
 	public static Estimator getInstance() {
 		if (instance == null) {
 			instance = new Estimator();
 		}
-		
+
 		return instance;
 	}
-	
+
 	private Estimator() {
 	}
 
@@ -91,13 +92,13 @@ public class Estimator {
 			return;
 		}
 
-		int time = competitor.getTotalTime().toInt();
-		int avgLapTime = competitor.getAvgLap().toInt();
+		Duration time = competitor.getTotalTime();
+		Duration avgLapTime = competitor.getAvgLap();
 
 		do {
-			time += avgLapTime;
-			laps += 1;
-		} while (time < scheduledTime.toInt());
+			time = time.plus(avgLapTime);
+			laps++;
+		} while (time.compareTo(scheduledTime) < 0);
 
 		if (lapsToGo == 0 || laps < lapsToGo + competitor.getLapsComplete()) {
 			estimatedLapsAvg = laps;
@@ -105,10 +106,9 @@ public class Estimator {
 			estimatedLapsAvg = scheduledLaps;
 		}
 
-		this.estimatedTimeAvg = new Duration(time);
+		estimatedTimeAvg = time;
 
-		changeSupport.firePropertyChange("estimatedLapsAvg", oldEstimatedLapsAvg,
-				Integer.toString(estimatedLapsAvg));
+		changeSupport.firePropertyChange("estimatedLapsAvg", oldEstimatedLapsAvg, Integer.toString(estimatedLapsAvg));
 		changeSupport.firePropertyChange("estimatedTimeAvg", oldEstimatedTimeAvg, estimatedTimeAvg);
 	}
 
@@ -126,18 +126,18 @@ public class Estimator {
 			estimatedLapsBest = lapsToGo;
 			return;
 		}
-		int time = competitor.getTotalTime().toInt();
-		int bestLapTime = competitor.getBestLap().toInt();
+		Duration time = competitor.getTotalTime();
+		Duration bestLapTime = competitor.getBestLap();
 
-		if (bestLapTime == 0) {
+		if (bestLapTime.isZero()) {
 			estimatedLapsBest = lapsToGo;
 			return;
 		}
 
 		do {
-			time += bestLapTime;
-			laps += 1;
-		} while (time < scheduledTime.toInt());
+			time = time.plus(bestLapTime);
+			laps++;
+		} while (time.compareTo(scheduledTime) < 0);
 
 		if (lapsToGo == 0 || laps < lapsToGo + competitor.getLapsComplete()) {
 			estimatedLapsBest = laps;
@@ -145,7 +145,7 @@ public class Estimator {
 			estimatedLapsBest = scheduledLaps;
 		}
 
-		estimatedTimeBest = new Duration(time);
+		estimatedTimeBest = time;
 
 		changeSupport.firePropertyChange("estimatedLapsBest", oldEstimatedLapsBest,
 				Integer.toString(estimatedLapsBest));

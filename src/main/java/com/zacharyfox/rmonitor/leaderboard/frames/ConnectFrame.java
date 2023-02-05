@@ -13,9 +13,8 @@ import com.zacharyfox.rmonitor.client.RMonitorClient.State;
 
 import net.miginfocom.swing.MigLayout;
 
+@SuppressWarnings("serial")
 public class ConnectFrame extends JFrame {
-
-	private static final long serialVersionUID = -7099004415134104465L;
 
 	private static final String ACTION_DISCONNECT = "Disconnect";
 	private static final String ACTION_CONNECT = "Connect";
@@ -56,7 +55,7 @@ public class ConnectFrame extends JFrame {
 		connectButton.setHorizontalAlignment(SwingConstants.RIGHT);
 		connectButton.addActionListener(e -> handleClientAction(e, client));
 		getContentPane().add(connectButton, "cell 1 2,alignx right");
-		
+
 		client.addStateChangeListener((oldState, newState) -> handleClientState(newState));
 		handleClientState(client.getCurrentState());
 	}
@@ -72,6 +71,7 @@ public class ConnectFrame extends JFrame {
 		case ACTION_DISCONNECT:
 			client.stop();
 			break;
+
 		default:
 			break;
 		}

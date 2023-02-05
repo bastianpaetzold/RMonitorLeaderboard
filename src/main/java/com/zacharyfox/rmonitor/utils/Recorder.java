@@ -15,7 +15,7 @@ import java.util.function.BiConsumer;
 import com.zacharyfox.rmonitor.config.ConfigurationManager;
 
 public class Recorder {
-	
+
 	public static final String DEFAULT_FILE_PATH = "";
 	public static final String DEFAULT_FILE_ENCODING = Charset.defaultCharset().name();
 
@@ -24,7 +24,7 @@ public class Recorder {
 
 	private Path filePath;
 	private Charset encoding;
-	
+
 	private BufferedWriter writer;
 	private long startTime = 0;
 
@@ -135,7 +135,7 @@ public class Recorder {
 		this.filePath = filePath;
 		configManager.setConfig(PROP_FILE_PATH, filePath.toString());
 	}
-	
+
 	public void setEncoding(Charset encoding) {
 		this.encoding = encoding;
 		configManager.setConfig(PROP_FILE_ENCODING, encoding.name());

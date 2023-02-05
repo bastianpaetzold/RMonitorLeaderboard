@@ -2,6 +2,7 @@ package com.zacharyfox.rmonitor.leaderboard.frames;
 
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
+import java.time.Duration;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -10,14 +11,14 @@ import javax.swing.WindowConstants;
 
 import com.zacharyfox.rmonitor.entities.Competitor;
 import com.zacharyfox.rmonitor.entities.RaceClass;
+import com.zacharyfox.rmonitor.utils.DurationUtil;
 import com.zacharyfox.rmonitor.utils.Estimator;
 
 import net.miginfocom.swing.MigLayout;
 
+@SuppressWarnings("serial")
 public class EstimatorFrame extends JFrame {
-	
-	private static final long serialVersionUID = -1784686632807846422L;
-	
+
 	private final JLabel estimatedLapsAvg;
 	private final JLabel estimatedLapsBest;
 	private final JLabel estimatedTimeAvg;
@@ -85,13 +86,13 @@ public class EstimatorFrame extends JFrame {
 		estimator.addPropertyChangeListener(this::updateDisplay);
 
 		estimatedLapsBest.setText(Integer.toString(estimator.getEstimatedLapsBest()));
-		estimatedTimeBest.setText(" @ " + estimator.getEstimatedTimeBest().toString());
+		estimatedTimeBest.setText(" @ " + DurationUtil.format(estimator.getEstimatedTimeBest()));
 		estimatedLapsAvg.setText(Integer.toString(estimator.getEstimatedLapsAvg()));
-		estimatedTimeAvg.setText(" @ " + estimator.getEstimatedTimeAvg().toString());
+		estimatedTimeAvg.setText(" @ " + DurationUtil.format(estimator.getEstimatedTimeAvg()));
 		scheduledLaps.setText(Integer.toString(estimator.getScheduledLaps()));
-		scheduledTime.setText(estimator.getScheduledTime().toString());
+		scheduledTime.setText(DurationUtil.format(estimator.getScheduledTime()));
 		lapsComplete.setText(Integer.toString(estimator.getLapsComplete()));
-		topThree.setText(this.getTopThreeText());
+		topThree.setText(getTopThreeText());
 	}
 
 	private String getTopThreeText() {
@@ -119,7 +120,7 @@ public class EstimatorFrame extends JFrame {
 		}
 
 		if (evt.getPropertyName().equals("estimatedTimeBest")) {
-			estimatedTimeBest.setText(" @ " + evt.getNewValue().toString());
+			estimatedTimeBest.setText(" @ " + DurationUtil.format((Duration) evt.getNewValue()));
 		}
 
 		if (evt.getPropertyName().equals("scheduledLaps")) {
@@ -131,11 +132,11 @@ public class EstimatorFrame extends JFrame {
 		}
 
 		if (evt.getPropertyName().equals("estimatedTimeAvg")) {
-			estimatedTimeAvg.setText(" @ " + evt.getNewValue().toString());
+			estimatedTimeAvg.setText(" @ " + DurationUtil.format((Duration) evt.getNewValue()));
 		}
 
 		if (evt.getPropertyName().equals("scheduledTime")) {
-			scheduledTime.setText(evt.getNewValue().toString());
+			scheduledTime.setText(DurationUtil.format((Duration) evt.getNewValue()));
 		}
 
 		if (evt.getPropertyName().equals("lapsComplete")) {

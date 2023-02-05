@@ -1,18 +1,18 @@
 package com.zacharyfox.rmonitor.message;
 
-import com.zacharyfox.rmonitor.utils.Duration;
+import java.time.Duration;
 
-public class InitRecord extends RMonitorMessage
-{
+import com.zacharyfox.rmonitor.utils.DurationUtil;
+
+public class InitRecord implements RMonitorMessage {
+
 	private Duration timeOfDay;
 
-	public InitRecord(String[] tokens)
-	{
-		timeOfDay = new Duration(tokens[1]);
+	public InitRecord(String[] tokens) {
+		timeOfDay = DurationUtil.parse(tokens[1]);
 	}
 
-	public Duration getTimeOfDay()
-	{
+	public Duration getTimeOfDay() {
 		return timeOfDay;
 	}
 }

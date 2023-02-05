@@ -11,6 +11,7 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.time.Duration;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -27,11 +28,10 @@ import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.config.ConfigurationManager;
 import com.zacharyfox.rmonitor.entities.Race;
 import com.zacharyfox.rmonitor.entities.Race.FlagState;
-import com.zacharyfox.rmonitor.utils.Duration;
+import com.zacharyfox.rmonitor.utils.DurationUtil;
 
+@SuppressWarnings("serial")
 public class LapCounterFrame extends JFrame {
-
-	private static final long serialVersionUID = 4091886534434959071L;
 
 	private static final String PROP_LAP_SWITCH_DELAY = "lapCounter.lapSwitchDelay";
 
@@ -47,8 +47,6 @@ public class LapCounterFrame extends JFrame {
 	private int lastLapsComplete;
 	private Duration lastLapCountChangeTime;
 	private int lapSwitchDelay;
-	private boolean countLapsUp;
-
 	private PropertyChangeListener propertyChangeListener = this::updateDisplay;
 	private JTextField tfElapsedTime;
 	private JTextField tfFlag;
@@ -65,7 +63,7 @@ public class LapCounterFrame extends JFrame {
 		ConfigurationManager configManager = ConfigurationManager.getInstance();
 
 		lapSwitchDelay = Integer.parseInt(configManager.getConfig(PROP_LAP_SWITCH_DELAY, "5"));
-		countLapsUp = false;
+		boolean countLapsUp = false;
 		lastLapsComplete = -1;
 
 		setBounds(100, 100, 1446, 840);
@@ -146,6 +144,7 @@ public class LapCounterFrame extends JFrame {
 		infoPanel.add(chckbxCountUpwards);
 
 		tfDelay.getDocument().addDocumentListener(new DocumentListener() {
+
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				if (tfDelay.getText().matches("\\d+") && !Integer.toString(lapSwitchDelay).equals(tfDelay.getText())) {
@@ -166,20 +165,20 @@ public class LapCounterFrame extends JFrame {
 			}
 		});
 
-		lastLapCountChangeTime = new Duration();
+		lastLapCountChangeTime = Duration.ZERO;
 		lastLapCount = 0;
 
 		RMonitorClient.getInstance().getRace().addPropertyChangeListener(propertyChangeListener);
 	}
 
 	class ResizeListener extends ComponentAdapter {
+
 		@Override
 		public void componentResized(ComponentEvent e) {
 			// Recalculate the variable you mentioned
 			Font theFont = new Font("Tahoma", Font.PLAIN, (int) (e.getComponent().getHeight() * .85));// 400
 			tfLaps.setFont(theFont);
 		}
-
 	}
 
 	private void updateDisplay(PropertyChangeEvent evt) {
@@ -196,8 +195,8 @@ public class LapCounterFrame extends JFrame {
 
 		if (evt.getPropertyName().equals("lapsToGo") || evt.getPropertyName().equals("elapsedTime")
 				|| evt.getPropertyName().equals("lapsComplete")) {
-			tfElapsedTime.setText(elapsedTime.toString());
-			int secondsSinceLastLapCountUpdate = elapsedTime.toInt() - lastLapCountChangeTime.toInt();
+			tfElapsedTime.setText(DurationUtil.format(elapsedTime));
+			long secondsSinceLastLapCountUpdate = elapsedTime.minus(lastLapCountChangeTime).getSeconds();
 
 			Race.FlagState currentFlagState = RMonitorClient.getInstance().getRace().getCurrentFlagState();
 
@@ -208,30 +207,27 @@ public class LapCounterFrame extends JFrame {
 				} else {
 					tfLaps.setText("-");
 				}
-			} else {
+			} else // For Purple the LapToGo are shown instantly
+			if (currentFlagState == Race.FlagState.PURPLE || currentFlagState == Race.FlagState.NONE) {
+				if (lastLapCount > 0) {
+					tfLaps.setText(Integer.toString(lastLapCount));
+				} else {
+					tfLaps.setText("-");
+				}
+				// for other flags we show the Laps to GO only after the lapSwitchDelay
+			} else if (secondsSinceLastLapCountUpdate > lapSwitchDelay) {
 
-				// For Purple the LapToGo are shown instantly
-				if (currentFlagState == Race.FlagState.PURPLE || currentFlagState == Race.FlagState.NONE) {
-					if (lastLapCount > 0) {
-						tfLaps.setText(Integer.toString(lastLapCount));
-					} else {
-						tfLaps.setText("-");
-					}
-					// for other flags we show the Laps to GO only after the lapSwitchDelay
-				} else if (secondsSinceLastLapCountUpdate > lapSwitchDelay) {
-
-					if (lastLapCount > 0) {
-						tfLaps.setText(Integer.toString(lastLapCount - 1));
-					} else {
-						tfLaps.setText("0");
-					}
+				if (lastLapCount > 0) {
+					tfLaps.setText(Integer.toString(lastLapCount - 1));
+				} else {
+					tfLaps.setText("0");
 				}
 			}
 		}
 
 		if (evt.getPropertyName().equals("currentFlagState")) {
 			setFlagColor((FlagState) evt.getNewValue());
-			tfElapsedTime.setText(elapsedTime.toString());
+			tfElapsedTime.setText(DurationUtil.format(elapsedTime));
 
 			// After switch to green we have to trigger the decrease the lap counter
 			if ((FlagState) evt.getNewValue() == Race.FlagState.GREEN) {
@@ -245,18 +241,23 @@ public class LapCounterFrame extends JFrame {
 		case RED:
 			tfFlag.setBackground(Color.red);
 			break;
+
 		case YELLOW:
 			tfFlag.setBackground(Color.YELLOW);
 			break;
+
 		case GREEN:
 			tfFlag.setBackground(Color.GREEN);
 			break;
+
 		case FINISH:
 			tfFlag.setBackground(Color.LIGHT_GRAY);
 			break;
+
 		case PURPLE:
 			tfFlag.setBackground(new Color(98, 0, 255));
 			break;
+
 		default:
 			tfFlag.setBackground(Color.BLACK);
 		}

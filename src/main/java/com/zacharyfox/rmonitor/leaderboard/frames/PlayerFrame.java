@@ -13,9 +13,8 @@ import com.zacharyfox.rmonitor.utils.Player.State;
 
 import net.miginfocom.swing.MigLayout;
 
+@SuppressWarnings("serial")
 public class PlayerFrame extends JFrame {
-
-	private static final long serialVersionUID = 8633813216935831797L;
 
 	private static final String ACTION_OPEN = "Open";
 	private static final String ACTION_START = "Start";
@@ -81,7 +80,7 @@ public class PlayerFrame extends JFrame {
 			pauseResume.setText(ACTION_RESUME);
 			pauseResume.setEnabled(true);
 			break;
-			
+
 		case RUNNING:
 			startStop.setText(ACTION_STOP);
 			playerFile.setEnabled(false);
@@ -89,7 +88,7 @@ public class PlayerFrame extends JFrame {
 			pauseResume.setText(ACTION_PAUSE);
 			pauseResume.setEnabled(true);
 			break;
-			
+
 		case STOPPED:
 			startStop.setText(ACTION_START);
 			playerFile.setEnabled(true);
@@ -134,7 +133,7 @@ public class PlayerFrame extends JFrame {
 			pauseResume.setText(ACTION_PAUSE);
 			player.resume();
 			break;
-			
+
 		default:
 			break;
 		}

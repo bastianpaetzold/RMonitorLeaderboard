@@ -5,19 +5,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import com.zacharyfox.rmonitor.message.InitRecord;
-import com.zacharyfox.rmonitor.utils.Duration;
+import com.zacharyfox.rmonitor.utils.DurationUtil;
 
-public class InitRecordTest
-{
+public class InitRecordTest {
+
 	@Test
-	public void test()
-	{
-		String[] tokens = {
-			"$I", "16:36:08.000", "12 jan 01"
-		};
+	public void test() {
+		String[] tokens = { "$I", "16:36:08.000", "12 jan 01" };
 
 		InitRecord message = new InitRecord(tokens);
 
-		assertEquals(new Duration("16:36:08.000"), message.getTimeOfDay());
+		assertEquals(DurationUtil.parse("16:36:08.000"), message.getTimeOfDay());
 	}
 }

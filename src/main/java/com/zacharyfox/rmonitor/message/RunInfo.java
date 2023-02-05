@@ -1,23 +1,20 @@
 package com.zacharyfox.rmonitor.message;
 
-public class RunInfo extends RMonitorMessage
-{
+public class RunInfo implements RMonitorMessage {
+
 	private String raceName;
 	private int unique;
 
-	public RunInfo(String[] tokens)
-	{
+	public RunInfo(String[] tokens) {
 		unique = Integer.parseInt(tokens[1]);
 		raceName = tokens[2];
 	}
 
-	public String getRaceName()
-	{
+	public String getRaceName() {
 		return raceName;
 	}
 
-	public int getUniqueId()
-	{
+	public int getUniqueId() {
 		return unique;
 	}
 }

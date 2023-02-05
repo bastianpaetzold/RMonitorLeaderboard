@@ -1,40 +1,37 @@
 package com.zacharyfox.rmonitor.message;
 
-import com.zacharyfox.rmonitor.utils.Duration;
+import java.time.Duration;
 
-public class QualInfo extends RMonitorMessage
-{
+import com.zacharyfox.rmonitor.utils.DurationUtil;
+
+public class QualInfo implements RMonitorMessage, RegistrationInfo {
+
 	private int bestLap;
 	private Duration bestLapTime;
 	private int position;
 	private String regNumber;
 
-	public QualInfo(String[] tokens)
-	{
+	public QualInfo(String[] tokens) {
 		position = Integer.parseInt(tokens[1]);
 		regNumber = tokens[2];
 		bestLap = (tokens[3].equals("")) ? 0 : Integer.parseInt(tokens[3]);
-		bestLapTime = new Duration(tokens[4]);
+		bestLapTime = DurationUtil.parse(tokens[4]);
 	}
 
-	public int getBestLap()
-	{
+	public int getBestLap() {
 		return bestLap;
 	}
 
-	public Duration getBestLapTime()
-	{
+	public Duration getBestLapTime() {
 		return bestLapTime;
 	}
 
-	public int getPosition()
-	{
+	public int getPosition() {
 		return position;
 	}
 
 	@Override
-	public String getRegNumber()
-	{
+	public String getRegNumber() {
 		return regNumber;
 	}
 }

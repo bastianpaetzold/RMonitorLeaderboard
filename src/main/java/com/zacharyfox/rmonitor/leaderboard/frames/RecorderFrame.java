@@ -13,6 +13,7 @@ import com.zacharyfox.rmonitor.utils.Recorder.State;
 
 import net.miginfocom.swing.MigLayout;
 
+@SuppressWarnings("serial")
 public class RecorderFrame extends JFrame {
 
 	private static final String ACTION_SAVE_AS = "Save As";
@@ -23,7 +24,6 @@ public class RecorderFrame extends JFrame {
 	private final JButton selectFileButton;
 	private final JButton startStop;
 	private static RecorderFrame instance;
-	private static final long serialVersionUID = -9179041103033981780L;
 
 	private RecorderFrame() {
 		Recorder recorder = Recorder.getInstance();
@@ -44,7 +44,7 @@ public class RecorderFrame extends JFrame {
 		startStop.setEnabled(true);
 		startStop.addActionListener(this::handleRecorderAction);
 		getContentPane().add(startStop, "cell 2 0");
-		
+
 		recorder.addStateChangeListener((oldState, newState) -> handleRecorderState(newState));
 		handleRecorderState(recorder.getCurrentState());
 	}

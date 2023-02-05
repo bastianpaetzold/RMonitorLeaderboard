@@ -1,9 +1,9 @@
 package com.zacharyfox.rmonitor.entities;
 
-
 public class RaceTO {
-	
-	public class CompetitorTO{
+
+	public class CompetitorTO {
+
 		public String number;
 		public int position;
 		public int lapsComplete;
@@ -12,11 +12,10 @@ public class RaceTO {
 		public String totalTime;
 		public String bestLap;
 		public String lastLap;
-		public int qualiPosition;		
-		
-		public CompetitorTO(String number, int position, int lapsComplete,
-				String firstName, String lastName, String totalTime,
-				String bestLap, String lastLap, int qualiPosition) {
+		public int qualiPosition;
+
+		public CompetitorTO(String number, int position, int lapsComplete, String firstName, String lastName,
+				String totalTime, String bestLap, String lastLap, int qualiPosition) {
 			this.number = number;
 			this.position = position;
 			this.lapsComplete = lapsComplete;
@@ -27,11 +26,8 @@ public class RaceTO {
 			this.lastLap = lastLap;
 			this.qualiPosition = qualiPosition;
 		}
-		
-		
-		
 	}
-	
+
 	public String raceName;
 	public int raceID;
 	public String flagStatus;
@@ -42,8 +38,8 @@ public class RaceTO {
 	public String trackName;
 	public CompetitorTO[] competitors;
 
-	public RaceTO(String elapsedTime, String flagStatus, int id, int lapsToGo,
-			int lapsComplete, String name, String timeOfDay, String trackName ) {
+	public RaceTO(String elapsedTime, String flagStatus, int id, int lapsToGo, int lapsComplete, String name,
+			String timeOfDay, String trackName) {
 		this.elapsedTime = elapsedTime;
 		this.flagStatus = flagStatus;
 		this.raceID = id;
@@ -53,11 +49,4 @@ public class RaceTO {
 		this.timeOfDay = timeOfDay;
 		this.trackName = trackName;
 	}
-	
-	
-	
-	
-	
-	
-	
 }

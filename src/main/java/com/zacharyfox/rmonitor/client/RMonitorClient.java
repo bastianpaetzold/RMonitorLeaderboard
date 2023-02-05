@@ -130,7 +130,7 @@ public class RMonitorClient {
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
-			System.out.println("Retry: " +  retryCounter);
+			System.out.println("Retry: " + retryCounter);
 		}
 	}
 
@@ -203,11 +203,11 @@ public class RMonitorClient {
 		this.encoding = encoding;
 		configManager.setConfig(PROP_ENCODING, encoding.name());
 	}
-	
+
 	public void setMaxRetries(int maxRetries) {
 		this.maxRetries = maxRetries;
 	}
-	
+
 	public void setRetryTimeout(int retryTimeout) {
 		this.retryTimeout = retryTimeout;
 	}

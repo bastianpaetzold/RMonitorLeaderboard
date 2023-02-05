@@ -1,8 +1,6 @@
 package com.zacharyfox.rmonitor.leaderboard;
 
 import java.awt.SystemColor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -20,9 +18,8 @@ import com.zacharyfox.rmonitor.leaderboard.frames.RecorderFrame;
 import com.zacharyfox.rmonitor.leaderboard.frames.ServerFrame;
 import com.zacharyfox.rmonitor.leaderboard.frames.StartSignalFrame;
 
-public class LeaderBoardMenuBar extends JMenuBar
-{
-	private static final long serialVersionUID = -5580666379854182051L;
+@SuppressWarnings("serial")
+public class LeaderBoardMenuBar extends JMenuBar {
 
 	private final JMenuItem aboutMenuItem;
 	private final JMenuItem connectMenuItem;
@@ -36,13 +33,11 @@ public class LeaderBoardMenuBar extends JMenuBar
 	private final JMenuItem lapCounterMenuItem;
 	private final JMenuItem finishLineLogMenuItem;
 	private final JMenuItem webServerMenuItem;
-	
-	
+
 	private final JMenu toolsMenu;
 	private final JMenu viewMenu;
 
-	public LeaderBoardMenuBar(final MainFrame mainFrame)
-	{
+	public LeaderBoardMenuBar(final MainFrame mainFrame) {
 		setBackground(SystemColor.menu);
 		setBorder(UIManager.getBorder("Menu.border"));
 
@@ -50,13 +45,9 @@ public class LeaderBoardMenuBar extends JMenuBar
 		add(fileMenu);
 
 		connectMenuItem = new JMenuItem("Connection");
-		connectMenuItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent evt)
-			{
-				ConnectFrame newFrame = ConnectFrame.getInstance();
-				newFrame.setVisible(true);
-			}
+		connectMenuItem.addActionListener(evt -> {
+			ConnectFrame newFrame = ConnectFrame.getInstance();
+			newFrame.setVisible(true);
 		});
 
 		fileMenu.add(connectMenuItem);
@@ -65,101 +56,63 @@ public class LeaderBoardMenuBar extends JMenuBar
 		add(viewMenu);
 
 		fullScreenMenuItem = new JMenuItem("Full Screen");
-		fullScreenMenuItem.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				mainFrame.goFullScreen();
-			}
-		});
+		fullScreenMenuItem.addActionListener(e -> mainFrame.goFullScreen());
 		viewMenu.add(fullScreenMenuItem);
 
 		toolsMenu = new JMenu("Tools");
 		add(toolsMenu);
 
 		recorderMenuItem = new JMenuItem("Recorder");
-		recorderMenuItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent evt)
-			{
-				RecorderFrame newFrame = RecorderFrame.getInstance();
-				newFrame.setVisible(true);
-			}
+		recorderMenuItem.addActionListener(evt -> {
+			RecorderFrame newFrame = RecorderFrame.getInstance();
+			newFrame.setVisible(true);
 		});
-		
+
 		toolsMenu.add(recorderMenuItem);
-		
 
 		playerMenuItem = new JMenuItem("Player");
-		playerMenuItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent evt)
-			{
-				PlayerFrame newFrame = PlayerFrame.getInstance();
-				newFrame.setVisible(true);
-			}
+		playerMenuItem.addActionListener(evt -> {
+			PlayerFrame newFrame = PlayerFrame.getInstance();
+			newFrame.setVisible(true);
 		});
 
 		toolsMenu.add(playerMenuItem);
 
 		estimatorMenuItem = new JMenuItem("Estimator");
-		estimatorMenuItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent evt)
-			{
-				EstimatorFrame newFrame = EstimatorFrame.getInstance();
-				newFrame.setVisible(true);
-			}
+		estimatorMenuItem.addActionListener(evt -> {
+			EstimatorFrame newFrame = EstimatorFrame.getInstance();
+			newFrame.setVisible(true);
 		});
 		toolsMenu.add(estimatorMenuItem);
 
 		startSignalMenuItem = new JMenuItem("Start Signal");
-		startSignalMenuItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent evt)
-			{
-				StartSignalFrame newFrame = StartSignalFrame.getInstance();
-				newFrame.setVisible(true);
-			}
+		startSignalMenuItem.addActionListener(evt -> {
+			StartSignalFrame newFrame = StartSignalFrame.getInstance();
+			newFrame.setVisible(true);
 		});
 		toolsMenu.add(startSignalMenuItem);
 
 		lapCounterMenuItem = new JMenuItem("Lap Counter");
-		lapCounterMenuItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent evt)
-			{
-				LapCounterFrame newFrame = LapCounterFrame.getInstance();
-				newFrame.setVisible(true);
-			}
+		lapCounterMenuItem.addActionListener(evt -> {
+			LapCounterFrame newFrame = LapCounterFrame.getInstance();
+			newFrame.setVisible(true);
 		});
 		toolsMenu.add(lapCounterMenuItem);
 
-
 		finishLineLogMenuItem = new JMenuItem("Finish Line Log");
-		finishLineLogMenuItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent evt)
-			{
-				FinishLineLogConfigFrame newFrame = FinishLineLogConfigFrame.getInstance();
-				newFrame.setVisible(true);
-			}
+		finishLineLogMenuItem.addActionListener(evt -> {
+			FinishLineLogConfigFrame newFrame = FinishLineLogConfigFrame.getInstance();
+			newFrame.setVisible(true);
 		});
 		toolsMenu.add(finishLineLogMenuItem);
-		
+
 		webServerMenuItem = new JMenuItem("Web Server");
-		webServerMenuItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent evt)
-			{
-				ServerFrame newFrame = ServerFrame.getInstance();
-				newFrame.setVisible(true);
-			}
+		webServerMenuItem.addActionListener(evt -> {
+			ServerFrame newFrame = ServerFrame.getInstance();
+			newFrame.setVisible(true);
 		});
 		toolsMenu.add(webServerMenuItem);
 
-		
 		helpMenu = new JMenu("Help");
 		helpMenu.setBorder(UIManager.getBorder("MenuItem.border"));
 		helpMenu.setBackground(SystemColor.menu);
@@ -168,44 +121,37 @@ public class LeaderBoardMenuBar extends JMenuBar
 		aboutMenuItem = new JMenuItem("About");
 		aboutMenuItem.setBorder(UIManager.getBorder("MenuItem.border"));
 		aboutMenuItem.setBackground(SystemColor.menu);
-		aboutMenuItem.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				AboutFrame newFrame = new AboutFrame();
-				newFrame.setVisible(true);
-			}
+		aboutMenuItem.addActionListener(e -> {
+			AboutFrame newFrame = new AboutFrame();
+			newFrame.setVisible(true);
 		});
 
 		helpMenu.add(aboutMenuItem);
 
 		setVisible(true);
 	}
-	
-	public void disableStartSignalMenu(){
+
+	public void disableStartSignalMenu() {
 		startSignalMenuItem.setEnabled(false);
 	}
 
-	public void enableStartSignalMenu(){
+	public void enableStartSignalMenu() {
 		startSignalMenuItem.setEnabled(true);
 	}
-	
-	public void disableLapCounterMenu(){
+
+	public void disableLapCounterMenu() {
 		lapCounterMenuItem.setEnabled(false);
 	}
 
-	public void enableLapCounterMenu(){
+	public void enableLapCounterMenu() {
 		lapCounterMenuItem.setEnabled(true);
 	}
 
-	public void disableFinishLineLogMenu(){
+	public void disableFinishLineLogMenu() {
 		finishLineLogMenuItem.setEnabled(false);
 	}
 
-	public void enableFinishLineLogMenu(){
+	public void enableFinishLineLogMenu() {
 		finishLineLogMenuItem.setEnabled(true);
 	}
-
-	
 }

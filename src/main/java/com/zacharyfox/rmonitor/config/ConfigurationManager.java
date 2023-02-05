@@ -31,7 +31,7 @@ public class ConfigurationManager {
 			}
 		}
 	}
-	
+
 	public void saveConfig() {
 		try (BufferedWriter writer = Files.newBufferedWriter(propertiesPath)) {
 			properties.store(writer, null);
@@ -39,20 +39,20 @@ public class ConfigurationManager {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public String getConfig(String key, String defaultValue) {
 		return properties.getProperty(key, defaultValue);
 	}
-	
+
 	public int getConfig(String key, int defaultValue) {
 		return Integer.parseInt(properties.getProperty(key, Integer.toString(defaultValue)));
 	}
-	
+
 	public void setConfig(String key, String value) {
 		properties.setProperty(key, value);
 		saveConfig();
 	}
-	
+
 	public void setConfig(String key, int value) {
 		setConfig(key, Integer.toString(value));
 	}
@@ -61,7 +61,7 @@ public class ConfigurationManager {
 		if (instance == null) {
 			instance = new ConfigurationManager();
 		}
-	
+
 		return instance;
 	}
 }

@@ -4,23 +4,20 @@ import java.util.HashMap;
 
 import com.zacharyfox.rmonitor.message.ClassInfo;
 
-public class RaceClass
-{
-	private static HashMap<Integer, String> instances = new HashMap<Integer, String>();
+public class RaceClass {
 
-	private RaceClass()
-	{
+	private static HashMap<Integer, String> instances = new HashMap<>();
+
+	private RaceClass() {
 	}
 
-	public static String getClassName(Integer classId)
-	{
+	public static String getClassName(int classId) {
 		String className = instances.get(classId);
 
 		return (className == null) ? "" : className;
 	}
 
-	public static void update(ClassInfo message)
-	{
+	public static void update(ClassInfo message) {
 		String className = instances.get(message.getUniqueId());
 
 		if (className == null || !className.equals(message.getDescription())) {

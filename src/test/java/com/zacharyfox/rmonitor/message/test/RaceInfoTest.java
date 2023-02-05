@@ -5,22 +5,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import com.zacharyfox.rmonitor.message.RaceInfo;
-import com.zacharyfox.rmonitor.utils.Duration;
+import com.zacharyfox.rmonitor.utils.DurationUtil;
 
-public class RaceInfoTest
-{
+public class RaceInfoTest {
+
 	@Test
-	public void test()
-	{
-		String[] tokens = {
-			"$G", "3", "1234BE", "14", "01:12:47.872"
-		};
+	public void test() {
+		String[] tokens = { "$G", "3", "1234BE", "14", "01:12:47.872" };
 
 		RaceInfo message = new RaceInfo(tokens);
 
 		assertEquals(3, message.getPosition());
 		assertEquals("1234BE", message.getRegNumber());
 		assertEquals(14, message.getLaps());
-		assertEquals(new Duration("01:12:47.872"), message.getTotalTime());
+		assertEquals(DurationUtil.parse("01:12:47.872"), message.getTotalTime());
 	}
 }

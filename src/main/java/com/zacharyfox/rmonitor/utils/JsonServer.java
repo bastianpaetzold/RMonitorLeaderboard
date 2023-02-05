@@ -129,6 +129,7 @@ public class JsonServer {
 	}
 
 	private class JsonHandler extends AbstractHandler {
+
 		private Gson gson;
 		private RaceTO lastRaceTO;
 
@@ -145,8 +146,9 @@ public class JsonServer {
 			// set CORS Headers
 			response.addHeader("Access-Control-Allow-Headers",
 					"Access-Control-Allow-Origin, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
-			if (response.getHeader("Access-Control-Allow-Origin") == null)
+			if (response.getHeader("Access-Control-Allow-Origin") == null) {
 				response.addHeader("Access-Control-Allow-Origin", "*");
+			}
 
 			// Declare response status code
 			response.setStatus(HttpServletResponse.SC_OK);

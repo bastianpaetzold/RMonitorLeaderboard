@@ -1,23 +1,20 @@
 package com.zacharyfox.rmonitor.message;
 
-public class SettingInfo extends RMonitorMessage
-{
+public class SettingInfo implements RMonitorMessage {
+
 	private String description;
 	private String value;
 
-	public SettingInfo(String[] tokens)
-	{
+	public SettingInfo(String[] tokens) {
 		description = tokens[1];
 		value = tokens[2];
 	}
 
-	public String getDescription()
-	{
+	public String getDescription() {
 		return description;
 	}
 
-	public String getValue()
-	{
+	public String getValue() {
 		return value;
 	}
 }

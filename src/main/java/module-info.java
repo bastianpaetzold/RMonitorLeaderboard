@@ -1,4 +1,5 @@
 module com.zacharyfox.rmonitor.leaderboard {
+
 	exports com.zacharyfox.rmonitor.leaderboard;
 	exports com.zacharyfox.rmonitor.leaderboard.frames;
 	exports com.zacharyfox.rmonitor.utils;
@@ -11,6 +12,6 @@ module com.zacharyfox.rmonitor.leaderboard {
 	requires org.eclipse.jetty.server;
 	requires com.miglayout.swing;
 	requires info.picocli;
-	
+
 	opens com.zacharyfox.rmonitor.leaderboard to info.picocli;
 }

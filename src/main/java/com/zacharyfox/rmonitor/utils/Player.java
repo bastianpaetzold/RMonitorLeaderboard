@@ -133,7 +133,7 @@ public class Player {
 		} catch (IOException e) {
 			System.err.println("Failed to start server for player: " + e.getMessage());
 		}
-	
+
 		if (currentState == State.WAITING_FOR_CONNECTION) {
 			try {
 				System.out.println("Player waiting for client");
@@ -144,7 +144,7 @@ public class Player {
 				System.out.println("Player waiting for client cancelled");
 			}
 		}
-	
+
 		return currentState == State.RUNNING;
 	}
 

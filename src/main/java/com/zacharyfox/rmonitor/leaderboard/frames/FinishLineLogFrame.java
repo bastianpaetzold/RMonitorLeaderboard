@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
+import java.time.Duration;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -33,13 +34,12 @@ import javax.swing.WindowConstants;
 import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.leaderboard.FinishLineLogTable;
 import com.zacharyfox.rmonitor.leaderboard.FinishlineLogTableModel;
-import com.zacharyfox.rmonitor.utils.Duration;
+import com.zacharyfox.rmonitor.utils.DurationUtil;
 
 import net.miginfocom.swing.MigLayout;
 
+@SuppressWarnings("serial")
 public class FinishLineLogFrame extends JFrame {
-
-	private static final long serialVersionUID = -8775231053258225843L;
 
 	private final JLabel elapsedTime;
 	private final JLabel lblNewLabel1;
@@ -91,13 +91,13 @@ public class FinishLineLogFrame extends JFrame {
 		lblNewLabel2.setHorizontalAlignment(SwingConstants.RIGHT);
 		timeBar.add(lblNewLabel2, "cell 3 0");
 
-		elapsedTime = new JLabel(new Duration().toString());
+		elapsedTime = new JLabel(DurationUtil.format(Duration.ZERO));
 		elapsedTime.setHorizontalTextPosition(SwingConstants.LEFT);
 		elapsedTime.setHorizontalAlignment(SwingConstants.LEFT);
 		elapsedTime.setFont(new Font(systemLabelFont.getName(), Font.BOLD, systemLabelFont.getSize() + 3));
 		timeBar.add(elapsedTime, "cell 2 0");
 
-		timeToGo = new JLabel(new Duration().toString());
+		timeToGo = new JLabel(DurationUtil.format(Duration.ZERO));
 		timeToGo.setHorizontalTextPosition(SwingConstants.LEFT);
 		timeToGo.setHorizontalAlignment(SwingConstants.LEFT);
 		timeToGo.setFont(new Font(systemLabelFont.getName(), Font.BOLD, systemLabelFont.getSize() + 3));
@@ -113,7 +113,6 @@ public class FinishLineLogFrame extends JFrame {
 		finishLineLogTable.setShowHorizontalLines(false);
 		finishLineLogTable.setShowGrid(false);
 		finishLineLogTable.setRowMargin(2);
-		finishLineLogTable.setRowHeight(rowHeight);
 		finishLineLogTable.setFont(new Font("Lucida Console", Font.BOLD, rowHeight));
 		finishLineLogTable.setBackground(Color.BLACK);
 		finishLineLogTable.setForeground(Color.YELLOW);
@@ -150,7 +149,6 @@ public class FinishLineLogFrame extends JFrame {
 
 				inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, true), "escAction");
 				actionMap.put("escAction", new AbstractAction() {
-					private static final long serialVersionUID = -2399289576909037389L;
 
 					@Override
 					public void actionPerformed(ActionEvent evt) {
@@ -178,11 +176,11 @@ public class FinishLineLogFrame extends JFrame {
 		}
 
 		if (evt.getPropertyName().equals("elapsedTime")) {
-			elapsedTime.setText(((Duration) evt.getNewValue()).toString());
+			elapsedTime.setText(DurationUtil.format((Duration) evt.getNewValue()));
 		}
 
 		if (evt.getPropertyName().equals("timeToGo")) {
-			timeToGo.setText(((Duration) evt.getNewValue()).toString());
+			timeToGo.setText(DurationUtil.format((Duration) evt.getNewValue()));
 		}
 
 		if (evt.getPropertyName().equals("lapsToGo")) {

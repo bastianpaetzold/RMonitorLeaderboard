@@ -1,47 +1,44 @@
 package com.zacharyfox.rmonitor.message;
 
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
+import java.util.AbstractMap;
+import java.util.Map;
 
-public abstract class Factory
-{
-	// private HashMap<String, String> = new HashMap<String, String>();
-	private static HashMap<String, Class<?>> classMap = new HashMap<String, Class<?>>() {
-		private static final long serialVersionUID = -4460006007376415842L;
+public abstract class Factory {
 
-		{
-			put("$F", Heartbeat.class);
-			put("$B", RunInfo.class);
-			put("$G", RaceInfo.class);
-			put("$A", CompInfo.class);
-			put("$C", ClassInfo.class);
-			put("$H", QualInfo.class);
-			put("$E", SettingInfo.class);
-			put("$I", InitRecord.class);
-			put("$J", PassingInfo.class);
-			put("$SP", LapInfo.class);
-			put("$SR", LapInfo.class);
-			put("$COMP", CompInfo.class);
-		}
-	};
+	// @formatter:off
+	private static Map<String, Class<?>> classMap = Map.ofEntries(
+			new AbstractMap.SimpleEntry<>("$F", Heartbeat.class),
+			new AbstractMap.SimpleEntry<>("$B", RunInfo.class),
+			new AbstractMap.SimpleEntry<>("$G", RaceInfo.class),
+			new AbstractMap.SimpleEntry<>("$A", CompInfo.class),
+			new AbstractMap.SimpleEntry<>("$C", ClassInfo.class),
+			new AbstractMap.SimpleEntry<>("$H", QualInfo.class),
+			new AbstractMap.SimpleEntry<>("$E", SettingInfo.class),
+			new AbstractMap.SimpleEntry<>("$I", InitRecord.class),
+			new AbstractMap.SimpleEntry<>("$J", PassingInfo.class),
+			new AbstractMap.SimpleEntry<>("$SP", LapInfo.class),
+			new AbstractMap.SimpleEntry<>("$SR", LapInfo.class),
+			new AbstractMap.SimpleEntry<>("$COMP", CompInfo.class));
+	// @formatter:on
+
+	private Factory() {
+	}
 
 	@SuppressWarnings("unchecked")
-	public static <M extends RMonitorMessage> M getMessage(String line)
-	{
+	public static <M extends RMonitorMessage> M getMessage(String line) {
 		System.out.println(line);
 		// TODO: better tokenizing here - doesn't handle values with commas
 		String[] tokens = line.split(",");
 
 		for (int i = 0; i < tokens.length; i++) {
-			tokens[i] = tokens[i].replaceAll("\"", "");
+			tokens[i] = tokens[i].replace("\"", "");
 		}
 		Class<?> messageClass = classMap.get(tokens[0]);
 
 		try {
 			Constructor<?> constructor = messageClass.getDeclaredConstructor(String[].class);
-			return (M) constructor.newInstance(new Object[] {
-				tokens
-			});
+			return (M) constructor.newInstance(new Object[] { tokens });
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -12,9 +12,8 @@ import com.zacharyfox.rmonitor.config.ConfigurationManager;
 
 import net.miginfocom.swing.MigLayout;
 
+@SuppressWarnings("serial")
 public class FinishLineLogConfigFrame extends JFrame {
-
-	private static final long serialVersionUID = -4798150755306654896L;
 
 	private static final String PROP_ROW_HEIGHT = "finishLineLog.rowHeight";
 
@@ -74,5 +73,4 @@ public class FinishLineLogConfigFrame extends JFrame {
 
 		return instance;
 	}
-
 }

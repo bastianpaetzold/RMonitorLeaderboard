@@ -1,44 +1,40 @@
 package com.zacharyfox.rmonitor.leaderboard;
 
+import java.time.Duration;
+
 import javax.swing.JTable;
 import javax.swing.table.TableRowSorter;
 
-import com.zacharyfox.rmonitor.utils.Duration;
+@SuppressWarnings("serial")
+public class LeaderBoardTable extends JTable {
 
-public class LeaderBoardTable extends JTable
-{
-	private static final long serialVersionUID = -6458659058033888484L;
 	private LeaderBoardTableModel leaderBoardTableModel = new LeaderBoardTableModel();
-	private TableRowSorter<LeaderBoardTableModel> sorter = new TableRowSorter<LeaderBoardTableModel>(leaderBoardTableModel);
+	private TableRowSorter<LeaderBoardTableModel> sorter = new TableRowSorter<>(leaderBoardTableModel);
 
-	public LeaderBoardTable()
-	{
-		super();
+	public LeaderBoardTable() {
+		setModel(leaderBoardTableModel);
+		setRowSorter(sorter);
+		setDefaultRenderer(Duration.class, new LeaderBoardTableCellRenderer());
 
-		this.setModel(leaderBoardTableModel);
-		this.setRowSorter(sorter);
-		this.setDefaultRenderer(Duration.class, new LeaderBoardTableCellRenderer());
-		
-		this.initColumns();
-		
+		initColumns();
+
 		sorter.setSortsOnUpdates(true);
 		sorter.toggleSortOrder(0);
 	}
-	
-	private void initColumns()
-	{
-		Integer smallColumnSize = 40;
-		Integer timeColumnSize = 100;
-		
-		Integer[] smallColumns = {0, 1 , 2, 3, 5};
-		Integer[] timeColumns = {6, 7, 8, 9};
-		
-		for (Integer column : smallColumns) {
-			this.getColumnModel().getColumn(column).setPreferredWidth(smallColumnSize);
+
+	private void initColumns() {
+		int smallColumnSize = 40;
+		int timeColumnSize = 100;
+
+		int[] smallColumns = { 0, 1, 2, 3, 5 };
+		int[] timeColumns = { 6, 7, 8, 9 };
+
+		for (int column : smallColumns) {
+			getColumnModel().getColumn(column).setPreferredWidth(smallColumnSize);
 		}
-		
-		for (Integer column : timeColumns) {
-			this.getColumnModel().getColumn(column).setPreferredWidth(timeColumnSize);
+
+		for (int column : timeColumns) {
+			getColumnModel().getColumn(column).setPreferredWidth(timeColumnSize);
 		}
 	}
 }

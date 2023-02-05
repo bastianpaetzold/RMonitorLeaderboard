@@ -14,9 +14,8 @@ import com.zacharyfox.rmonitor.utils.JsonServer.State;
 
 import net.miginfocom.swing.MigLayout;
 
+@SuppressWarnings("serial")
 public class ServerFrame extends JFrame {
-
-	private static final long serialVersionUID = 3848021032174790659L;
 
 	private static final String ACTION_START = "Start";
 	private static final String ACTION_STOP = "Stop";
@@ -71,6 +70,7 @@ public class ServerFrame extends JFrame {
 			JsonServer server = JsonServer.getInstance();
 			server.setPort(Integer.parseInt(portField.getText()));
 			new SwingWorker<Void, Void>() {
+
 				@Override
 				protected Void doInBackground() throws Exception {
 					server.start();
@@ -95,5 +95,4 @@ public class ServerFrame extends JFrame {
 
 		return instance;
 	}
-
 }

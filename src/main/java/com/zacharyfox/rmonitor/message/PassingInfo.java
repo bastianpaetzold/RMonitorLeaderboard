@@ -1,33 +1,31 @@
 package com.zacharyfox.rmonitor.message;
 
-import com.zacharyfox.rmonitor.utils.Duration;
+import java.time.Duration;
 
-public class PassingInfo extends RMonitorMessage
-{
+import com.zacharyfox.rmonitor.utils.DurationUtil;
+
+public class PassingInfo implements RMonitorMessage, RegistrationInfo {
+
 	private final Duration lapTime;
 	private final String regNumber;
 	private final Duration totalTime;
 
-	public PassingInfo(String[] tokens)
-	{
+	public PassingInfo(String[] tokens) {
 		regNumber = tokens[1];
-		lapTime = new Duration(tokens[2]);
-		totalTime = new Duration(tokens[3]);
+		lapTime = DurationUtil.parse(tokens[2]);
+		totalTime = DurationUtil.parse(tokens[3]);
 	}
 
-	public Duration getLapTime()
-	{
+	public Duration getLapTime() {
 		return lapTime;
 	}
 
 	@Override
-	public String getRegNumber()
-	{
+	public String getRegNumber() {
 		return regNumber;
 	}
 
-	public Duration getTotalTime()
-	{
+	public Duration getTotalTime() {
 		return totalTime;
 	}
 }

@@ -2,21 +2,24 @@ package com.zacharyfox.rmonitor.entities;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.zacharyfox.rmonitor.message.CompInfo;
 import com.zacharyfox.rmonitor.message.LapInfo;
 import com.zacharyfox.rmonitor.message.PassingInfo;
 import com.zacharyfox.rmonitor.message.QualInfo;
-import com.zacharyfox.rmonitor.message.RMonitorMessage;
 import com.zacharyfox.rmonitor.message.RaceInfo;
-import com.zacharyfox.rmonitor.utils.Duration;
+import com.zacharyfox.rmonitor.message.RegistrationInfo;
+import com.zacharyfox.rmonitor.utils.DurationUtil;
 
-public class Competitor
-{
-	public class Lap
-	{
+public class Competitor {
+
+	public class Lap {
+
 		public int lapNumber;
 		public Duration lapTime;
 		public int position;
@@ -24,120 +27,102 @@ public class Competitor
 	}
 
 	private String addData = "";
-	private Duration bestLap = new Duration();
+	private Duration bestLap = Duration.ZERO;
 	private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 	private int classId = 0;
 	private String firstName = "";
-	private final ArrayList<Competitor.Lap> laps = new ArrayList<Competitor.Lap>();
+	private final ArrayList<Competitor.Lap> laps = new ArrayList<>();
 	private int lapsComplete = 0;
-	private Duration lastLap = new Duration();
+	private Duration lastLap = Duration.ZERO;
 	private String lastName = "";
 	private String nationality = "";
 	private String number = "";
 	private int position = 0;
 	private int qualiPosition = 0;
 	private String regNumber = "";
-	private Duration totalTime = new Duration();
+	private Duration totalTime = Duration.ZERO;
 	private String transNumber = "";
-	private static HashMap<String, Competitor> instances = new HashMap<String, Competitor>();
+	private static HashMap<String, Competitor> instances = new HashMap<>();
 
-	private Competitor()
-	{
+	private Competitor() {
 
 	}
 
-	public void addPropertyChangeListener(PropertyChangeListener l)
-	{
+	public void addPropertyChangeListener(PropertyChangeListener l) {
 		changeSupport.addPropertyChangeListener(l);
 	}
 
-	public void addPropertyChangeListener(String property, PropertyChangeListener l)
-	{
+	public void addPropertyChangeListener(String property, PropertyChangeListener l) {
 		changeSupport.addPropertyChangeListener(property, l);
 	}
 
-	public String getAddData()
-	{
+	public String getAddData() {
 		return addData;
 	}
 
-	public Duration getAvgLap()
-	{
-		float totalTime = 0;
+	public Duration getAvgLap() {
+		Duration duration = Duration.ZERO;
+
 		int count = 0;
-
-		if (laps.size() > 0) {
-			for (Competitor.Lap lap : laps) {
-				if (lap.lapTime != null && lap.lapNumber > 0) {
-					totalTime = totalTime + lap.lapTime.toFloat();
-					count++;
-				}
-			}
-
-			if (count > 0) {
-				return new Duration(totalTime / count);
+		for (Competitor.Lap lap : laps) {
+			if (lap.lapTime != null && lap.lapNumber > 0) {
+				duration = duration.plus(lap.lapTime);
+				count++;
 			}
 		}
-		return new Duration();
+
+		if (count > 0) {
+			duration = duration.dividedBy(count);
+		}
+
+		return duration;
 	}
 
-	public Duration getBestLap()
-	{
+	public Duration getBestLap() {
 		return bestLap;
 	}
 
-	public int getClassId()
-	{
+	public int getClassId() {
 		return classId;
 	}
 
-	public String getFirstName()
-	{
+	public String getFirstName() {
 		return firstName;
 	}
 
-	public ArrayList<Competitor.Lap> getLaps()
-	{
+	public List<Competitor.Lap> getLaps() {
 		return laps;
 	}
 
-	public int getLapsComplete()
-	{
+	public int getLapsComplete() {
 		return lapsComplete;
 	}
 
-	public Duration getLastLap()
-	{
+	public Duration getLastLap() {
 		return lastLap;
 	}
 
-	public String getLastName()
-	{
+	public String getLastName() {
 		return lastName;
 	}
 
-	public String getNationality()
-	{
+	public String getNationality() {
 		return nationality;
 	}
 
-	public String getNumber()
-	{
+	public String getNumber() {
 		return number;
 	}
 
-	public int getPosition()
-	{
+	public int getPosition() {
 		return position;
 	}
-	
-	public int getQualiPosition()
-	{
+
+	public int getQualiPosition() {
 		return qualiPosition;
 	}
 
-	public int getPositionInClass()
-	{
+	public int getPositionInClass() {
 		int positionInClass = 1;
 
 		for (Competitor competitor : instances.values()) {
@@ -149,59 +134,52 @@ public class Competitor
 		return positionInClass;
 	}
 
-	public String getRegNumber()
-	{
+	public String getRegNumber() {
 		return regNumber;
 	}
 
-	public Duration getTotalTime()
-	{
+	public Duration getTotalTime() {
 		return totalTime;
 	}
 
-	public String getTransNumber()
-	{
+	public String getTransNumber() {
 		return transNumber;
 	}
 
-	public void removePropertyChangeListener(PropertyChangeListener l)
-	{
+	public void removePropertyChangeListener(PropertyChangeListener l) {
 		changeSupport.removePropertyChangeListener(l);
 	}
 
-	public void removePropertyChangeListener(String property, PropertyChangeListener l)
-	{
+	public void removePropertyChangeListener(String property, PropertyChangeListener l) {
 		changeSupport.removePropertyChangeListener(property, l);
 	}
 
 	@Override
-	public String toString()
-	{
-		String string;
-
-		string = "First Name: " + firstName + "\n";
-		string += "Last Name: " + lastName + "\n";
-		string += "Registration Number: " + regNumber + "\n";
-		string += "Number: " + number + "\n";
-		string += "Transponder Number: " + transNumber + "\n";
-		string += "Class ID: " + classId + "\n";
-		string += "Position: " + position + "\n";
-		string += "Laps: " + lapsComplete + "\n";
-		string += "Total Time: " + totalTime + "\n";
-		string += "Best Time: " + bestLap + "\n";
-
-		string += "Laps: \n";
-
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
 		for (Competitor.Lap lap : laps) {
-			string += lap.lapNumber + " " + lap.position + " " + lap.lapTime + " " + lap.totalTime + "\n";
+			builder.append(String.format("%s %s %s %s%n", lap.lapNumber, lap.position, DurationUtil.format(lap.lapTime),
+					DurationUtil.format(lap.totalTime)));
 		}
-
-		return string;
+		return """
+				First Name: %s
+				Last Name: %s
+				Registration Number: %s
+				Number: %s
+				Transponder Number: %s
+				Class ID: %s
+				Position: %s
+				Laps: %s
+				Total Time: %s
+				Best Time: %s
+				Laps:
+				%s
+				""".formatted(firstName, lastName, regNumber, number, transNumber, classId, position, lapsComplete,
+				DurationUtil.format(totalTime), DurationUtil.format(bestLap), builder.toString());
 	}
 
-	private void addLap(LapInfo message)
-	{
-		Boolean found = false;
+	private void addLap(LapInfo message) {
+		boolean found = false;
 
 		for (Competitor.Lap lap : this.laps) {
 			if (lap.lapNumber == message.getLapNumber()) {
@@ -211,7 +189,7 @@ public class Competitor
 			}
 		}
 
-		if (found == false) {
+		if (!found) {
 			Competitor.Lap lap = new Competitor.Lap();
 			lap.lapNumber = message.getLapNumber();
 			lap.position = message.getPosition();
@@ -221,9 +199,8 @@ public class Competitor
 		}
 	}
 
-	private void addLap(PassingInfo message)
-	{
-		Boolean found = false;
+	private void addLap(PassingInfo message) {
+		boolean found = false;
 
 		for (Competitor.Lap lap : this.laps) {
 			if (lap != null && lap.totalTime != null && lap.totalTime.equals(message.getTotalTime())) {
@@ -232,7 +209,7 @@ public class Competitor
 			}
 		}
 
-		if (found == false) {
+		if (!found) {
 			Competitor.Lap lap = new Competitor.Lap();
 			lap.lapTime = message.getLapTime();
 			lap.totalTime = message.getTotalTime();
@@ -240,9 +217,8 @@ public class Competitor
 		}
 	}
 
-	private void addLap(RaceInfo message)
-	{
-		Boolean found = false;
+	private void addLap(RaceInfo message) {
+		boolean found = false;
 		for (Competitor.Lap lap : this.laps) {
 			if (lap != null && lap.totalTime != null && lap.totalTime.equals(message.getTotalTime())) {
 				found = true;
@@ -252,7 +228,7 @@ public class Competitor
 			}
 		}
 
-		if (found == false) {
+		if (!found) {
 			Competitor.Lap lap = new Competitor.Lap();
 			lap.totalTime = message.getTotalTime();
 			lap.lapNumber = message.getLaps();
@@ -261,14 +237,13 @@ public class Competitor
 		}
 	}
 
-	private void messageUpdate(CompInfo message)
-	{
-		this.setRegNumber(message.getRegNumber());
-		this.setNumber(message.getNumber());
-		this.setTransNumber(message.getTransNumber());
-		this.setFirstName(message.getFirstName());
-		this.setLastName(message.getLastName());
-		this.setClassId(message.getClassId());
+	private void messageUpdate(CompInfo message) {
+		setRegNumber(message.getRegNumber());
+		setNumber(message.getNumber());
+		setTransNumber(message.getTransNumber());
+		setFirstName(message.getFirstName());
+		setLastName(message.getLastName());
+		setClassId(message.getClassId());
 
 		if (!"".equals(message.getNationality())) {
 			this.setNationality(message.getNationality());
@@ -279,8 +254,7 @@ public class Competitor
 		}
 	}
 
-	private void messageUpdate(LapInfo message)
-	{
+	private void messageUpdate(LapInfo message) {
 		this.addLap(message);
 
 		if (message.getLapNumber() == lapsComplete) {
@@ -290,64 +264,56 @@ public class Competitor
 		setBestLap(message.getLapTime());
 	}
 
-	private void messageUpdate(PassingInfo message)
-	{
-		this.addLap(message);
+	private void messageUpdate(PassingInfo message) {
+		addLap(message);
 
-		this.setLastLap(message.getLapTime());
-		this.setBestLap(message.getLapTime());
-		this.setTotalTime(message.getTotalTime());
+		setLastLap(message.getLapTime());
+		setBestLap(message.getLapTime());
+		setTotalTime(message.getTotalTime());
 	}
 
-	private void messageUpdate(QualInfo message)
-	{
-		this.setRegNumber(message.getRegNumber());
-		this.setQualiPosition(message.getPosition());
-		this.setBestLap(message.getBestLapTime());
+	private void messageUpdate(QualInfo message) {
+		setRegNumber(message.getRegNumber());
+		setQualiPosition(message.getPosition());
+		setBestLap(message.getBestLapTime());
 	}
 
-	private void messageUpdate(RaceInfo message)
-	{
-		this.addLap(message);
+	private void messageUpdate(RaceInfo message) {
+		addLap(message);
 
-		this.setRegNumber(message.getRegNumber());
-		this.setPosition(message.getPosition());
-		this.setLapsComplete(message.getLaps());
-		this.setTotalTime(message.getTotalTime());
+		setRegNumber(message.getRegNumber());
+		setPosition(message.getPosition());
+		setLapsComplete(message.getLaps());
+		setTotalTime(message.getTotalTime());
 	}
 
-	private void setAddData(String addData)
-	{
+	private void setAddData(String addData) {
 		String oldAddData = this.addData;
 		this.addData = addData;
 		changeSupport.firePropertyChange("addData", oldAddData, this.addData);
 	}
 
-	private void setBestLap(Duration bestLap)
-	{
-		if (this.bestLap.toInt() == 0 || bestLap.toFloat() < this.bestLap.toFloat()) {
+	private void setBestLap(Duration bestLap) {
+		if (this.bestLap.isZero() || bestLap.compareTo(this.bestLap) < 0) {
 			Duration oldBestLap = this.bestLap;
 			this.bestLap = bestLap;
 			changeSupport.firePropertyChange("bestLap", oldBestLap, this.bestLap);
 		}
 	}
 
-	private void setClassId(int classId)
-	{
+	private void setClassId(int classId) {
 		int oldClassId = this.classId;
 		this.classId = classId;
 		changeSupport.firePropertyChange("classId", oldClassId, this.classId);
 	}
 
-	private void setFirstName(String firstName)
-	{
+	private void setFirstName(String firstName) {
 		String oldName = this.firstName;
 		this.firstName = firstName;
 		changeSupport.firePropertyChange("firstName", oldName, firstName);
 	}
 
-	private void setLapsComplete(int lapsComplete)
-	{
+	private void setLapsComplete(int lapsComplete) {
 		int oldLapsComplete = this.lapsComplete;
 		if (oldLapsComplete != lapsComplete) {
 			this.lapsComplete = lapsComplete;
@@ -355,72 +321,61 @@ public class Competitor
 		}
 	}
 
-	private void setLastLap(Duration lastLap)
-	{
+	private void setLastLap(Duration lastLap) {
 		Duration oldLastLap = this.lastLap;
 		this.lastLap = lastLap;
 		changeSupport.firePropertyChange("lastLap", oldLastLap, this.lastLap);
 	}
 
-	private void setLastName(String lastName)
-	{
+	private void setLastName(String lastName) {
 		String oldLastName = this.lastName;
 		this.lastName = lastName;
 		changeSupport.firePropertyChange("lastName", oldLastName, this.lastName);
 	}
 
-	private void setNationality(String nationality)
-	{
+	private void setNationality(String nationality) {
 		String oldNationality = this.nationality;
 		this.nationality = nationality;
 		changeSupport.firePropertyChange("nationality", oldNationality, this.nationality);
 	}
 
-	private void setNumber(String number)
-	{
+	private void setNumber(String number) {
 		String oldNumber = this.number;
 		this.number = number;
 		changeSupport.firePropertyChange("number", oldNumber, this.number);
 	}
 
-	private void setPosition(int position)
-	{
+	private void setPosition(int position) {
 		int oldPosition = this.position;
 		this.position = position;
 		changeSupport.firePropertyChange("position", oldPosition, this.position);
 	}
-	
-	private void setQualiPosition(int qualiPosition)
-	{
+
+	private void setQualiPosition(int qualiPosition) {
 		int oldQualiPosition = this.qualiPosition;
 		this.qualiPosition = qualiPosition;
 		changeSupport.firePropertyChange("qualiPosition", oldQualiPosition, this.qualiPosition);
 	}
 
-
-	private void setRegNumber(String regNumber)
-	{
+	private void setRegNumber(String regNumber) {
 		String oldRegNumber = this.regNumber;
 		this.regNumber = regNumber;
 		changeSupport.firePropertyChange("regNumber", oldRegNumber, this.regNumber);
 	}
 
-	private void setTotalTime(Duration totalTime)
-	{
+	private void setTotalTime(Duration totalTime) {
 		Duration oldTotalTime = this.totalTime;
 		this.totalTime = totalTime;
 		changeSupport.firePropertyChange("totalTime", oldTotalTime, this.totalTime);
 	}
 
-	private void setTransNumber(String transNumber)
-	{
+	private void setTransNumber(String transNumber) {
 		String oldTransNumber = this.transNumber;
 		this.transNumber = transNumber;
 		changeSupport.firePropertyChange("transNumber", oldTransNumber, this.transNumber);
 	}
 
-	public static Competitor getByPosition(int position)
-	{
+	public static Competitor getByPosition(int position) {
 		for (Competitor competitor : instances.values()) {
 			if (competitor.position == position) {
 				return competitor;
@@ -429,17 +384,17 @@ public class Competitor
 		return null;
 	}
 
-	public static Duration getFastestLap()
-	{
-		Duration fastestLap = new Duration();
+	public static Duration getFastestLap() {
+		Duration fastestLap = Duration.ZERO;
 		Duration competitorBestLap;
 
 		for (Competitor competitor : instances.values()) {
 			competitorBestLap = competitor.getBestLap();
-			if (competitorBestLap.toInt() == 0)
+			if (competitorBestLap.isZero()) {
 				continue;
+			}
 
-			if (fastestLap.isEmpty() || competitorBestLap.lt(fastestLap)) {
+			if (fastestLap.isZero() || competitorBestLap.compareTo(fastestLap) < 0) {
 				fastestLap = competitorBestLap;
 			}
 		}
@@ -447,52 +402,48 @@ public class Competitor
 		return fastestLap;
 	}
 
-	public static Competitor getInstance(String regNumber)
-	{
-		if (instances.containsKey(regNumber)) {
-			return instances.get(regNumber);
-		}
-		return null;
+	public static Competitor getInstance(String regNumber) {
+		return instances.get(regNumber);
 	}
 
-	public static HashMap<String, Competitor> getInstances()
-	{
+	public static Map<String, Competitor> getInstances() {
 		return instances;
 	}
 
-	public static void reset()
-	{
-		instances = new HashMap<String, Competitor>();
+	public static void reset() {
+		instances = new HashMap<>();
 	}
 
-	public static void updateOrCreate(RMonitorMessage message)
-	{
-		Competitor instance = Competitor.getInstance(message.getRegNumber());
+	public static void updateOrCreate(RegistrationInfo info) {
+		Competitor instance = Competitor.getInstance(info.getRegNumber());
 
 		instance = (instance == null) ? new Competitor() : instance;
 
-		if (message.getClass() == RaceInfo.class) {
-			instance.messageUpdate((RaceInfo) message);
-		} else if (message.getClass() == CompInfo.class) {
-			instance.messageUpdate((CompInfo) message);
-		} else if (message.getClass() == LapInfo.class) {
-			instance.messageUpdate((LapInfo) message);
-		} else if (message.getClass() == QualInfo.class) {
-			instance.messageUpdate((QualInfo) message);
-		} else if (message.getClass() == PassingInfo.class) {
-			instance.messageUpdate((PassingInfo) message);
+		if (info.getClass() == RaceInfo.class) {
+			instance.messageUpdate((RaceInfo) info);
+		} else if (info.getClass() == CompInfo.class) {
+			instance.messageUpdate((CompInfo) info);
+		} else if (info.getClass() == LapInfo.class) {
+			instance.messageUpdate((LapInfo) info);
+		} else if (info.getClass() == QualInfo.class) {
+			instance.messageUpdate((QualInfo) info);
+		} else if (info.getClass() == PassingInfo.class) {
+			instance.messageUpdate((PassingInfo) info);
 		}
 
 		instances.put(instance.getRegNumber(), instance);
 	}
-	
-	public static void setCompetitorTO(RaceTO raceTO){
+
+	public static void setCompetitorTO(RaceTO raceTO) {
 		RaceTO.CompetitorTO[] competitors = new RaceTO.CompetitorTO[instances.size()];
 		int i = 0;
 		for (Competitor competitor : instances.values()) {
-			RaceTO.CompetitorTO competitorTO = raceTO.new CompetitorTO(competitor.number,competitor.position, competitor.lapsComplete, competitor.firstName, competitor.lastName, competitor.totalTime.toString(), competitor.bestLap.toString(), competitor.lastLap.toString(), competitor.qualiPosition);
+			RaceTO.CompetitorTO competitorTO = raceTO.new CompetitorTO(competitor.number, competitor.position,
+					competitor.lapsComplete, competitor.firstName, competitor.lastName,
+					DurationUtil.format(competitor.totalTime), DurationUtil.format(competitor.bestLap),
+					DurationUtil.format(competitor.lastLap), competitor.qualiPosition);
 			competitors[i++] = competitorTO;
 		}
-		raceTO.competitors = competitors;	
+		raceTO.competitors = competitors;
 	}
 }

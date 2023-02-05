@@ -31,22 +31,27 @@ public class LeaderBoard implements Callable<Integer> {
 
 	static class ClientGroup {
 
-		@Option(names = { "-c", "--start-client" }, required = true, description = "Start the client and connect it to a remote race monitor.")
+		@Option(names = { "-c",
+				"--start-client" }, required = true, description = "Start the client and connect it to a remote race monitor.")
 		boolean start;
 
-		@Option(names = { "--host", "--remote-host" }, description = "Remote host to connect to. Default: " + RMonitorClient.DEFAULT_HOST)
+		@Option(names = { "--host", "--remote-host" }, description = "Remote host to connect to. Default: "
+				+ RMonitorClient.DEFAULT_HOST)
 		Optional<String> host;
 
-		@Option(names = { "--port", "--remote-port" }, description = "Remote port to connect to. Default: " + RMonitorClient.DEFAULT_PORT)
+		@Option(names = { "--port", "--remote-port" }, description = "Remote port to connect to. Default: "
+				+ RMonitorClient.DEFAULT_PORT)
 		Optional<Integer> port;
-		
+
 		@Option(names = "--client-stream-encoding", description = "Encoding of the stream client receives. Default: Default encoding on this system (JVM)")
 		Optional<Charset> streamEncoding;
-		
-		@Option(names = "--client-max-retries", description = "Number of retries if the remote connection fails. Set to -1 for unlimited retries. Default: " + RMonitorClient.DEFAULT_RETRY_MAX)
+
+		@Option(names = "--client-max-retries", description = "Number of retries if the remote connection fails. Set to -1 for unlimited retries. Default: "
+				+ RMonitorClient.DEFAULT_RETRY_MAX)
 		Optional<Integer> maxRetries;
 
-		@Option(names = "--client-retry-timeout", description = "Timeout in ms between retries. Default: " + RMonitorClient.DEFAULT_RETRY_TIMEOUT)
+		@Option(names = "--client-retry-timeout", description = "Timeout in ms between retries. Default: "
+				+ RMonitorClient.DEFAULT_RETRY_TIMEOUT)
 		Optional<Integer> retryTimeout;
 	}
 
@@ -58,10 +63,12 @@ public class LeaderBoard implements Callable<Integer> {
 		@Option(names = { "-s", "--start-server" }, required = true, description = "Start the web server.")
 		boolean start;
 
-		@Option(names = "--server-host", description = "Host to bind the web server to. Default: " + JsonServer.DEFAULT_HOST)
+		@Option(names = "--server-host", description = "Host to bind the web server to. Default: "
+				+ JsonServer.DEFAULT_HOST)
 		Optional<String> host;
 
-		@Option(names = "--server-port", description = "Port to bind the web server to. Default: " + JsonServer.DEFAULT_PORT)
+		@Option(names = "--server-port", description = "Port to bind the web server to. Default: "
+				+ JsonServer.DEFAULT_PORT)
 		Optional<Integer> port;
 	}
 
@@ -73,10 +80,12 @@ public class LeaderBoard implements Callable<Integer> {
 		@Option(names = { "-p", "--start-player" }, required = true, description = "Start the player.")
 		boolean start;
 
-		@Option(names = "--player-speedup", description = "Speedup that the player should use when playing the messages. Default: " + Player.DEFAULT_SPEEDUP)
+		@Option(names = "--player-speedup", description = "Speedup that the player should use when playing the messages. Default: "
+				+ Player.DEFAULT_SPEEDUP)
 		Optional<Integer> speedup;
 
-		@Option(names = "--player-port", description = "Port on which the player should listen for client connections. Default: " + Player.DEFAULT_PORT)
+		@Option(names = "--player-port", description = "Port on which the player should listen for client connections. Default: "
+				+ Player.DEFAULT_PORT)
 		Optional<Integer> port;
 
 		@Option(names = "--player-file", required = true, description = "Path to the file which the player should use to read messages from.")
@@ -88,7 +97,7 @@ public class LeaderBoard implements Callable<Integer> {
 		@Option(names = "--player-stream-encoding", description = "Encoding of the stream that the player plays to the client. Default: Default encoding on this system (JVM)")
 		Optional<Charset> streamEncoding;
 	}
-	
+
 	@ArgGroup(exclusive = false)
 	private RecorderGroup recorderGroup;
 
@@ -99,14 +108,14 @@ public class LeaderBoard implements Callable<Integer> {
 
 		@Option(names = "--recorder-file", required = true, description = "Path to the file which the recorder should use to write messages into.")
 		Path filePath;
-		
+
 		@Option(names = "--recorder-file-encoding", description = "Encoding of the file that the recorder uses to write messages. Default: Default encoding on this system (JVM)")
 		Optional<Charset> fileEncoding;
 	}
 
 	@Override
 	public Integer call() throws Exception {
-		 ConfigurationManager.getInstance().loadConfig();
+		ConfigurationManager.getInstance().loadConfig();
 
 		if (serverGroup != null && serverGroup.start) {
 			JsonServer server = JsonServer.getInstance();
@@ -114,7 +123,7 @@ public class LeaderBoard implements Callable<Integer> {
 			serverGroup.port.ifPresent(server::setPort);
 			server.start();
 		}
-		
+
 		if (playerGroup != null && playerGroup.start) {
 			Player player = Player.getInstance();
 			playerGroup.port.ifPresent(player::setPort);
@@ -124,7 +133,7 @@ public class LeaderBoard implements Callable<Integer> {
 			playerGroup.streamEncoding.ifPresent(player::setStreamEncoding);
 			player.start();
 		}
-		
+
 		if (recorderGroup != null && recorderGroup.start) {
 			Recorder recorder = Recorder.getInstance();
 			recorder.setFilePath(recorderGroup.filePath);
@@ -178,5 +187,4 @@ public class LeaderBoard implements Callable<Integer> {
 			System.exit(status);
 		}
 	}
-
 }

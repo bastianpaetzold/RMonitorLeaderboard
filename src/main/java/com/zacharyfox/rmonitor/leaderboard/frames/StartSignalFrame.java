@@ -9,6 +9,7 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.time.Duration;
 import java.util.Collection;
 
 import javax.swing.JButton;
@@ -23,11 +24,10 @@ import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.entities.Competitor;
 import com.zacharyfox.rmonitor.entities.Race;
 import com.zacharyfox.rmonitor.entities.Race.FlagState;
-import com.zacharyfox.rmonitor.utils.Duration;
+import com.zacharyfox.rmonitor.utils.DurationUtil;
 
+@SuppressWarnings("serial")
 public class StartSignalFrame extends JFrame {
-
-	private static final long serialVersionUID = 4113219569378342905L;
 
 	private static StartSignalFrame instance;
 
@@ -115,7 +115,7 @@ public class StartSignalFrame extends JFrame {
 		}
 
 		if (evt.getPropertyName().equals("elapsedTime")) {
-			tfRaceTime.setText(((Duration) evt.getNewValue()).toString());
+			tfRaceTime.setText(DurationUtil.format((Duration) evt.getNewValue()));
 		}
 
 		if (evt.getPropertyName().equals("currentFlagState")) {
@@ -123,13 +123,14 @@ public class StartSignalFrame extends JFrame {
 			tfFlag.setText("");
 		}
 
-		if (evt.getPropertyName().equals("competitorsVersion") && RMonitorClient.getInstance().getRace().getCurrentFlagState() == Race.FlagState.PURPLE) {
+		if (evt.getPropertyName().equals("competitorsVersion")
+				&& RMonitorClient.getInstance().getRace().getCurrentFlagState() == Race.FlagState.PURPLE) {
 			tfFlag.setText(getCompetitorsString(Competitor.getInstances().values()));
 		}
 	}
 
 	private String getCompetitorsString(Collection<Competitor> competitors) {
-		String result = "";
+		String result;
 
 		StringBuilder stringBuilder = new StringBuilder();
 		for (Competitor competitor : competitors) {
@@ -141,7 +142,7 @@ public class StartSignalFrame extends JFrame {
 		if (!"".equals(result)) {
 			result = result.substring(0, result.length() - 2);
 		}
-		
+
 		return result;
 	}
 
@@ -150,18 +151,23 @@ public class StartSignalFrame extends JFrame {
 		case RED:
 			tfFlag.setBackground(Color.red);
 			break;
+
 		case YELLOW:
 			tfFlag.setBackground(Color.YELLOW);
 			break;
+
 		case GREEN:
 			tfFlag.setBackground(Color.GREEN);
 			break;
+
 		case FINISH:
 			tfFlag.setBackground(Color.LIGHT_GRAY);
 			break;
+
 		case PURPLE:
 			tfFlag.setBackground(new Color(98, 0, 255));
 			break;
+
 		default:
 			tfFlag.setBackground(Color.BLACK);
 		}
@@ -174,5 +180,4 @@ public class StartSignalFrame extends JFrame {
 
 		return instance;
 	}
-
 }
