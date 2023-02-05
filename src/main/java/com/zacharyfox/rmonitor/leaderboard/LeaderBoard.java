@@ -42,6 +42,12 @@ public class LeaderBoard implements Callable<Integer> {
 		
 		@Option(names = "--client-stream-encoding", description = "Encoding of the stream client receives. Default: Default encoding on this system (JVM)")
 		Optional<Charset> streamEncoding;
+		
+		@Option(names = "--client-max-retries", description = "Number of retries if the remote connection fails. Set to -1 for unlimited retries. Default: " + RMonitorClient.DEFAULT_RETRY_MAX)
+		Optional<Integer> maxRetries;
+
+		@Option(names = "--client-retry-timeout", description = "Timeout in ms between retries. Default: " + RMonitorClient.DEFAULT_RETRY_TIMEOUT)
+		Optional<Integer> retryTimeout;
 	}
 
 	@ArgGroup(exclusive = false)
@@ -133,6 +139,8 @@ public class LeaderBoard implements Callable<Integer> {
 				clientGroup.host.ifPresent(client::setHost);
 				clientGroup.port.ifPresent(client::setPort);
 				clientGroup.streamEncoding.ifPresent(client::setEncoding);
+				clientGroup.maxRetries.ifPresent(client::setMaxRetries);
+				clientGroup.retryTimeout.ifPresent(client::setRetryTimeout);
 			}
 			client.start();
 		}

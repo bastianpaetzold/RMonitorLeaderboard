@@ -22,7 +22,6 @@ public class EstimatorFrame extends JFrame {
 	private final JLabel estimatedLapsBest;
 	private final JLabel estimatedTimeAvg;
 	private final JLabel estimatedTimeBest;
-	private final Estimator estimator;
 	private final JLabel lapsComplete;
 	private final JLabel lblEstimatedLapsAvg;
 	private final JLabel lblEstimatedLapsBest;
@@ -30,7 +29,6 @@ public class EstimatorFrame extends JFrame {
 	private final JLabel lblScheduledLaps;
 	private final JLabel lblScheduledTime;
 	private final JLabel lblTopThree;
-	private final MainFrame mainFrame;
 	private final JLabel scheduledLaps;
 	private final JLabel scheduledTime;
 	private final JSeparator separator = new JSeparator();
@@ -38,8 +36,8 @@ public class EstimatorFrame extends JFrame {
 
 	private static EstimatorFrame instance;
 
-	private EstimatorFrame(MainFrame mainFrame) {
-		this.mainFrame = mainFrame;
+	private EstimatorFrame() {
+		Estimator estimator = Estimator.getInstance();
 
 		getContentPane().setLayout(new MigLayout("", "[grow][]", "[100.00,grow][][][][][]"));
 
@@ -84,7 +82,6 @@ public class EstimatorFrame extends JFrame {
 		setBounds(100, 100, 450, 200);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-		estimator = new Estimator();
 		estimator.addPropertyChangeListener(this::updateDisplay);
 
 		estimatedLapsBest.setText(Integer.toString(estimator.getEstimatedLapsBest()));
@@ -95,8 +92,6 @@ public class EstimatorFrame extends JFrame {
 		scheduledTime.setText(estimator.getScheduledTime().toString());
 		lapsComplete.setText(Integer.toString(estimator.getLapsComplete()));
 		topThree.setText(this.getTopThreeText());
-
-		this.mainFrame.setEstimator(estimator);
 	}
 
 	private String getTopThreeText() {
@@ -150,9 +145,9 @@ public class EstimatorFrame extends JFrame {
 		topThree.setText(this.getTopThreeText());
 	}
 
-	public static EstimatorFrame getInstance(MainFrame mainFrame) {
+	public static EstimatorFrame getInstance() {
 		if (instance == null) {
-			instance = new EstimatorFrame(mainFrame);
+			instance = new EstimatorFrame();
 		}
 
 		return instance;

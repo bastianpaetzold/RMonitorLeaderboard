@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
 import java.nio.charset.UnsupportedCharsetException;
@@ -23,16 +24,22 @@ public class RMonitorClient {
 	public static final String DEFAULT_HOST = "127.0.0.1";
 	public static final int DEFAULT_PORT = 50000;
 	public static final String DEFAULT_ENCODING = Charset.defaultCharset().name();
-	
+	public static final int DEFAULT_RETRY_MAX = 3;
+	public static final int DEFAULT_RETRY_TIMEOUT = 10000;
+
 	private static final String PROP_HOST = "client.host";
 	private static final String PROP_PORT = "client.port";
 	private static final String PROP_ENCODING = "client.encoding";
+	private static final String PROP_RETRY_MAX = "client.retry.max";
+	private static final String PROP_RETRY_TIMEOUT = "client.retry.timeout";
 
 	private static RMonitorClient instance;
 
 	private String host;
 	private int port;
 	private Charset encoding;
+	private int maxRetries;
+	private int retryTimeout;
 
 	private Thread thread;
 	private State currentState;
@@ -44,19 +51,22 @@ public class RMonitorClient {
 	private Estimator estimator;
 
 	public enum State {
-		STARTED, RUNNING, STOPPED
+		STARTED, CONNECTING, CONNECTED, STOPPING, STOPPED
 	}
 
 	private RMonitorClient() {
 		listenerList = new ArrayList<>();
 		currentState = State.STOPPED;
 		currentRace = new Race();
-		
+
 		recorder = Recorder.getInstance();
+		estimator = Estimator.getInstance();
 
 		configManager = ConfigurationManager.getInstance();
 		host = configManager.getConfig(PROP_HOST, DEFAULT_HOST);
 		port = configManager.getConfig(PROP_PORT, DEFAULT_PORT);
+		maxRetries = configManager.getConfig(PROP_RETRY_MAX, DEFAULT_RETRY_MAX);
+		retryTimeout = configManager.getConfig(PROP_RETRY_TIMEOUT, DEFAULT_RETRY_TIMEOUT);
 
 		String encodingString = configManager.getConfig(PROP_ENCODING, DEFAULT_ENCODING);
 		try {
@@ -89,45 +99,74 @@ public class RMonitorClient {
 		updateCurrentState(State.STARTED);
 		currentRace = new Race();
 
-		try (Socket socket = new Socket(host, port)) {
-			updateCurrentState(State.RUNNING);
-			doWork(socket.getInputStream());
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			updateCurrentState(State.STOPPED);
+		int retryCounter = 0;
+		while (canConnect(retryCounter)) {
+			updateCurrentState(State.CONNECTING);
+			sleepRetryTimeout(retryCounter);
+
+			try (Socket socket = new Socket(host, port)) {
+				updateCurrentState(State.CONNECTED);
+				readMessages(socket.getInputStream());
+			} catch (UnknownHostException | IllegalArgumentException e) {
+				e.printStackTrace();
+				updateCurrentState(State.STOPPING);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				retryCounter++;
+			}
+		}
+		updateCurrentState(State.STOPPED);
+	}
+
+	private boolean canConnect(int retryCounter) {
+		return currentState != State.STOPPING && (maxRetries == -1 || retryCounter <= maxRetries);
+	}
+
+	private void sleepRetryTimeout(int retryCounter) {
+		if (retryCounter > 0) {
+			try {
+				Thread.sleep(retryTimeout);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+			System.out.println("Retry: " +  retryCounter);
 		}
 	}
 
-	private void doWork(InputStream inputStream) {
+	private boolean readMessages(InputStream inputStream) {
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, encoding))) {
 			String line;
 
-			while (!Thread.currentThread().isInterrupted() && (line = reader.readLine()) != null) {
+			while (currentState == State.CONNECTED && (line = reader.readLine()) != null) {
 				processMessage(line);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+			return false;
 		}
+		return true;
 	}
 
-	private synchronized void processMessage(String message) {
+	private void processMessage(String message) {
 		currentRace.update(Factory.getMessage(message));
 		recorder.push(message);
-		
-		if (estimator != null) {
-			estimator.update(currentRace);
-		}
+		estimator.update(currentRace);
 	}
 
-	public void stop() {
-		thread.interrupt();
+	public synchronized void stop() {
+		if (currentState != State.STOPPED) {
+			updateCurrentState(State.STOPPING);
+			thread.interrupt();
+		}
 	}
 
 	private void updateCurrentState(State newState) {
-		State oldState = currentState;
-		currentState = newState;
-		notifyStateChangeListener(oldState, newState);
+		if (currentState != newState) {
+			State oldState = currentState;
+			currentState = newState;
+			notifyStateChangeListener(oldState, newState);
+		}
 	}
 
 	private void notifyStateChangeListener(State oldState, State newState) {
@@ -146,7 +185,7 @@ public class RMonitorClient {
 		this.host = host;
 		configManager.setConfig(PROP_HOST, host);
 	}
-	
+
 	public String getHost() {
 		return host;
 	}
@@ -155,22 +194,26 @@ public class RMonitorClient {
 		this.port = port;
 		configManager.setConfig(PROP_PORT, port);
 	}
-	
+
 	public int getPort() {
 		return port;
 	}
-	
+
 	public void setEncoding(Charset encoding) {
 		this.encoding = encoding;
 		configManager.setConfig(PROP_ENCODING, encoding.name());
 	}
+	
+	public void setMaxRetries(int maxRetries) {
+		this.maxRetries = maxRetries;
+	}
+	
+	public void setRetryTimeout(int retryTimeout) {
+		this.retryTimeout = retryTimeout;
+	}
 
 	public Race getRace() {
 		return currentRace;
-	}
-
-	public synchronized void setEstimator(Estimator estimator) {
-		this.estimator = estimator;
 	}
 
 	public State getCurrentState() {

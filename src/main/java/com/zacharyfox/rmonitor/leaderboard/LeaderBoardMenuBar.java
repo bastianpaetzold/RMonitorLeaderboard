@@ -22,6 +22,8 @@ import com.zacharyfox.rmonitor.leaderboard.frames.StartSignalFrame;
 
 public class LeaderBoardMenuBar extends JMenuBar
 {
+	private static final long serialVersionUID = -5580666379854182051L;
+
 	private final JMenuItem aboutMenuItem;
 	private final JMenuItem connectMenuItem;
 	private final JMenuItem estimatorMenuItem;
@@ -38,7 +40,6 @@ public class LeaderBoardMenuBar extends JMenuBar
 	
 	private final JMenu toolsMenu;
 	private final JMenu viewMenu;
-	private static final long serialVersionUID = -4625321135214323710L;
 
 	public LeaderBoardMenuBar(final MainFrame mainFrame)
 	{
@@ -107,7 +108,7 @@ public class LeaderBoardMenuBar extends JMenuBar
 			@Override
 			public void actionPerformed(ActionEvent evt)
 			{
-				EstimatorFrame newFrame = EstimatorFrame.getInstance(mainFrame);
+				EstimatorFrame newFrame = EstimatorFrame.getInstance();
 				newFrame.setVisible(true);
 			}
 		});

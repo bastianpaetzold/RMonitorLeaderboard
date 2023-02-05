@@ -101,31 +101,19 @@ public class Player {
 	}
 
 	private void run() {
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(Files.newInputStream(filePath), fileEncoding))) {
+		try (BufferedReader reader = new BufferedReader(
+				new InputStreamReader(Files.newInputStream(filePath), fileEncoding))) {
 			updateCurrentState(State.STARTED);
 
 			if (awaitConnection()) {
-				PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true, streamEncoding);
+				PrintWriter writer = new PrintWriter(clientSocket.getOutputStream(), true, streamEncoding);
 
 				if (pauseRequested) {
 					pauseRequested = false;
 					updateCurrentState(State.PAUSED);
 				}
 
-				long lastTs = 0;
-				String line = reader.readLine();
-				while (line != null) {
-					if (currentState == State.PAUSED) {
-						Thread.sleep(1000);
-					} else {
-						String[] tokens = line.split(" ", 2);
-						long tS = Integer.parseInt(tokens[0]);
-						out.println(tokens[1]);
-						Thread.sleep((int) ((tS - lastTs) / speedup));
-						lastTs = tS;
-						line = reader.readLine();
-					}
-				}
+				playMessages(reader, writer);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -133,6 +121,7 @@ public class Player {
 			Thread.currentThread().interrupt();
 		} finally {
 			updateCurrentState(State.STOPPED);
+			closeConnections();
 			System.out.println("Player stopped");
 		}
 	}
@@ -144,7 +133,7 @@ public class Player {
 		} catch (IOException e) {
 			System.err.println("Failed to start server for player: " + e.getMessage());
 		}
-
+	
 		if (currentState == State.WAITING_FOR_CONNECTION) {
 			try {
 				System.out.println("Player waiting for client");
@@ -155,11 +144,28 @@ public class Player {
 				System.out.println("Player waiting for client cancelled");
 			}
 		}
-
+	
 		return currentState == State.RUNNING;
 	}
 
-	public synchronized void stop() {
+	private void playMessages(BufferedReader reader, PrintWriter writer) throws IOException, InterruptedException {
+		long lastTimestamp = 0;
+		String line = reader.readLine();
+		while (line != null) {
+			if (currentState == State.PAUSED) {
+				Thread.sleep(1000);
+			} else {
+				String[] tokens = line.split(" ", 2);
+				long timestampe = Integer.parseInt(tokens[0]);
+				writer.println(tokens[1]);
+				Thread.sleep((int) ((timestampe - lastTimestamp) / speedup));
+				lastTimestamp = timestampe;
+				line = reader.readLine();
+			}
+		}
+	}
+
+	private void closeConnections() {
 		try {
 			if (clientSocket != null) {
 				clientSocket.close();
@@ -167,11 +173,15 @@ public class Player {
 			if (serverSocket != null) {
 				serverSocket.close();
 			}
-			if (thread != null) {
-				thread.interrupt();
-			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	public synchronized void stop() {
+		closeConnections();
+		if (thread != null) {
+			thread.interrupt();
 		}
 	}
 

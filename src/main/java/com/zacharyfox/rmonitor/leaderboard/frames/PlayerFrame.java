@@ -67,7 +67,7 @@ public class PlayerFrame extends JFrame {
 
 	private void handlePlayerState(State state) {
 		switch (state) {
-		case STARTED:
+		case STARTED, WAITING_FOR_CONNECTION:
 			startStop.setText(ACTION_STOP);
 			playerFile.setEnabled(false);
 			selectFileButton.setEnabled(false);
@@ -97,7 +97,7 @@ public class PlayerFrame extends JFrame {
 			pauseResume.setText(ACTION_PAUSE);
 			pauseResume.setEnabled(false);
 			break;
-			
+
 		default:
 			break;
 		}

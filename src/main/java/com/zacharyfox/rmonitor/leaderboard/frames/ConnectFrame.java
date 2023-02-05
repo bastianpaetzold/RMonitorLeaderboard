@@ -1,5 +1,7 @@
 package com.zacharyfox.rmonitor.leaderboard.frames;
 
+import java.awt.event.ActionEvent;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -7,6 +9,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import com.zacharyfox.rmonitor.client.RMonitorClient;
+import com.zacharyfox.rmonitor.client.RMonitorClient.State;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -51,45 +54,63 @@ public class ConnectFrame extends JFrame {
 
 		connectButton = new JButton(ACTION_CONNECT);
 		connectButton.setHorizontalAlignment(SwingConstants.RIGHT);
-		connectButton.addActionListener(e -> {
-			switch (e.getActionCommand()) {
-			case ACTION_CONNECT:
-				client.setHost(ip.getText());
-				client.setPort(Integer.parseInt(port.getText()));
-				client.start();
-				break;
-
-			case ACTION_DISCONNECT:
-				client.stop();
-				break;
-			default:
-				break;
-			}
-		});
-		client.addStateChangeListener((oldState, newState) -> {
-			switch (newState) {
-			case STARTED:
-				connectButton.setText("Connecting...");
-				connectButton.setEnabled(false);
-				break;
-
-			case RUNNING:
-				connectButton.setText(ACTION_DISCONNECT);
-				ip.setEnabled(false);
-				port.setEnabled(false);
-				connectButton.setEnabled(true);
-				ConnectFrame.this.setVisible(false);
-				break;
-
-			case STOPPED:
-				connectButton.setText(ACTION_CONNECT);
-				ip.setEnabled(true);
-				port.setEnabled(true);
-				connectButton.setEnabled(true);
-				break;
-			}
-		});
+		connectButton.addActionListener(e -> handleClientAction(e, client));
 		getContentPane().add(connectButton, "cell 1 2,alignx right");
+		
+		client.addStateChangeListener((oldState, newState) -> handleClientState(newState));
+		handleClientState(client.getCurrentState());
+	}
+
+	private void handleClientAction(ActionEvent event, RMonitorClient client) {
+		switch (event.getActionCommand()) {
+		case ACTION_CONNECT:
+			client.setHost(ip.getText());
+			client.setPort(Integer.parseInt(port.getText()));
+			client.start();
+			break;
+
+		case ACTION_DISCONNECT:
+			client.stop();
+			break;
+		default:
+			break;
+		}
+	}
+
+	private void handleClientState(State state) {
+		switch (state) {
+		case STARTED, CONNECTING:
+			setTitle("Connecting...");
+			connectButton.setText(ACTION_DISCONNECT);
+			ip.setEnabled(false);
+			port.setEnabled(false);
+			break;
+
+		case CONNECTED:
+			setTitle("Connected");
+			ip.setEnabled(false);
+			port.setEnabled(false);
+
+			ConnectFrame.this.setVisible(false);
+			break;
+
+		case STOPPING:
+			setTitle("Disconnecting...");
+			ip.setEnabled(false);
+			port.setEnabled(false);
+			break;
+
+		case STOPPED:
+			setTitle("Disconnected");
+			connectButton.setText(ACTION_CONNECT);
+			ip.setEnabled(true);
+			port.setEnabled(true);
+			break;
+
+		default:
+			break;
+		}
+
 	}
 
 	public static ConnectFrame getInstance() {

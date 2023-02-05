@@ -34,13 +34,14 @@ import com.zacharyfox.rmonitor.leaderboard.LeaderBoardMenuBar;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardTable;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardTableModel;
 import com.zacharyfox.rmonitor.utils.Duration;
-import com.zacharyfox.rmonitor.utils.Estimator;
 
 import net.miginfocom.swing.MigLayout;
 
 public class MainFrame extends JFrame {
+	
+	private static final long serialVersionUID = 2575524019279463301L;
+	
 	private final JLabel elapsedTime;
-	private Estimator estimator;
 	private final JPanel flagColor;
 	private final JPanel flagColor_1;
 	private final JPanel flagColor_2;
@@ -58,8 +59,6 @@ public class MainFrame extends JFrame {
 	private final JLabel timeToGo;
 	private final JPanel titleBar;
 	private final JLabel trackName;
-
-	private static final long serialVersionUID = -743830529485841322L;
 
 	public MainFrame() {
 		Font systemLabelFont = UIManager.getFont("Label.font");
@@ -164,7 +163,7 @@ public class MainFrame extends JFrame {
 			case STARTED:
 				break;
 
-			case RUNNING:
+			case CONNECTED:
 				client.getRace().addPropertyChangeListener(this::updateDisplay);
 
 				menuBar.enableStartSignalMenu();
@@ -176,6 +175,9 @@ public class MainFrame extends JFrame {
 				menuBar.disableStartSignalMenu();
 				menuBar.disableLapCounterMenu();
 				menuBar.disableFinishLineLogMenu();
+				break;
+
+			default:
 				break;
 			}
 		});
@@ -225,18 +227,6 @@ public class MainFrame extends JFrame {
 			 */
 		} else {
 			setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
-		}
-	}
-
-	public void removeEstimator() {
-		this.estimator = null;
-		RMonitorClient.getInstance().setEstimator(null);
-	}
-
-	public void setEstimator(Estimator estimator) {
-		if (this.estimator == null) {
-			this.estimator = estimator;
-			RMonitorClient.getInstance().setEstimator(estimator);
 		}
 	}
 
