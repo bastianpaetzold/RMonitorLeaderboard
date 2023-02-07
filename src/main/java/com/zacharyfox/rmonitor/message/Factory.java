@@ -4,7 +4,12 @@ import java.lang.reflect.Constructor;
 import java.util.AbstractMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public abstract class Factory {
+
+	private static final Logger LOGGER = LogManager.getLogger(Factory.class);
 
 	// @formatter:off
 	private static Map<String, Class<?>> classMap = Map.ofEntries(
@@ -27,7 +32,7 @@ public abstract class Factory {
 
 	@SuppressWarnings("unchecked")
 	public static <M extends RMonitorMessage> M getMessage(String line) {
-		System.out.println(line);
+		LOGGER.debug("Message: {}", line);
 		// TODO: better tokenizing here - doesn't handle values with commas
 		String[] tokens = line.split(",");
 
@@ -40,7 +45,6 @@ public abstract class Factory {
 			Constructor<?> constructor = messageClass.getDeclaredConstructor(String[].class);
 			return (M) constructor.newInstance(new Object[] { tokens });
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

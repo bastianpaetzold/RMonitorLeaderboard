@@ -6,6 +6,9 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Objects;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.zacharyfox.rmonitor.message.ClassInfo;
 import com.zacharyfox.rmonitor.message.CompInfo;
 import com.zacharyfox.rmonitor.message.Heartbeat;
@@ -21,6 +24,7 @@ import com.zacharyfox.rmonitor.utils.DurationUtil;
 
 public class Race {
 
+	private static final Logger LOGGER = LogManager.getLogger(Race.class);
 	private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
 	private int competitorsVersion = 0;
@@ -139,7 +143,7 @@ public class Race {
 			} else if (message instanceof ClassInfo classInfo) {
 				RaceClass.update(classInfo);
 			} else {
-				System.out.println("Message not processed by Race: " + message);
+				LOGGER.info("Message not processed by Race: {}", message);
 			}
 		}
 	}

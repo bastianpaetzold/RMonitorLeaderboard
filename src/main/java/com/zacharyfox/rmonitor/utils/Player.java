@@ -16,9 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.zacharyfox.rmonitor.config.ConfigurationManager;
 
 public class Player {
+
+	private static final Logger LOGGER = LogManager.getLogger(Player.class);
 
 	public static final int DEFAULT_PORT = 50000;
 	public static final String DEFAULT_SPEEDUP = "2";
@@ -74,10 +79,10 @@ public class Player {
 		try {
 			fileEncoding = Charset.forName(fileEncodingString);
 		} catch (IllegalCharsetNameException e) {
-			System.err.println("Illegal charset defined as player file encoding: " + fileEncodingString);
+			LOGGER.error("Illegal charset defined as player file encoding: {}", fileEncodingString);
 			fileEncoding = Charset.defaultCharset();
 		} catch (UnsupportedCharsetException e) {
-			System.err.println("Unsupported charset defined as player file encoding: " + fileEncodingString);
+			LOGGER.error("Unsupported charset defined as player file encoding: {}", fileEncodingString);
 			fileEncoding = Charset.defaultCharset();
 		}
 
@@ -85,10 +90,10 @@ public class Player {
 		try {
 			streamEncoding = Charset.forName(streamEncodingString);
 		} catch (IllegalCharsetNameException e) {
-			System.err.println("Illegal charset defined as player stream encoding: " + streamEncodingString);
+			LOGGER.error("Illegal charset defined as player stream encoding: {}", streamEncodingString);
 			streamEncoding = Charset.defaultCharset();
 		} catch (UnsupportedCharsetException e) {
-			System.err.println("Unsupported charset defined as player stream encoding: " + streamEncodingString);
+			LOGGER.error("Unsupported charset defined as player stream encoding: {}", streamEncodingString);
 			streamEncoding = Charset.defaultCharset();
 		}
 	}
@@ -122,7 +127,7 @@ public class Player {
 		} finally {
 			updateCurrentState(State.STOPPED);
 			closeConnections();
-			System.out.println("Player stopped");
+			LOGGER.info("Player stopped");
 		}
 	}
 
@@ -131,17 +136,17 @@ public class Player {
 			serverSocket = new ServerSocket(port);
 			updateCurrentState(State.WAITING_FOR_CONNECTION);
 		} catch (IOException e) {
-			System.err.println("Failed to start server for player: " + e.getMessage());
+			LOGGER.error("Failed to start server for player", e);
 		}
 
 		if (currentState == State.WAITING_FOR_CONNECTION) {
 			try {
-				System.out.println("Player waiting for client");
+				LOGGER.info("Player waiting for client");
 				clientSocket = serverSocket.accept();
 				updateCurrentState(State.RUNNING);
-				System.out.println("Player client connected");
+				LOGGER.info("Player client connected");
 			} catch (IOException e) {
-				System.out.println("Player waiting for client cancelled");
+				LOGGER.info("Player waiting for client cancelled");
 			}
 		}
 
@@ -207,7 +212,7 @@ public class Player {
 			if (filePath != null && Files.isReadable(filePath)) {
 				startable = true;
 			} else {
-				System.err.println("Player file is not valid or readable: " + filePath.toString());
+				LOGGER.error("Player file is not valid or readable: {}", filePath);
 			}
 		}
 

@@ -10,6 +10,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -21,6 +23,8 @@ import com.zacharyfox.rmonitor.entities.Race;
 import com.zacharyfox.rmonitor.entities.RaceTO;
 
 public class JsonServer {
+
+	private static final Logger LOGGER = LogManager.getLogger(JsonServer.class);
 
 	public static final String DEFAULT_HOST = "0.0.0.0";
 	public static final int DEFAULT_PORT = 8080;
@@ -128,7 +132,7 @@ public class JsonServer {
 		return currentState;
 	}
 
-	private class JsonHandler extends AbstractHandler {
+	private static class JsonHandler extends AbstractHandler {
 
 		private Gson gson;
 		private RaceTO lastRaceTO;
@@ -155,7 +159,7 @@ public class JsonServer {
 
 			Object resultTO;
 
-			System.out.println("Path Info:" + request.getPathInfo());
+			LOGGER.info("Path Info: {}", request.getPathInfo());
 			// We split the path of the request
 			String[] pathInfoParts = request.getPathInfo().split("/");
 			if (pathInfoParts.length > 1 && pathInfoParts[1].equals("race")) {

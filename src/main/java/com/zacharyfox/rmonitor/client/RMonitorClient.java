@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.zacharyfox.rmonitor.config.ConfigurationManager;
 import com.zacharyfox.rmonitor.entities.Race;
 import com.zacharyfox.rmonitor.message.Factory;
@@ -20,6 +23,8 @@ import com.zacharyfox.rmonitor.utils.Estimator;
 import com.zacharyfox.rmonitor.utils.Recorder;
 
 public class RMonitorClient {
+
+	private static final Logger LOGGER = LogManager.getLogger(RMonitorClient.class);
 
 	public static final String DEFAULT_HOST = "127.0.0.1";
 	public static final int DEFAULT_PORT = 50000;
@@ -72,10 +77,10 @@ public class RMonitorClient {
 		try {
 			encoding = Charset.forName(encodingString);
 		} catch (IllegalCharsetNameException e) {
-			System.err.println("Illegal charset defined as client stream encoding: " + encodingString);
+			LOGGER.error("Illegal charset defined as client stream encoding: {}", encodingString);
 			encoding = Charset.defaultCharset();
 		} catch (UnsupportedCharsetException e) {
-			System.err.println("Unsupported charset defined as client stream encoding: " + encodingString);
+			LOGGER.error("Unsupported charset defined as client stream encoding: {}", encodingString);
 			encoding = Charset.defaultCharset();
 		}
 	}
@@ -130,7 +135,7 @@ public class RMonitorClient {
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
-			System.out.println("Retry: " + retryCounter);
+			LOGGER.info("Retry: {}", retryCounter);
 		}
 	}
 
