@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 import com.zacharyfox.rmonitor.message.InitRecord;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 
-public class InitRecordTest {
+class InitRecordTest {
 
 	@Test
-	public void test() {
+	void test() {
 		String[] tokens = { "$I", "16:36:08.000", "12 jan 01" };
 
 		InitRecord message = new InitRecord(tokens);

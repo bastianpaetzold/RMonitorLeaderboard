@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 import com.zacharyfox.rmonitor.message.Heartbeat;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 
-public class HeartbeatTest {
+class HeartbeatTest {
 
 	@Test
-	public void test() {
+	void test() {
 		String[] tokens = { "$F", "14", "00:12:45", "13:34:23", "00:09:47", "Green" };
 
 		Heartbeat message = new Heartbeat(tokens);

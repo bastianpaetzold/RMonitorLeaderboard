@@ -18,20 +18,12 @@ import com.zacharyfox.rmonitor.utils.DurationUtil;
 
 public class Competitor {
 
-	public class Lap {
-
-		public int lapNumber;
-		public Duration lapTime;
-		public int position;
-		public Duration totalTime;
-	}
-
 	private String addData = "";
 	private Duration bestLap = Duration.ZERO;
 	private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 	private int classId = 0;
 	private String firstName = "";
-	private final ArrayList<Competitor.Lap> laps = new ArrayList<>();
+	private final ArrayList<Lap> laps = new ArrayList<>();
 	private int lapsComplete = 0;
 	private Duration lastLap = Duration.ZERO;
 	private String lastName = "";
@@ -64,9 +56,9 @@ public class Competitor {
 		Duration duration = Duration.ZERO;
 
 		int count = 0;
-		for (Competitor.Lap lap : laps) {
-			if (lap.lapTime != null && lap.lapNumber > 0) {
-				duration = duration.plus(lap.lapTime);
+		for (Lap lap : laps) {
+			if (lap.getLapTime() != null && lap.getLapNumber() > 0) {
+				duration = duration.plus(lap.getLapTime());
 				count++;
 			}
 		}
@@ -90,7 +82,7 @@ public class Competitor {
 		return firstName;
 	}
 
-	public List<Competitor.Lap> getLaps() {
+	public List<Lap> getLaps() {
 		return laps;
 	}
 
@@ -157,9 +149,9 @@ public class Competitor {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		for (Competitor.Lap lap : laps) {
-			builder.append(String.format("%s %s %s %s%n", lap.lapNumber, lap.position, DurationUtil.format(lap.lapTime),
-					DurationUtil.format(lap.totalTime)));
+		for (Lap lap : laps) {
+			builder.append(String.format("%s %s %s %s%n", lap.getLapNumber(), lap.getPosition(),
+					DurationUtil.format(lap.getLapTime()), DurationUtil.format(lap.getTotalTime())));
 		}
 		return """
 				First Name: %s
@@ -181,19 +173,19 @@ public class Competitor {
 	private void addLap(LapInfo message) {
 		boolean found = false;
 
-		for (Competitor.Lap lap : this.laps) {
-			if (lap.lapNumber == message.getLapNumber()) {
+		for (Lap lap : this.laps) {
+			if (lap.getLapNumber() == message.getLapNumber()) {
 				found = true;
-				lap.lapTime = message.getLapTime();
-				lap.position = message.getPosition();
+				lap.setLapTime(message.getLapTime());
+				lap.setPosition(message.getPosition());
 			}
 		}
 
 		if (!found) {
-			Competitor.Lap lap = new Competitor.Lap();
-			lap.lapNumber = message.getLapNumber();
-			lap.position = message.getPosition();
-			lap.lapTime = message.getLapTime();
+			Lap lap = new Lap();
+			lap.setLapNumber(message.getLapNumber());
+			lap.setPosition(message.getPosition());
+			lap.setLapTime(message.getLapTime());
 
 			this.laps.add(lap);
 		}
@@ -202,37 +194,37 @@ public class Competitor {
 	private void addLap(PassingInfo message) {
 		boolean found = false;
 
-		for (Competitor.Lap lap : this.laps) {
-			if (lap != null && lap.totalTime != null && lap.totalTime.equals(message.getTotalTime())) {
+		for (Lap lap : this.laps) {
+			if (lap != null && lap.getTotalTime() != null && lap.getTotalTime().equals(message.getTotalTime())) {
 				found = true;
-				lap.lapTime = message.getLapTime();
+				lap.setLapTime(message.getLapTime());
 			}
 		}
 
 		if (!found) {
-			Competitor.Lap lap = new Competitor.Lap();
-			lap.lapTime = message.getLapTime();
-			lap.totalTime = message.getTotalTime();
+			Lap lap = new Lap();
+			lap.setLapTime(message.getLapTime());
+			lap.setTotalTime(message.getTotalTime());
 			this.laps.add(lap);
 		}
 	}
 
 	private void addLap(RaceInfo message) {
 		boolean found = false;
-		for (Competitor.Lap lap : this.laps) {
-			if (lap != null && lap.totalTime != null && lap.totalTime.equals(message.getTotalTime())) {
+		for (Lap lap : this.laps) {
+			if (lap != null && lap.getTotalTime() != null && lap.getTotalTime().equals(message.getTotalTime())) {
 				found = true;
-				lap.totalTime = message.getTotalTime();
-				lap.lapNumber = message.getLaps();
-				lap.position = message.getPosition();
+				lap.setTotalTime(message.getTotalTime());
+				lap.setLapNumber(message.getLaps());
+				lap.setPosition(message.getPosition());
 			}
 		}
 
 		if (!found) {
-			Competitor.Lap lap = new Competitor.Lap();
-			lap.totalTime = message.getTotalTime();
-			lap.lapNumber = message.getLaps();
-			lap.position = message.getPosition();
+			Lap lap = new Lap();
+			lap.setTotalTime(message.getTotalTime());
+			lap.setLapNumber(message.getLaps());
+			lap.setPosition(message.getPosition());
 			this.laps.add(lap);
 		}
 	}
@@ -435,15 +427,12 @@ public class Competitor {
 	}
 
 	public static void setCompetitorTO(RaceTO raceTO) {
-		RaceTO.CompetitorTO[] competitors = new RaceTO.CompetitorTO[instances.size()];
-		int i = 0;
-		for (Competitor competitor : instances.values()) {
-			RaceTO.CompetitorTO competitorTO = raceTO.new CompetitorTO(competitor.number, competitor.position,
-					competitor.lapsComplete, competitor.firstName, competitor.lastName,
-					DurationUtil.format(competitor.totalTime), DurationUtil.format(competitor.bestLap),
-					DurationUtil.format(competitor.lastLap), competitor.qualiPosition);
-			competitors[i++] = competitorTO;
-		}
-		raceTO.competitors = competitors;
+		CompetitorTO[] competitorTOs = instances.values().stream()
+				.map(competitor -> new CompetitorTO(competitor.number, competitor.position, competitor.lapsComplete,
+						competitor.firstName, competitor.lastName, DurationUtil.format(competitor.totalTime),
+						DurationUtil.format(competitor.bestLap), DurationUtil.format(competitor.lastLap),
+						competitor.qualiPosition))
+				.toArray(CompetitorTO[]::new);
+		raceTO.setCompetitors(competitorTOs);
 	}
 }

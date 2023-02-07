@@ -9,6 +9,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.zacharyfox.rmonitor.entities.Competitor;
+import com.zacharyfox.rmonitor.entities.Lap;
 import com.zacharyfox.rmonitor.message.CompInfo;
 import com.zacharyfox.rmonitor.message.LapInfo;
 import com.zacharyfox.rmonitor.message.PassingInfo;
@@ -16,7 +17,7 @@ import com.zacharyfox.rmonitor.message.QualInfo;
 import com.zacharyfox.rmonitor.message.RaceInfo;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 
-public class CompetitorTest {
+class CompetitorTest {
 
 	protected boolean bestLapFired = false;
 	protected boolean classIdFired = false;
@@ -32,26 +33,26 @@ public class CompetitorTest {
 	protected boolean transNumberFired = false;
 
 	@Test
-	public void testAddLap() {
+	void testAddLap() {
 		final Competitor competitor = getCompetitor();
 
 		this.playLapMessages();
 
-		List<Competitor.Lap> laps = competitor.getLaps();
+		List<Lap> laps = competitor.getLaps();
 
-		assertEquals(1, laps.get(0).lapNumber);
-		assertEquals(3, laps.get(0).position);
-		assertEquals(DurationUtil.parse("00:01:47.872"), laps.get(0).lapTime);
-		assertEquals(DurationUtil.parse("00:01:47.872"), laps.get(0).totalTime);
+		assertEquals(1, laps.get(0).getLapNumber());
+		assertEquals(3, laps.get(0).getPosition());
+		assertEquals(DurationUtil.parse("00:01:47.872"), laps.get(0).getLapTime());
+		assertEquals(DurationUtil.parse("00:01:47.872"), laps.get(0).getTotalTime());
 
-		assertEquals(2, laps.get(1).lapNumber);
-		assertEquals(2, laps.get(1).position);
-		assertEquals(DurationUtil.parse("00:01:46.749"), laps.get(1).lapTime);
-		assertEquals(DurationUtil.parse("00:03:34.621"), laps.get(1).totalTime);
+		assertEquals(2, laps.get(1).getLapNumber());
+		assertEquals(2, laps.get(1).getPosition());
+		assertEquals(DurationUtil.parse("00:01:46.749"), laps.get(1).getLapTime());
+		assertEquals(DurationUtil.parse("00:03:34.621"), laps.get(1).getTotalTime());
 	}
 
 	@Test
-	public void testAvgLap() {
+	void testAvgLap() {
 		final Competitor competitor = getCompetitor();
 
 		assertEquals(Duration.ZERO, competitor.getAvgLap());
@@ -62,7 +63,7 @@ public class CompetitorTest {
 	}
 
 	@Test
-	public void testGetByPosition() {
+	void testGetByPosition() {
 		final Competitor competitor = getCompetitor();
 		this.playLapMessages();
 
@@ -70,13 +71,13 @@ public class CompetitorTest {
 	}
 
 	@Test
-	public void testGetFastestLap() {
+	void testGetFastestLap() {
 		this.playLapMessages();
 		assertEquals(DurationUtil.parse("00:01:46.749"), Competitor.getFastestLap());
 	}
 
 	@Test
-	public void testGetPositionInClass() {
+	void testGetPositionInClass() {
 		final Competitor competitor = getCompetitor();
 
 		this.playLapMessages();
@@ -84,7 +85,7 @@ public class CompetitorTest {
 	}
 
 	@Test
-	public void testUpdateCompInfo() {
+	void testUpdateCompInfo() {
 		final Competitor competitor = getCompetitor();
 
 		String[] tokens = { "$A", "1234BE", "123", "54321", "Jack", "Jackson", "MX", "6" };
@@ -140,7 +141,7 @@ public class CompetitorTest {
 	}
 
 	@Test
-	public void testUpdateLapInfo() {
+	void testUpdateLapInfo() {
 		final Competitor competitor = getCompetitor();
 
 		String[] tokens = { "$SP", "3", "1234BE", "2", "00:01:33.894", "76682" };
@@ -149,11 +150,11 @@ public class CompetitorTest {
 
 		Competitor.updateOrCreate(message);
 
-		List<Competitor.Lap> laps = competitor.getLaps();
+		List<Lap> laps = competitor.getLaps();
 
-		for (Competitor.Lap lap : laps) {
-			if (lap.lapNumber == 2) {
-				assertEquals(lap.lapTime, DurationUtil.parse("00:01:33.894"));
+		for (Lap lap : laps) {
+			if (lap.getLapNumber() == 2) {
+				assertEquals(lap.getLapTime(), DurationUtil.parse("00:01:33.894"));
 			}
 		}
 
@@ -175,7 +176,7 @@ public class CompetitorTest {
 	}
 
 	@Test
-	public void testUpdatePassingInfo() {
+	void testUpdatePassingInfo() {
 		final Competitor competitor = getCompetitor();
 
 		String[] tokens = { "$J", "1234BE", "01:12:47.872", "01:12:47.872" };
@@ -203,7 +204,7 @@ public class CompetitorTest {
 	}
 
 	@Test
-	public void testUpdateQualInfo() {
+	void testUpdateQualInfo() {
 		final Competitor competitor = getCompetitor();
 
 		String[] tokens = { "$H", "1", "1234BE", "1", "01:12:47.872" };
@@ -224,7 +225,7 @@ public class CompetitorTest {
 	}
 
 	@Test
-	public void testUpdateRaceInfo() {
+	void testUpdateRaceInfo() {
 		final Competitor competitor = getCompetitor();
 
 		String[] tokens = { "$G", "3", "1234BE", "14", "01:12:47.872" };

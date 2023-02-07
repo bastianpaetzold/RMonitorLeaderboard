@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 import com.zacharyfox.rmonitor.message.RaceInfo;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 
-public class RaceInfoTest {
+class RaceInfoTest {
 
 	@Test
-	public void test() {
+	void test() {
 		String[] tokens = { "$G", "3", "1234BE", "14", "01:12:47.872" };
 
 		RaceInfo message = new RaceInfo(tokens);

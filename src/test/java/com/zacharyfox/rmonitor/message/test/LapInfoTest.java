@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 import com.zacharyfox.rmonitor.message.LapInfo;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 
-public class LapInfoTest {
+class LapInfoTest {
 
 	@Test
-	public void test() {
+	void test() {
 		String[] tokens = { "$SP", "3", "2", "2", "00:01:33.894", "76682" };
 
 		LapInfo message = new LapInfo(tokens);

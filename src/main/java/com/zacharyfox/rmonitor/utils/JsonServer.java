@@ -164,14 +164,14 @@ public class JsonServer {
 			String[] pathInfoParts = request.getPathInfo().split("/");
 			if (pathInfoParts.length > 1 && pathInfoParts[1].equals("race")) {
 				// object selected is race
-				// System.out.println("Path is race:" + pathInfoParts[1]);
+				LOGGER.debug("Path is race: {}", pathInfoParts[1]);
 				// check for an ID as second part
 				if (pathInfoParts.length > 2 && pathInfoParts[2].matches("\\d+")) {
 					int raceID = Integer.parseInt(pathInfoParts[2]);
-					// System.out.println("Returning race with ID:" + raceID);
+					LOGGER.trace("Returning race with ID: {}", raceID);
 					resultTO = getRaceToReturn(raceID);
 				} else {
-					// System.out.println("Returning current race");
+					LOGGER.trace("Returning current race");
 					resultTO = getRaceToReturn();
 				}
 			} else if (pathInfoParts.length > 1 && pathInfoParts[1].equals("races")) {
@@ -191,8 +191,8 @@ public class JsonServer {
 		private RaceTO getRaceToReturn() {
 			RaceTO currentRaceTO = RMonitorClient.getInstance().getRace().getRaceTO();
 			// if the currentRaceTO has ID = 0 we try to get the lastRaceTO from the history
-			if (lastRaceTO != null && currentRaceTO.raceID == 0) {
-				currentRaceTO = Race.getToByID(lastRaceTO.raceID);
+			if (lastRaceTO != null && currentRaceTO.getRaceID() == 0) {
+				currentRaceTO = Race.getToByID(lastRaceTO.getRaceID());
 			} else {
 				lastRaceTO = currentRaceTO;
 			}

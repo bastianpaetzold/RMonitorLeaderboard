@@ -8,7 +8,10 @@ import java.util.SortedMap;
  * Multiplier: (2 / (Time periods + 1) ) = (2 / (10 + 1) ) = 0.1818 (18.18%)
  * EMA: {Close - EMA(previous day)} x multiplier + EMA(previous day).
  */
-public abstract class ExponentialMovingAverage {
+public class ExponentialMovingAverage {
+
+	private ExponentialMovingAverage() {
+	}
 
 	public static long getAverage(SortedMap<Integer, Long> laps) {
 		return laps.get(laps.lastKey()) / laps.lastKey();

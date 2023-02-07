@@ -12,7 +12,7 @@ import com.zacharyfox.rmonitor.message.RunInfo;
 import com.zacharyfox.rmonitor.message.SettingInfo;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 
-public class RaceTest {
+class RaceTest {
 
 	private boolean competitorsVersionFired = false;
 	private boolean elapsedTimeFired = false;
@@ -27,7 +27,7 @@ public class RaceTest {
 	private boolean trackNameFired = false;
 
 	@Test
-	public void testUpdateHeartbeat() {
+	void testUpdateHeartbeat() {
 		Heartbeat message = new Heartbeat(new String[] { "$F", "14", "00:12:45", "13:34:23", "00:09:47", "Green" });
 
 		Race race = new Race();
@@ -75,7 +75,7 @@ public class RaceTest {
 	}
 
 	@Test
-	public void testUpdateRaceInfo() {
+	void testUpdateRaceInfo() {
 		RaceInfo message = new RaceInfo(new String[] { "$G", "3", "1234BE", "14", "01:12:47.872" });
 
 		Race race = new Race();
@@ -91,7 +91,7 @@ public class RaceTest {
 	}
 
 	@Test
-	public void testUpdateRunInfo() {
+	void testUpdateRunInfo() {
 		RunInfo message = new RunInfo(new String[] { "$B", "5", "Friday free practice" });
 
 		Race race = new Race();
@@ -115,7 +115,7 @@ public class RaceTest {
 	}
 
 	@Test
-	public void testUpdateSettingInfo() {
+	void testUpdateSettingInfo() {
 		SettingInfo message = new SettingInfo(new String[] { "$E", "TRACKNAME", "Indianapolis Motor Speedway" });
 
 		SettingInfo message_1 = new SettingInfo(new String[] { "$E", "TRACKLENGTH", "2.500" });

@@ -2,41 +2,15 @@ package com.zacharyfox.rmonitor.entities;
 
 public class RaceTO {
 
-	public class CompetitorTO {
-
-		public String number;
-		public int position;
-		public int lapsComplete;
-		public String firstName;
-		public String lastName;
-		public String totalTime;
-		public String bestLap;
-		public String lastLap;
-		public int qualiPosition;
-
-		public CompetitorTO(String number, int position, int lapsComplete, String firstName, String lastName,
-				String totalTime, String bestLap, String lastLap, int qualiPosition) {
-			this.number = number;
-			this.position = position;
-			this.lapsComplete = lapsComplete;
-			this.firstName = firstName;
-			this.lastName = lastName;
-			this.totalTime = totalTime;
-			this.bestLap = bestLap;
-			this.lastLap = lastLap;
-			this.qualiPosition = qualiPosition;
-		}
-	}
-
-	public String raceName;
-	public int raceID;
-	public String flagStatus;
-	public String elapsedTime;
-	public String timeOfDay;
-	public int lapsComplete;
-	public int lapsToGo;
-	public String trackName;
-	public CompetitorTO[] competitors;
+	private String raceName;
+	private int raceID;
+	private String flagStatus;
+	private String elapsedTime;
+	private String timeOfDay;
+	private int lapsComplete;
+	private int lapsToGo;
+	private String trackName;
+	private CompetitorTO[] competitors;
 
 	public RaceTO(String elapsedTime, String flagStatus, int id, int lapsToGo, int lapsComplete, String name,
 			String timeOfDay, String trackName) {
@@ -48,5 +22,77 @@ public class RaceTO {
 		this.raceName = name;
 		this.timeOfDay = timeOfDay;
 		this.trackName = trackName;
+	}
+
+	public String getRaceName() {
+		return raceName;
+	}
+
+	public void setRaceName(String raceName) {
+		this.raceName = raceName;
+	}
+
+	public int getRaceID() {
+		return raceID;
+	}
+
+	public void setRaceID(int raceID) {
+		this.raceID = raceID;
+	}
+
+	public String getFlagStatus() {
+		return flagStatus;
+	}
+
+	public void setFlagStatus(String flagStatus) {
+		this.flagStatus = flagStatus;
+	}
+
+	public String getElapsedTime() {
+		return elapsedTime;
+	}
+
+	public void setElapsedTime(String elapsedTime) {
+		this.elapsedTime = elapsedTime;
+	}
+
+	public String getTimeOfDay() {
+		return timeOfDay;
+	}
+
+	public void setTimeOfDay(String timeOfDay) {
+		this.timeOfDay = timeOfDay;
+	}
+
+	public int getLapsComplete() {
+		return lapsComplete;
+	}
+
+	public void setLapsComplete(int lapsComplete) {
+		this.lapsComplete = lapsComplete;
+	}
+
+	public int getLapsToGo() {
+		return lapsToGo;
+	}
+
+	public void setLapsToGo(int lapsToGo) {
+		this.lapsToGo = lapsToGo;
+	}
+
+	public String getTrackName() {
+		return trackName;
+	}
+
+	public void setTrackName(String trackName) {
+		this.trackName = trackName;
+	}
+
+	public CompetitorTO[] getCompetitors() {
+		return competitors;
+	}
+
+	public void setCompetitors(CompetitorTO[] competitors) {
+		this.competitors = competitors;
 	}
 }

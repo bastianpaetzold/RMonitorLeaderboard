@@ -6,15 +6,11 @@ import org.junit.jupiter.api.Test;
 
 import com.zacharyfox.rmonitor.message.RunInfo;
 
-public class RunInfoTest
-{
+class RunInfoTest {
 
 	@Test
-	public void test()
-	{
-		String[] tokens = {
-			"$B", "5", "Friday free practice"
-		};
+	void test() {
+		String[] tokens = { "$B", "5", "Friday free practice" };
 
 		RunInfo message = new RunInfo(tokens);
 

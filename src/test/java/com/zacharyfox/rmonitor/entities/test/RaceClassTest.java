@@ -9,11 +9,10 @@ import com.zacharyfox.rmonitor.message.ClassInfo;
 import com.zacharyfox.rmonitor.message.Factory;
 import com.zacharyfox.rmonitor.message.RMonitorMessage;
 
-public class RaceClassTest
-{
+class RaceClassTest {
+
 	@Test
-	public void testUpdateRaceClass()
-	{
+	void testUpdateRaceClass() {
 		assertEquals("", RaceClass.getClassName(5));
 
 		String line = "$C,5,\"Formula 300\"";

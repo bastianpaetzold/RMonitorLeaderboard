@@ -16,12 +16,10 @@ import com.zacharyfox.rmonitor.message.RaceInfo;
 import com.zacharyfox.rmonitor.message.RunInfo;
 import com.zacharyfox.rmonitor.message.SettingInfo;
 
-public class FactoryTest
-{
+class FactoryTest {
 
 	@Test
-	public void testClassInfo()
-	{
+	void testClassInfo() {
 		String line = "$C,5,\"Formula 300\"";
 		RMonitorMessage message = Factory.getMessage(line);
 
@@ -29,8 +27,7 @@ public class FactoryTest
 	}
 
 	@Test
-	public void testCompInfo()
-	{
+	void testCompInfo() {
 		String line = "$A,\"1234BE\",\"12X\",52474,\"John\",\"Johnson\",\"USA\",5";
 		RMonitorMessage message = Factory.getMessage(line);
 
@@ -43,8 +40,7 @@ public class FactoryTest
 	}
 
 	@Test
-	public void testHeartbeat()
-	{
+	void testHeartbeat() {
 		String line = "$F,14,\"00:12:45\",\"13:34:23\",\"00:09:47\",\"Green\"";
 		RMonitorMessage message = Factory.getMessage(line);
 
@@ -52,8 +48,7 @@ public class FactoryTest
 	}
 
 	@Test
-	public void testInitRecord()
-	{
+	void testInitRecord() {
 		String line = "$I,\"16:36:08.000\",\"12 jan 01\"";
 		RMonitorMessage message = Factory.getMessage(line);
 
@@ -61,8 +56,7 @@ public class FactoryTest
 	}
 
 	@Test
-	public void testPassingInfo()
-	{
+	void testPassingInfo() {
 		String line = "$J,\"1234BE\",\"00:02:03.826\",\"01:42:17.672\"";
 		RMonitorMessage message = Factory.getMessage(line);
 
@@ -70,8 +64,7 @@ public class FactoryTest
 	}
 
 	@Test
-	public void testQualInfo()
-	{
+	void testQualInfo() {
 		String line = "$H,2,\"1234BE\",3,\"00:02:17.872\"";
 		RMonitorMessage message = Factory.getMessage(line);
 
@@ -79,8 +72,7 @@ public class FactoryTest
 	}
 
 	@Test
-	public void testRaceInfo()
-	{
+	void testRaceInfo() {
 		String line = "$G,3,\"1234BE\",14,\"01:12:47.872\"";
 		RMonitorMessage message = Factory.getMessage(line);
 
@@ -88,8 +80,7 @@ public class FactoryTest
 	}
 
 	@Test
-	public void testRunInfo()
-	{
+	void testRunInfo() {
 		String line = "$B,5,\"Friday free practice\"";
 		RMonitorMessage message = Factory.getMessage(line);
 
@@ -97,8 +88,7 @@ public class FactoryTest
 	}
 
 	@Test
-	public void testSettingInfo()
-	{
+	void testSettingInfo() {
 		String line = "$E,\"TRACKNAME\",\"Indianapolis Motor Speedway\"";
 		RMonitorMessage message = Factory.getMessage(line);
 

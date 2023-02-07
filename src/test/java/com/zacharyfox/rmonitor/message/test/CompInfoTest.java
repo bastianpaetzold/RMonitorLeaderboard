@@ -6,21 +6,16 @@ import org.junit.jupiter.api.Test;
 
 import com.zacharyfox.rmonitor.message.CompInfo;
 
-public class CompInfoTest
-{
+class CompInfoTest {
 
 	@Test
-	public void test()
-	{
+	void test() {
 		testAType();
 		testCompType();
 	}
 
-	private void testAType()
-	{
-		String[] tokens = {
-			"$A", "1234BE", "12X", "52474", "John", "Johnson", "USA", "5"
-		};
+	private void testAType() {
+		String[] tokens = { "$A", "1234BE", "12X", "52474", "John", "Johnson", "USA", "5" };
 
 		CompInfo message = new CompInfo(tokens);
 
@@ -34,11 +29,8 @@ public class CompInfoTest
 		assertEquals(null, message.getAddInfo());
 	}
 
-	private void testCompType()
-	{
-		String[] tokens = {
-			"$COMP", "1234BE", "12X", "5", "John", "Johnson", "USA", "CAMEL"
-		};
+	private void testCompType() {
+		String[] tokens = { "$COMP", "1234BE", "12X", "5", "John", "Johnson", "USA", "CAMEL" };
 
 		CompInfo message = new CompInfo(tokens);
 

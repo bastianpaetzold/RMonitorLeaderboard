@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 import com.zacharyfox.rmonitor.message.PassingInfo;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 
-public class PassingInfoTest {
+class PassingInfoTest {
 
 	@Test
-	public void test() {
+	void test() {
 		String[] tokens = { "$J", "1234BE", "00:02:03.826", "01:42:17.672" };
 
 		PassingInfo message = new PassingInfo(tokens);

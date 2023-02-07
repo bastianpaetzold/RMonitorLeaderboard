@@ -6,18 +6,15 @@ import org.junit.jupiter.api.Test;
 
 import com.zacharyfox.rmonitor.message.ClassInfo;
 
-public class ClassInfoTest
-{
+class ClassInfoTest {
+
 	@Test
-	public void test()
-	{
-		String[] tokens = {
-			"$C", "5", "Formula 300"
-		};
+	void test() {
+		String[] tokens = { "$C", "5", "Formula 300" };
 
 		ClassInfo message = new ClassInfo(tokens);
 
-		assertEquals( 5, message.getUniqueId(), "Class ID 5");
-		assertEquals( "Formula 300", message.getDescription(), "Class Description is Formula 300");
+		assertEquals(5, message.getUniqueId(), "Class ID 5");
+		assertEquals("Formula 300", message.getDescription(), "Class Description is Formula 300");
 	}
 }

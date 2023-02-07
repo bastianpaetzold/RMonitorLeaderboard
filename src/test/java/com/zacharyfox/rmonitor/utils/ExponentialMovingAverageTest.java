@@ -4,13 +4,11 @@ import java.util.TreeMap;
 
 import org.junit.jupiter.api.Test;
 
-public class ExponentialMovingAverageTest
-{
+class ExponentialMovingAverageTest {
 
 	@Test
-	public void test()
-	{
-		TreeMap<Integer, Long> laps = new TreeMap<Integer, Long>();
+	void test() {
+		TreeMap<Integer, Long> laps = new TreeMap<>();
 		laps.put(1, (long) 2227);
 		laps.put(2, (long) 2219);
 		laps.put(3, (long) 2208);

@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 import com.zacharyfox.rmonitor.message.QualInfo;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 
-public class QualInfoTest {
+class QualInfoTest {
 
 	@Test
-	public void test() {
+	void test() {
 		String[] tokens = { "$H", "2", "1234BE", "3", "00:02:17.872" };
 
 		QualInfo message = new QualInfo(tokens);
