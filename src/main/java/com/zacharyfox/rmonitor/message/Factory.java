@@ -4,12 +4,12 @@ import java.lang.reflect.Constructor;
 import java.util.AbstractMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class Factory {
 
-	private static final Logger LOGGER = LogManager.getLogger(Factory.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Factory.class);
 
 	// @formatter:off
 	private static Map<String, Class<?>> classMap = Map.ofEntries(

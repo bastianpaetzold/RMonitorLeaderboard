@@ -10,11 +10,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.zacharyfox.rmonitor.client.RMonitorClient;
@@ -24,7 +24,7 @@ import com.zacharyfox.rmonitor.entities.RaceTO;
 
 public class JsonServer {
 
-	private static final Logger LOGGER = LogManager.getLogger(JsonServer.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(JsonServer.class);
 
 	public static final String DEFAULT_HOST = "0.0.0.0";
 	public static final int DEFAULT_PORT = 8080;

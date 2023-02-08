@@ -6,8 +6,8 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Objects;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.zacharyfox.rmonitor.message.ClassInfo;
 import com.zacharyfox.rmonitor.message.CompInfo;
@@ -24,7 +24,7 @@ import com.zacharyfox.rmonitor.utils.DurationUtil;
 
 public class Race {
 
-	private static final Logger LOGGER = LogManager.getLogger(Race.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Race.class);
 	private final PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 
 	private int competitorsVersion = 0;

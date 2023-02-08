@@ -12,7 +12,6 @@ module com.zacharyfox.rmonitor.leaderboard {
 	requires org.eclipse.jetty.server;
 	requires com.miglayout.swing;
 	requires info.picocli;
-	requires org.apache.logging.log4j;
 
 	opens com.zacharyfox.rmonitor.leaderboard to info.picocli;
 }

@@ -16,14 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.zacharyfox.rmonitor.config.ConfigurationManager;
 
 public class Player {
 
-	private static final Logger LOGGER = LogManager.getLogger(Player.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Player.class);
 
 	public static final int DEFAULT_PORT = 50000;
 	public static final String DEFAULT_SPEEDUP = "2";

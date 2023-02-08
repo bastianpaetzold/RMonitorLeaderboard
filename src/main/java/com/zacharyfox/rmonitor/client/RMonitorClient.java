@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.zacharyfox.rmonitor.config.ConfigurationManager;
 import com.zacharyfox.rmonitor.entities.Race;
@@ -24,7 +24,7 @@ import com.zacharyfox.rmonitor.utils.Recorder;
 
 public class RMonitorClient {
 
-	private static final Logger LOGGER = LogManager.getLogger(RMonitorClient.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RMonitorClient.class);
 
 	public static final String DEFAULT_HOST = "127.0.0.1";
 	public static final int DEFAULT_PORT = 50000;
