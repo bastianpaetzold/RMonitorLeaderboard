@@ -11,9 +11,9 @@ Protocol information was taken from here: http://www.imsatiming.com/software/Pro
 It displays summary information and a sortable table of the current competitors in the race. In addition, it will
 provide an estimate of time or laps remaining (based on time to go / laps to go received from the rmonitor feed.)
 
-In addition to the swing application, this repository contains library packages for handling rmonitor feed data.
+Additionally the application supports a headless mode in order to run on a system without GUI. This can be useful in scenarios where you just want to receive the rmonitor feed "forward" it using the web server module without displaying it.
 
-Building the Application
+Building the application
 ------------------------
 
 Requirements:
@@ -31,7 +31,20 @@ produces beside others the following two files in the  _target_  directory:
 - leaderboard-*.jar: Executable standalone JAR (requires Java 17 to run).
 - leaderboard-*-jlink.zip: A so-called  _Java Run-Time Image_  (doesn't require Java to run). It is platform dependent and therefore only runs on the platform it was build for.
 
-Running the Application
+Downloading pre-built packages
+------------------------------
+
+### Releases
+
+TODO
+
+### Pre-release versions
+
+Pre-release versions from the develop branch are available in the [package repository](https://github.com/bastianpaetzold/RMonitorLeaderboard/packages/1787619/versions).
+
+Please note that there are no guarantees regarding the functionality of those versions as they can easily break between builds. Therefore don't use them in an "productive" environment.
+
+Running the application
 ------------------------
 
 ### Standalone JAR
@@ -49,46 +62,12 @@ java -jar leaderboard.jar
 
 The image is just a zip file containing a directory structure that contains everything to run the application (no external Java required). Extract it somewhere and run the launcher script located in the  _bin_  directory. The name might differ depending on the OS it was build for. E.g. on Windows it is called  *launch_loaderboard.bat*.
 
+Credits
+-------
 
-Library Packages
-----------------
+The original work was done by [Zachary Fox](https://github.com/zacharyfox) with some improvements by [Kai Höfler](https://github.com/kaihoefler).
 
-### com.zacharyfox.rmonitor.entities
+License
+-------
 
-This package contains the models for the race and competitors.
-
-### com.zacharyfox.rmonitor.message
-
-This package contains classes for each type of message provided in the protocol, and a factory for creating the objects
-from an ascii string. Example usage below (returns a Heartbeat):
-
-	import com.zacharyfox.rmonitor.message.*
-	
-	String line = "$F,14,\"00:12:45\",\"13:34:23\",\"00:09:47\",\"Green\"";
-	RMonitorMessage message = Factory.getMessage(line);
-
-### com.zacharyfox.rmonitor.utils
-
-#### Duration
-
-Duration takes time values as strings ("00:01:23.456"), integers (milliseconds), or floats (seconds) supplied by the
-feed and stores them as milliseconds.
-
-	import com.zacharyfox.rmonitor.utils.Duration
-	
-	Duration duration = new Duration("00:01:23.456");
-
-#### Connection
-
-Connection extends Socket and contains a BufferedLineReader.
-
-	import com.zacharyfox.rmonitor.utils.Connection;
-	
-	String ip = "127.0.0.1";
-	Integer port = 50000;
-	Connection connection = new Connection(ip, port);
-	
-	while ((line = connection.readLine()) != null) {
-		System.out.println(line);
-	}
-
+RMonitorLeaderboard is released under version of the [GNU General Public License](https://www.gnu.org/licenses/gpl-3.0.html).
