@@ -35,7 +35,7 @@ public class Race {
 		PURPLE, GREEN, YELLOW, RED, FINISH, NONE
 	}
 
-	private FlagState currentFlagState;
+	private FlagState currentFlagState = FlagState.NONE;
 	private int id = 0;
 	private int lapsComplete = 0;
 	private int lapsToGo = 0;
