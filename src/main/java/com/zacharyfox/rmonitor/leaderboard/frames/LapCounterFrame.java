@@ -20,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -47,7 +48,7 @@ public class LapCounterFrame extends JFrame {
 	private int lastLapsComplete;
 	private Duration lastLapCountChangeTime;
 	private int lapSwitchDelay;
-	private PropertyChangeListener propertyChangeListener = this::updateDisplay;
+	private PropertyChangeListener propertyChangeListener = e -> SwingUtilities.invokeLater(() -> updateDisplay(e));
 	private JTextField tfElapsedTime;
 	private JTextField tfFlag;
 	private JPanel infoPanel;

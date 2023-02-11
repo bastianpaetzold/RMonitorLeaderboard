@@ -7,6 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import com.zacharyfox.rmonitor.utils.Recorder;
 import com.zacharyfox.rmonitor.utils.Recorder.State;
@@ -45,7 +46,8 @@ public class RecorderFrame extends JFrame {
 		startStop.addActionListener(this::handleRecorderAction);
 		getContentPane().add(startStop, "cell 2 0");
 
-		recorder.addStateChangeListener((oldState, newState) -> handleRecorderState(newState));
+		recorder.addStateChangeListener(
+				(oldState, newState) -> SwingUtilities.invokeLater(() -> handleRecorderState(newState)));
 		handleRecorderState(recorder.getCurrentState());
 	}
 

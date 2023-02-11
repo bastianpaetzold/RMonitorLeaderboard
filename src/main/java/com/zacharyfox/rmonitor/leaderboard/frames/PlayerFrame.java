@@ -7,6 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import com.zacharyfox.rmonitor.utils.Player;
 import com.zacharyfox.rmonitor.utils.Player.State;
@@ -60,7 +61,8 @@ public class PlayerFrame extends JFrame {
 		pauseResume.addActionListener(this::handlePlayerAction);
 		getContentPane().add(pauseResume, "cell 4 0");
 
-		player.addStateChangeListener((oldState, newState) -> handlePlayerState(newState));
+		player.addStateChangeListener(
+				(oldState, newState) -> SwingUtilities.invokeLater(() -> handlePlayerState(newState)));
 		handlePlayerState(player.getCurrentState());
 	}
 

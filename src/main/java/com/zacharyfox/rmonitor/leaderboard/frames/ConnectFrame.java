@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 
 import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.client.RMonitorClient.State;
@@ -56,7 +57,8 @@ public class ConnectFrame extends JFrame {
 		connectButton.addActionListener(e -> handleClientAction(e, client));
 		getContentPane().add(connectButton, "cell 1 2,alignx right");
 
-		client.addStateChangeListener((oldState, newState) -> handleClientState(newState));
+		client.addStateChangeListener(
+				(oldState, newState) -> SwingUtilities.invokeLater(() -> handleClientState(newState)));
 		handleClientState(client.getCurrentState());
 	}
 

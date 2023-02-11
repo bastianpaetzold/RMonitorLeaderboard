@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 import com.zacharyfox.rmonitor.client.RMonitorClient;
@@ -41,7 +42,7 @@ public class StartSignalFrame extends JFrame {
 	private JTextField tfRaceTime;
 
 	private JButton cancelButton;
-	private PropertyChangeListener propertyChangeListener = this::updateDisplay;
+	private PropertyChangeListener propertyChangeListener = e -> SwingUtilities.invokeLater(() -> updateDisplay(e));
 
 	/**
 	 * Create the dialog.

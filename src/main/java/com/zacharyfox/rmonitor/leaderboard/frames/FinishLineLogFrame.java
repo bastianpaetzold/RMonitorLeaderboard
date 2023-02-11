@@ -28,13 +28,13 @@ import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.entities.Race;
 import com.zacharyfox.rmonitor.leaderboard.FinishLineLogTable;
-import com.zacharyfox.rmonitor.leaderboard.FinishlineLogTableModel;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 
 import net.miginfocom.swing.MigLayout;
@@ -126,7 +126,8 @@ public class FinishLineLogFrame extends JFrame {
 		resultsTablePanel.add(finishLineLogTable.getTableHeader(), BorderLayout.NORTH);
 		resultsTablePanel.add(finishLineLogTable, BorderLayout.CENTER);
 
-		RMonitorClient.getInstance().getRace().addPropertyChangeListener(this::updateDisplay);
+		RMonitorClient.getInstance().getRace()
+				.addPropertyChangeListener(e -> SwingUtilities.invokeLater(() -> updateDisplay(e)));
 
 	}
 
@@ -190,7 +191,7 @@ public class FinishLineLogFrame extends JFrame {
 			break;
 
 		case Race.PROPERTY_COMPETITORS_VERSION:
-			((FinishlineLogTableModel) finishLineLogTable.getModel()).updateData();
+			finishLineLogTable.updateData();
 			break;
 
 		case Race.PROPERTY_TRACK_NAME:

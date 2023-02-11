@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
 import com.zacharyfox.rmonitor.client.RMonitorClient;
@@ -171,14 +172,16 @@ public class LeaderBoard implements Callable<Integer> {
 			e.printStackTrace();
 		}
 
-		try {
-			MainFrame window = new MainFrame();
-			window.setVisible(true);
-			ConnectFrame newFrame = ConnectFrame.getInstance();
-			newFrame.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		SwingUtilities.invokeLater(() -> {
+			try {
+				MainFrame window = new MainFrame();
+				window.setVisible(true);
+				ConnectFrame newFrame = ConnectFrame.getInstance();
+				newFrame.setVisible(true);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
 	}
 
 	public static void main(String[] args) {

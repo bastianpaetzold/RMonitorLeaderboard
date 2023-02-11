@@ -12,10 +12,7 @@ import com.zacharyfox.rmonitor.entities.Competitors;
 @SuppressWarnings("serial")
 public class FinishlineLogTableModel extends AbstractTableModel {
 
-	private String[] columnNames = {
-			// "Pos", "PIC", "#", "Class", "Name", "Laps", "Total Time", "Last Time", "Best
-			// Time", "Avg. Time"
-			"No.", "Laps", "Name", "Pos" };
+	private String[] columnNames = { "No.", "Laps", "Name", "Pos" };
 
 	private List<Object[]> data;
 
@@ -55,7 +52,7 @@ public class FinishlineLogTableModel extends AbstractTableModel {
 		return null;
 	}
 
-	public void updateData() {
+	void updateData() {
 		// @formatter:off
 		data = Competitors.getCompetitors().stream()
 				.filter(c -> c.getLapsComplete() > 0)

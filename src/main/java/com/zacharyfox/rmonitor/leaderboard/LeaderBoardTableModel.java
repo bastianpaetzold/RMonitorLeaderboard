@@ -51,16 +51,7 @@ public class LeaderBoardTableModel extends AbstractTableModel {
 		return null;
 	}
 
-	/*
-	 * Don't need to implement this method unless your table's data can change.
-	 */
-	@Override
-	public void setValueAt(Object value, int row, int col) {
-		data.get(row)[col] = value;
-		fireTableCellUpdated(row, col);
-	}
-
-	public void updateData() {
+	void updateData() {
 		ArrayList<Object[]> rows = new ArrayList<>();
 
 		for (Competitor competitor : Competitors.getCompetitors()) {

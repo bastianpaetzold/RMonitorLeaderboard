@@ -35,4 +35,8 @@ public class FinishLineLogTable extends JTable {
 			getColumnModel().getColumn(column).setPreferredWidth(bigColumnSize);
 		}
 	}
+
+	public void updateData() {
+		finishLineLogTableModel.updateData();
+	}
 }

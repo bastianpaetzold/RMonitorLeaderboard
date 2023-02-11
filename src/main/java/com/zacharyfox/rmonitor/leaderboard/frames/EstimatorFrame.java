@@ -7,6 +7,7 @@ import java.time.Duration;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JSeparator;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import com.zacharyfox.rmonitor.entities.Competitor;
@@ -84,7 +85,7 @@ public class EstimatorFrame extends JFrame {
 		setBounds(100, 100, 450, 200);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-		estimator.addPropertyChangeListener(this::updateDisplay);
+		estimator.addPropertyChangeListener(e -> SwingUtilities.invokeLater(() -> updateDisplay(e)));
 
 		estimatedLapsBest.setText(Integer.toString(estimator.getEstimatedLapsBest()));
 		estimatedTimeBest.setText(" @ " + DurationUtil.format(estimator.getEstimatedTimeBest()));

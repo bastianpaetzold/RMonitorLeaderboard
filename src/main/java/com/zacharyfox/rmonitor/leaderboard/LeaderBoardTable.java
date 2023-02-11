@@ -37,4 +37,8 @@ public class LeaderBoardTable extends JTable {
 			getColumnModel().getColumn(column).setPreferredWidth(timeColumnSize);
 		}
 	}
+
+	public void updateData() {
+		leaderBoardTableModel.updateData();
+	}
 }

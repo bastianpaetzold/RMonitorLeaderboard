@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import com.zacharyfox.rmonitor.utils.JsonServer;
@@ -45,7 +46,8 @@ public class ServerFrame extends JFrame {
 		startStop.setHorizontalAlignment(SwingConstants.RIGHT);
 		startStop.addActionListener(this::handlerServerAction);
 		getContentPane().add(startStop, "cell 1 1,alignx right");
-		jsonServer.addStateChangeListener((oldState, newState) -> handleServerState(newState));
+		jsonServer.addStateChangeListener(
+				(oldState, newState) -> SwingUtilities.invokeLater(() -> handleServerState(newState)));
 		handleServerState(jsonServer.getCurrentState());
 	}
 

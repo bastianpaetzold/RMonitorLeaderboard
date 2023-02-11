@@ -29,6 +29,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
@@ -37,7 +38,6 @@ import com.zacharyfox.rmonitor.entities.Race;
 import com.zacharyfox.rmonitor.entities.Race.FlagStatus;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardMenuBar;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardTable;
-import com.zacharyfox.rmonitor.leaderboard.LeaderBoardTableModel;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 
 import net.miginfocom.swing.MigLayout;
@@ -170,7 +170,7 @@ public class MainFrame extends JFrame {
 				break;
 
 			case CONNECTED:
-				client.getRace().addPropertyChangeListener(this::updateDisplay);
+				client.getRace().addPropertyChangeListener(e -> SwingUtilities.invokeLater(() -> updateDisplay(e)));
 
 				leaderBoardMenuBar.enableStartSignalMenu();
 				leaderBoardMenuBar.enableLapCounterMenu();
@@ -286,7 +286,7 @@ public class MainFrame extends JFrame {
 			break;
 
 		case Race.PROPERTY_COMPETITORS_VERSION:
-			((LeaderBoardTableModel) leaderBoardTable.getModel()).updateData();
+			leaderBoardTable.updateData();
 			break;
 
 		case Race.PROPERTY_FLAG_STATUS:
