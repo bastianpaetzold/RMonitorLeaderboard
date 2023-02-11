@@ -5,6 +5,7 @@ import java.beans.PropertyChangeSupport;
 import java.time.Duration;
 
 import com.zacharyfox.rmonitor.entities.Competitor;
+import com.zacharyfox.rmonitor.entities.Competitors;
 import com.zacharyfox.rmonitor.entities.Race;
 
 public class Estimator {
@@ -78,7 +79,7 @@ public class Estimator {
 	private void calculateEstimatedLapsByAvg() {
 		int oldEstimatedLapsAvg = estimatedLapsAvg;
 		Duration oldEstimatedTimeAvg = estimatedTimeAvg;
-		Competitor competitor = Competitor.getByPosition(1);
+		Competitor competitor = Competitors.getCompetitorByPosition(1);
 
 		if (competitor == null) {
 			estimatedLapsAvg = lapsToGo;
@@ -93,7 +94,7 @@ public class Estimator {
 		}
 
 		Duration time = competitor.getTotalTime();
-		Duration avgLapTime = competitor.getAvgLap();
+		Duration avgLapTime = competitor.calcAvgLap();
 
 		do {
 			time = time.plus(avgLapTime);
@@ -115,7 +116,7 @@ public class Estimator {
 	private void calculateEstimatedLapsByBest() {
 		int oldEstimatedLapsBest = estimatedLapsBest;
 		Duration oldEstimatedTimeBest = estimatedTimeBest;
-		Competitor competitor = Competitor.getByPosition(1);
+		Competitor competitor = Competitors.getCompetitorByPosition(1);
 		if (competitor == null) {
 			this.estimatedLapsBest = lapsToGo;
 			return;

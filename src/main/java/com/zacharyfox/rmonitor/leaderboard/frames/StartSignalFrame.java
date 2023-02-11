@@ -22,6 +22,7 @@ import javax.swing.border.EmptyBorder;
 
 import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.entities.Competitor;
+import com.zacharyfox.rmonitor.entities.Competitors;
 import com.zacharyfox.rmonitor.entities.Race;
 import com.zacharyfox.rmonitor.entities.Race.FlagState;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
@@ -125,7 +126,7 @@ public class StartSignalFrame extends JFrame {
 
 		if (evt.getPropertyName().equals("competitorsVersion")
 				&& RMonitorClient.getInstance().getRace().getCurrentFlagState() == Race.FlagState.PURPLE) {
-			tfFlag.setText(getCompetitorsString(Competitor.getInstances().values()));
+			tfFlag.setText(getCompetitorsString(Competitors.getCompetitors()));
 		}
 	}
 

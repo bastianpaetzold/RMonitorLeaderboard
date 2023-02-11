@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
 import com.zacharyfox.rmonitor.entities.Competitor;
+import com.zacharyfox.rmonitor.entities.Competitors;
 import com.zacharyfox.rmonitor.entities.RaceClass;
 
 @SuppressWarnings("serial")
@@ -62,7 +63,7 @@ public class LeaderBoardTableModel extends AbstractTableModel {
 	public void updateData() {
 		ArrayList<Object[]> rows = new ArrayList<>();
 
-		for (Competitor competitor : Competitor.getInstances().values()) {
+		for (Competitor competitor : Competitors.getCompetitors()) {
 			rows.add(getRow(competitor));
 		}
 
@@ -74,10 +75,10 @@ public class LeaderBoardTableModel extends AbstractTableModel {
 
 	private Object[] getRow(Competitor competitor) {
 		return new Object[] { (competitor.getPosition() == 0) ? 9999 : competitor.getPosition(),
-				competitor.getPositionInClass(), competitor.getRegNumber(),
+				competitor.calcPositionInClass(), competitor.getRegNumber(),
 				RaceClass.getClassName(competitor.getClassId()),
 				competitor.getFirstName() + " " + competitor.getLastName(), competitor.getLapsComplete(),
-				competitor.getTotalTime(), competitor.getLastLap(), competitor.getBestLap(), competitor.getAvgLap(),
+				competitor.getTotalTime(), competitor.getLastLap(), competitor.getBestLap(), competitor.calcAvgLap(),
 				"" };
 	}
 }

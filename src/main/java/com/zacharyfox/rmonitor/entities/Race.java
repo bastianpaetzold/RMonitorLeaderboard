@@ -110,7 +110,7 @@ public class Race {
 		string += "Race Duration: " + DurationUtil.format(scheduledTime) + "\n";
 
 		// Leader Info
-		Competitor leader = Competitor.getByPosition(1);
+		Competitor leader = Competitors.getCompetitorByPosition(1);
 
 		if (leader != null) {
 			string += "Leader: " + leader.getRegNumber() + "\n";
@@ -124,7 +124,7 @@ public class Race {
 	public void update(RMonitorMessage message) {
 		if (message != null) {
 			if (message instanceof RegistrationInfo info) {
-				Competitor.updateOrCreate(info);
+				Competitors.updateOrCreate(info);
 			}
 
 			if (message instanceof Heartbeat heartbeat) {
@@ -177,7 +177,7 @@ public class Race {
 			trackLength = (float) 0.0;
 			trackName = "";
 
-			Competitor.reset();
+			Competitors.reset();
 		}
 
 		setName(message.getRaceName());
@@ -196,7 +196,7 @@ public class Race {
 		setTimeToGo(Duration.ZERO);
 		setScheduledTime(Duration.ZERO);
 		setTimeOfDay(Duration.ZERO);
-		Competitor.reset();
+		Competitors.reset();
 		competitorsVersion = 0;
 		setCompetitorsVersion();
 		setLapsComplete(0);
@@ -337,7 +337,7 @@ public class Race {
 	public RaceTO getRaceTO() {
 		RaceTO raceTO = new RaceTO(DurationUtil.format(elapsedTime), currentFlagState.toString(), id, lapsToGo,
 				lapsComplete, name, DurationUtil.format(timeOfDay), trackName);
-		Competitor.setCompetitorTO(raceTO);
+		raceTO.setCompetitors(Competitors.getCompetitorsAsTO());
 
 		if (id != 0) {
 			allRaces.put(id, raceTO);

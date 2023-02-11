@@ -1,4 +1,4 @@
-package com.zacharyfox.rmonitor.message.test;
+package com.zacharyfox.rmonitor.message;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
