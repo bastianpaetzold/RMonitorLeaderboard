@@ -107,7 +107,10 @@ public class Competitor {
 		return qualiPosition;
 	}
 
-	public List<Lap> getLaps() {
+	/*
+	 * Only for testing
+	 */
+	List<Lap> getLaps() {
 		return laps;
 	}
 

@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.config.ConfigurationManager;
-import com.zacharyfox.rmonitor.entities.Race;
 import com.zacharyfox.rmonitor.entities.RaceTO;
+import com.zacharyfox.rmonitor.entities.Races;
 
 public class JsonServer {
 
@@ -189,22 +189,28 @@ public class JsonServer {
 		}
 
 		private RaceTO getRaceToReturn() {
-			RaceTO currentRaceTO = RMonitorClient.getInstance().getRace().getRaceTO();
-			// if the currentRaceTO has ID = 0 we try to get the lastRaceTO from the history
-			if (lastRaceTO != null && currentRaceTO.getRaceID() == 0) {
-				currentRaceTO = Race.getToByID(lastRaceTO.getRaceID());
+			RaceTO raceTO;
+
+			int raceId = RMonitorClient.getInstance().getRace().getId();
+			if (raceId > 0) {
+				raceTO = Races.getRaceTOById(raceId);
+				lastRaceTO = raceTO;
+			} else if (lastRaceTO != null) {
+				// if the current race has ID = 0 we try to get the lastRaceTO from the history
+				raceTO = Races.getRaceTOById(lastRaceTO.getRaceID());
 			} else {
-				lastRaceTO = currentRaceTO;
+				raceTO = RaceTO.from(RMonitorClient.getInstance().getRace());
 			}
-			return currentRaceTO;
+
+			return raceTO;
 		}
 
 		private RaceTO getRaceToReturn(int id) {
-			return Race.getToByID(id);
+			return Races.getRaceTOById(id);
 		}
 
 		private RaceTO[] getRacesToReturn() {
-			return Race.getAllRaceTOs();
+			return Races.getAllRaceTOs();
 		}
 	}
 }

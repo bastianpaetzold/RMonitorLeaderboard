@@ -33,6 +33,8 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 import com.zacharyfox.rmonitor.client.RMonitorClient;
+import com.zacharyfox.rmonitor.entities.Race;
+import com.zacharyfox.rmonitor.entities.Race.FlagStatus;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardMenuBar;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardTable;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardTableModel;
@@ -230,30 +232,30 @@ public class MainFrame extends JFrame {
 		}
 	}
 
-	private void setFlagColor(String status) {
+	private void setFlagColor(FlagStatus status) {
 		switch (status) {
-		case "Green":
+		case GREEN:
 			flagColor1.setBackground(COLOR_GREEN);
 			flagColor2.setBackground(COLOR_GREEN);
 			flagColor3.setBackground(COLOR_GREEN);
 			flagColor4.setBackground(COLOR_GREEN);
 			break;
 
-		case "Yellow":
+		case YELLOW:
 			flagColor1.setBackground(Color.YELLOW);
 			flagColor2.setBackground(Color.YELLOW);
 			flagColor3.setBackground(Color.YELLOW);
 			flagColor4.setBackground(Color.YELLOW);
 			break;
 
-		case "Red":
+		case RED:
 			flagColor1.setBackground(Color.RED);
 			flagColor2.setBackground(Color.RED);
 			flagColor3.setBackground(Color.RED);
 			flagColor4.setBackground(Color.RED);
 			break;
 
-		case "Finish":
+		case FINISH:
 			flagColor1.setBackground(Color.BLACK);
 			flagColor2.setBackground(Color.WHITE);
 			flagColor3.setBackground(Color.WHITE);
@@ -267,31 +269,31 @@ public class MainFrame extends JFrame {
 
 	private void updateDisplay(PropertyChangeEvent evt) {
 		switch (evt.getPropertyName()) {
-		case "raceName":
+		case Race.PROPERTY_RACE_NAME:
 			runName.setText((String) evt.getNewValue());
 			break;
 
-		case "elapsedTime":
+		case Race.PROPERTY_ELAPSED_TIME:
 			elapsedTime.setText(DurationUtil.format((Duration) evt.getNewValue()));
 			break;
 
-		case "timeToGo":
+		case Race.PROPERTY_TIME_TO_GO:
 			timeToGo.setText(DurationUtil.format((Duration) evt.getNewValue()));
 			break;
 
-		case "lapsToGo":
+		case Race.PROPERTY_LAPS_TO_GO:
 			timeToGo.setText(String.valueOf(((int) evt.getNewValue())));
 			break;
 
-		case "competitorsVersion":
+		case Race.PROPERTY_COMPETITORS_VERSION:
 			((LeaderBoardTableModel) leaderBoardTable.getModel()).updateData();
 			break;
 
-		case "flagStatus":
-			setFlagColor(evt.getNewValue().toString());
+		case Race.PROPERTY_FLAG_STATUS:
+			setFlagColor((FlagStatus) evt.getNewValue());
 			break;
 
-		case "trackName":
+		case Race.PROPERTY_TRACK_NAME:
 			trackName.setText(evt.getNewValue().toString());
 			break;
 

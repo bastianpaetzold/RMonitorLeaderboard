@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.zacharyfox.rmonitor.entities.RaceClass;
 import com.zacharyfox.rmonitor.message.ClassInfo;
 import com.zacharyfox.rmonitor.message.Factory;
 import com.zacharyfox.rmonitor.message.RMonitorMessage;

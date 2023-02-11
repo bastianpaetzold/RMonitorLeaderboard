@@ -27,7 +27,7 @@ import javax.swing.event.DocumentListener;
 import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.config.ConfigurationManager;
 import com.zacharyfox.rmonitor.entities.Race;
-import com.zacharyfox.rmonitor.entities.Race.FlagState;
+import com.zacharyfox.rmonitor.entities.Race.FlagStatus;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 
 @SuppressWarnings("serial")
@@ -43,7 +43,7 @@ public class LapCounterFrame extends JFrame {
 	private JTextField tfLaps;
 
 	private JButton cancelButton;
-	private int lastLapCount;
+	private int lastLapsToGo;
 	private int lastLapsComplete;
 	private Duration lastLapCountChangeTime;
 	private int lapSwitchDelay;
@@ -166,7 +166,7 @@ public class LapCounterFrame extends JFrame {
 		});
 
 		lastLapCountChangeTime = Duration.ZERO;
-		lastLapCount = 0;
+		lastLapsToGo = 0;
 
 		RMonitorClient.getInstance().getRace().addPropertyChangeListener(propertyChangeListener);
 	}
@@ -182,86 +182,75 @@ public class LapCounterFrame extends JFrame {
 	}
 
 	private void updateDisplay(PropertyChangeEvent evt) {
+		String propertyName = evt.getPropertyName();
 		Duration elapsedTime = RMonitorClient.getInstance().getRace().getElapsedTime();
-		if (evt.getPropertyName().equals("lapsToGo")) {
-			lastLapCount = ((int) evt.getNewValue());
-			lastLapCountChangeTime = elapsedTime;
-		}
 
-		if (evt.getPropertyName().equals("lapsComplete")) {
+		if (propertyName.equals(Race.PROPERTY_LAPS_COMPLETE)) {
 			lastLapsComplete = ((int) evt.getNewValue());
 			lastLapCountChangeTime = elapsedTime;
+			updateDisplayedLapCount();
 		}
 
-		if (evt.getPropertyName().equals("lapsToGo") || evt.getPropertyName().equals("elapsedTime")
-				|| evt.getPropertyName().equals("lapsComplete")) {
-			tfElapsedTime.setText(DurationUtil.format(elapsedTime));
-			long secondsSinceLastLapCountUpdate = elapsedTime.minus(lastLapCountChangeTime).getSeconds();
-
-			Race.FlagState currentFlagState = RMonitorClient.getInstance().getRace().getCurrentFlagState();
-
-			// Display lastLapsComplete or lastLapCount dependent on checkbox
-			if (chckbxCountUpwards.isSelected()) {
-				if (lastLapsComplete >= 0) {
-					tfLaps.setText(Integer.toString(lastLapsComplete));
-				} else {
-					tfLaps.setText("-");
-				}
-			} else // For Purple the LapToGo are shown instantly
-			if (currentFlagState == Race.FlagState.PURPLE || currentFlagState == Race.FlagState.NONE) {
-				if (lastLapCount > 0) {
-					tfLaps.setText(Integer.toString(lastLapCount));
-				} else {
-					tfLaps.setText("-");
-				}
-				// for other flags we show the Laps to GO only after the lapSwitchDelay
-			} else if (secondsSinceLastLapCountUpdate > lapSwitchDelay) {
-
-				if (lastLapCount > 0) {
-					tfLaps.setText(Integer.toString(lastLapCount - 1));
-				} else {
-					tfLaps.setText("0");
-				}
-			}
+		if (propertyName.equals(Race.PROPERTY_LAPS_TO_GO)) {
+			lastLapsToGo = ((int) evt.getNewValue());
+			lastLapCountChangeTime = elapsedTime;
+			updateDisplayedLapCount();
 		}
 
-		if (evt.getPropertyName().equals("currentFlagState")) {
-			setFlagColor((FlagState) evt.getNewValue());
+		if (propertyName.equals(Race.PROPERTY_ELAPSED_TIME)) {
 			tfElapsedTime.setText(DurationUtil.format(elapsedTime));
+			updateDisplayedLapCount();
+		}
 
-			// After switch to green we have to trigger the decrease the lap counter
-			if ((FlagState) evt.getNewValue() == Race.FlagState.GREEN) {
+		if (propertyName.equals(Race.PROPERTY_FLAG_STATUS)) {
+			FlagStatus flagStatus = (FlagStatus) evt.getNewValue();
+			setFlagColor(flagStatus);
+
+			// After switch to green we have to trigger the decrease of the lap counter
+			if (flagStatus == Race.FlagStatus.GREEN) {
 				lastLapCountChangeTime = elapsedTime;
 			}
 		}
 	}
 
-	private void setFlagColor(Race.FlagState flagState) {
-		switch (flagState) {
-		case RED:
-			tfFlag.setBackground(Color.red);
-			break;
+	private void updateDisplayedLapCount() {
+		FlagStatus flagStatus = RMonitorClient.getInstance().getRace().getFlagStatus();
+		Duration elapsedTime = RMonitorClient.getInstance().getRace().getElapsedTime();
+		long secondsSinceLastLapCountUpdate = elapsedTime.minus(lastLapCountChangeTime).getSeconds();
 
-		case YELLOW:
-			tfFlag.setBackground(Color.YELLOW);
-			break;
-
-		case GREEN:
-			tfFlag.setBackground(Color.GREEN);
-			break;
-
-		case FINISH:
-			tfFlag.setBackground(Color.LIGHT_GRAY);
-			break;
-
-		case PURPLE:
-			tfFlag.setBackground(new Color(98, 0, 255));
-			break;
-
-		default:
-			tfFlag.setBackground(Color.BLACK);
+		if (chckbxCountUpwards.isSelected()) {
+			if (lastLapsComplete >= 0) {
+				tfLaps.setText(Integer.toString(lastLapsComplete));
+			} else {
+				tfLaps.setText("-");
+			}
+			// For Purple the LapToGo are shown instantly
+		} else if (flagStatus == Race.FlagStatus.PURPLE || flagStatus == Race.FlagStatus.NONE) {
+			if (lastLapsToGo > 0) {
+				tfLaps.setText(Integer.toString(lastLapsToGo));
+			} else {
+				tfLaps.setText("-");
+			}
+			// for other flags we show the Laps to Go only after the lapSwitchDelay
+		} else if (secondsSinceLastLapCountUpdate > lapSwitchDelay) {
+			if (lastLapsToGo > 0) {
+				tfLaps.setText(Integer.toString(lastLapsToGo - 1));
+			} else {
+				tfLaps.setText("0");
+			}
 		}
+	}
 
+	private void setFlagColor(FlagStatus flagStatus) {
+		Color color = switch (flagStatus) {
+		case GREEN -> Color.GREEN;
+		case YELLOW -> Color.YELLOW;
+		case RED -> Color.RED;
+		case FINISH -> Color.LIGHT_GRAY;
+		case PURPLE -> new Color(98, 0, 255);
+		default -> Color.BLACK;
+		};
+		tfFlag.setBackground(color);
 	}
 
 	public static LapCounterFrame getInstance() {

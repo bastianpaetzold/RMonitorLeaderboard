@@ -10,7 +10,8 @@ import java.awt.GraphicsEnvironment;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.time.Duration;
-import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -24,7 +25,7 @@ import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.entities.Competitor;
 import com.zacharyfox.rmonitor.entities.Competitors;
 import com.zacharyfox.rmonitor.entities.Race;
-import com.zacharyfox.rmonitor.entities.Race.FlagState;
+import com.zacharyfox.rmonitor.entities.Race.FlagStatus;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 
 @SuppressWarnings("serial")
@@ -62,7 +63,7 @@ public class StartSignalFrame extends JFrame {
 		tfRaceName.setForeground(Color.WHITE);
 		tfRaceName.setBackground(Color.BLACK);
 		tfRaceName.setFont(new Font("Tahoma", Font.PLAIN, 80));
-		tfRaceName.setText(race.getRaceName());
+		tfRaceName.setText(race.getName());
 		tfRaceName.setColumns(50);
 		contentPanel.add(tfRaceName, BorderLayout.NORTH);
 
@@ -77,7 +78,7 @@ public class StartSignalFrame extends JFrame {
 		tfFlag.setColumns(20);
 		contentPanel.add(tfFlag, BorderLayout.CENTER);
 
-		setFlagColor(race.getCurrentFlagState());
+		setFlagColor(race.getFlagStatus());
 
 		tfRaceTime = new JTextField();
 		tfRaceTime.setText("00:00:00");
@@ -111,67 +112,45 @@ public class StartSignalFrame extends JFrame {
 	}
 
 	private void updateDisplay(PropertyChangeEvent evt) {
-		if (evt.getPropertyName().equals("raceName")) {
+		switch (evt.getPropertyName()) {
+		case Race.PROPERTY_RACE_NAME:
 			tfRaceName.setText((String) evt.getNewValue());
-		}
+			break;
 
-		if (evt.getPropertyName().equals("elapsedTime")) {
+		case Race.PROPERTY_ELAPSED_TIME:
 			tfRaceTime.setText(DurationUtil.format((Duration) evt.getNewValue()));
-		}
+			break;
 
-		if (evt.getPropertyName().equals("currentFlagState")) {
-			setFlagColor((FlagState) evt.getNewValue());
+		case Race.PROPERTY_FLAG_STATUS:
+			setFlagColor((FlagStatus) evt.getNewValue());
 			tfFlag.setText("");
-		}
-
-		if (evt.getPropertyName().equals("competitorsVersion")
-				&& RMonitorClient.getInstance().getRace().getCurrentFlagState() == Race.FlagState.PURPLE) {
-			tfFlag.setText(getCompetitorsString(Competitors.getCompetitors()));
-		}
-	}
-
-	private String getCompetitorsString(Collection<Competitor> competitors) {
-		String result;
-
-		StringBuilder stringBuilder = new StringBuilder();
-		for (Competitor competitor : competitors) {
-			stringBuilder.append(competitor.getRegNumber());
-			stringBuilder.append(", ");
-		}
-
-		result = stringBuilder.toString();
-		if (!"".equals(result)) {
-			result = result.substring(0, result.length() - 2);
-		}
-
-		return result;
-	}
-
-	private void setFlagColor(Race.FlagState flagState) {
-		switch (flagState) {
-		case RED:
-			tfFlag.setBackground(Color.red);
 			break;
 
-		case YELLOW:
-			tfFlag.setBackground(Color.YELLOW);
-			break;
-
-		case GREEN:
-			tfFlag.setBackground(Color.GREEN);
-			break;
-
-		case FINISH:
-			tfFlag.setBackground(Color.LIGHT_GRAY);
-			break;
-
-		case PURPLE:
-			tfFlag.setBackground(new Color(98, 0, 255));
+		case Race.PROPERTY_COMPETITORS_VERSION:
+			if (RMonitorClient.getInstance().getRace().getFlagStatus() == Race.FlagStatus.PURPLE) {
+				tfFlag.setText(createRegNumberString(Competitors.getCompetitors()));
+			}
 			break;
 
 		default:
-			tfFlag.setBackground(Color.BLACK);
+			break;
 		}
+	}
+
+	private String createRegNumberString(List<Competitor> competitors) {
+		return competitors.stream().map(Competitor::getRegNumber).collect(Collectors.joining(", "));
+	}
+
+	private void setFlagColor(FlagStatus flagStatus) {
+		Color color = switch (flagStatus) {
+		case GREEN -> Color.GREEN;
+		case YELLOW -> Color.YELLOW;
+		case RED -> Color.RED;
+		case FINISH -> Color.LIGHT_GRAY;
+		case PURPLE -> new Color(98, 0, 255);
+		default -> Color.BLACK;
+		};
+		tfFlag.setBackground(color);
 	}
 
 	public static StartSignalFrame getInstance() {

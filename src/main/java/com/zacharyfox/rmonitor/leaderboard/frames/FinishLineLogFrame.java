@@ -32,6 +32,7 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 import com.zacharyfox.rmonitor.client.RMonitorClient;
+import com.zacharyfox.rmonitor.entities.Race;
 import com.zacharyfox.rmonitor.leaderboard.FinishLineLogTable;
 import com.zacharyfox.rmonitor.leaderboard.FinishlineLogTableModel;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
@@ -171,32 +172,37 @@ public class FinishLineLogFrame extends JFrame {
 	}
 
 	private void updateDisplay(PropertyChangeEvent evt) {
-		if (evt.getPropertyName().equals("raceName")) {
+		switch (evt.getPropertyName()) {
+		case Race.PROPERTY_RACE_NAME:
 			runName.setText((String) evt.getNewValue());
-		}
+			break;
 
-		if (evt.getPropertyName().equals("elapsedTime")) {
+		case Race.PROPERTY_ELAPSED_TIME:
 			elapsedTime.setText(DurationUtil.format((Duration) evt.getNewValue()));
-		}
+			break;
 
-		if (evt.getPropertyName().equals("timeToGo")) {
+		case Race.PROPERTY_TIME_TO_GO:
 			timeToGo.setText(DurationUtil.format((Duration) evt.getNewValue()));
-		}
+			break;
 
-		if (evt.getPropertyName().equals("lapsToGo")) {
+		case Race.PROPERTY_LAPS_TO_GO:
 			timeToGo.setText(String.valueOf(((int) evt.getNewValue())));
-		}
+			break;
 
-		if (evt.getPropertyName().equals("competitorsVersion")) {
+		case Race.PROPERTY_COMPETITORS_VERSION:
 			((FinishlineLogTableModel) finishLineLogTable.getModel()).updateData();
-		}
+			break;
 
-		if (evt.getPropertyName().equals("trackName")) {
+		case Race.PROPERTY_TRACK_NAME:
 			trackName.setText(evt.getNewValue().toString());
-		}
+			break;
 
-		if (evt.getPropertyName().equals("trackLength")) {
-			// TODO: Handle Track Length
+		case Race.PROPERTY_TRACK_LENGTH:
+			// TODO handle track length
+			break;
+
+		default:
+			break;
 		}
 	}
 }

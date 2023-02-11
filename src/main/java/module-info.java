@@ -7,7 +7,7 @@ module com.zacharyfox.rmonitor.leaderboard {
 	exports com.zacharyfox.rmonitor.entities;
 
 	requires com.google.gson;
-	requires java.desktop;
+	requires transitive java.desktop;
 	requires java.prefs;
 	requires org.eclipse.jetty.server;
 	requires com.miglayout.swing;
