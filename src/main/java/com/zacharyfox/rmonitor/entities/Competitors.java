@@ -14,7 +14,6 @@ import com.zacharyfox.rmonitor.message.PassingInfo;
 import com.zacharyfox.rmonitor.message.QualInfo;
 import com.zacharyfox.rmonitor.message.RaceInfo;
 import com.zacharyfox.rmonitor.message.RegistrationInfo;
-import com.zacharyfox.rmonitor.utils.DurationUtil;
 
 public class Competitors {
 
@@ -59,13 +58,7 @@ public class Competitors {
 
 	public static CompetitorTO[] getCompetitorsAsTO() {
 		synchronized (competitorMap) {
-			return competitorMap.values().stream()
-					.map(competitor -> new CompetitorTO(competitor.getNumber(), competitor.getPosition(),
-							competitor.getLapsComplete(), competitor.getFirstName(), competitor.getLastName(),
-							DurationUtil.format(competitor.getTotalTime()),
-							DurationUtil.format(competitor.getBestLap()), DurationUtil.format(competitor.getLastLap()),
-							competitor.getQualiPosition()))
-					.toArray(CompetitorTO[]::new);
+			return competitorMap.values().stream().map(CompetitorTO::from).toArray(CompetitorTO[]::new);
 		}
 	}
 

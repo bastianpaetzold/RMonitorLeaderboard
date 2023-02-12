@@ -1,5 +1,7 @@
 package com.zacharyfox.rmonitor.entities;
 
+import com.zacharyfox.rmonitor.utils.DurationUtil;
+
 public class CompetitorTO {
 
 	private String number;
@@ -12,88 +14,57 @@ public class CompetitorTO {
 	private String lastLap;
 	private int qualiPosition;
 
-	public CompetitorTO(String number, int position, int lapsComplete, String firstName, String lastName,
-			String totalTime, String bestLap, String lastLap, int qualiPosition) {
-		this.number = number;
-		this.position = position;
-		this.lapsComplete = lapsComplete;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.totalTime = totalTime;
-		this.bestLap = bestLap;
-		this.lastLap = lastLap;
-		this.qualiPosition = qualiPosition;
+	private CompetitorTO() {
 	}
 
 	public String getNumber() {
 		return number;
 	}
 
-	public void setNumber(String number) {
-		this.number = number;
-	}
-
 	public int getPosition() {
 		return position;
-	}
-
-	public void setPosition(int position) {
-		this.position = position;
 	}
 
 	public int getLapsComplete() {
 		return lapsComplete;
 	}
 
-	public void setLapsComplete(int lapsComplete) {
-		this.lapsComplete = lapsComplete;
-	}
-
 	public String getFirstName() {
 		return firstName;
-	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
 	}
 
 	public String getLastName() {
 		return lastName;
 	}
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
 	public String getTotalTime() {
 		return totalTime;
-	}
-
-	public void setTotalTime(String totalTime) {
-		this.totalTime = totalTime;
 	}
 
 	public String getBestLap() {
 		return bestLap;
 	}
 
-	public void setBestLap(String bestLap) {
-		this.bestLap = bestLap;
-	}
-
 	public String getLastLap() {
 		return lastLap;
-	}
-
-	public void setLastLap(String lastLap) {
-		this.lastLap = lastLap;
 	}
 
 	public int getQualiPosition() {
 		return qualiPosition;
 	}
 
-	public void setQualiPosition(int qualiPosition) {
-		this.qualiPosition = qualiPosition;
+	public static CompetitorTO from(Competitor competitor) {
+		CompetitorTO competitorTO = new CompetitorTO();
+		competitorTO.number = competitor.getNumber();
+		competitorTO.position = competitor.getPosition();
+		competitorTO.lapsComplete = competitor.getLapsComplete();
+		competitorTO.firstName = competitor.getFirstName();
+		competitorTO.lastName = competitor.getLastName();
+		competitorTO.totalTime = DurationUtil.format(competitor.getTotalTime());
+		competitorTO.bestLap = DurationUtil.format(competitor.getBestLap());
+		competitorTO.lastLap = DurationUtil.format(competitor.getLastLap());
+		competitorTO.qualiPosition = competitor.getQualiPosition();
+
+		return competitorTO;
 	}
 }

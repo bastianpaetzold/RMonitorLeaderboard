@@ -9,15 +9,15 @@ import javax.swing.table.TableRowSorter;
 public class LeaderBoardTable extends JTable {
 
 	private LeaderBoardTableModel leaderBoardTableModel = new LeaderBoardTableModel();
-	private TableRowSorter<LeaderBoardTableModel> sorter = new TableRowSorter<>(leaderBoardTableModel);
 
 	public LeaderBoardTable() {
 		setModel(leaderBoardTableModel);
-		setRowSorter(sorter);
 		setDefaultRenderer(Duration.class, new LeaderBoardTableCellRenderer());
 
 		initColumns();
 
+		TableRowSorter<LeaderBoardTableModel> sorter = new TableRowSorter<>(leaderBoardTableModel);
+		setRowSorter(sorter);
 		sorter.setSortsOnUpdates(true);
 		sorter.toggleSortOrder(0);
 	}

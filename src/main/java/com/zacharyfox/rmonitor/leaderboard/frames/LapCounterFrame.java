@@ -5,8 +5,6 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.beans.PropertyChangeEvent;
@@ -34,21 +32,19 @@ import com.zacharyfox.rmonitor.utils.DurationUtil;
 @SuppressWarnings("serial")
 public class LapCounterFrame extends JFrame {
 
+	private static final String FONT_NAME = "Tahoma";
+
 	private static final String PROP_LAP_SWITCH_DELAY = "lapCounter.lapSwitchDelay";
-
-	private static LapCounterFrame instance;
-
-	static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
 
 	private JPanel contentPanel;
 	private JTextField tfLaps;
-
 	private JButton cancelButton;
 	private int lastLapsToGo;
 	private int lastLapsComplete;
 	private Duration lastLapCountChangeTime;
 	private int lapSwitchDelay;
-	private PropertyChangeListener propertyChangeListener = e -> SwingUtilities.invokeLater(() -> updateDisplay(e));
+	private transient PropertyChangeListener propertyChangeListener = e -> SwingUtilities
+			.invokeLater(() -> updateDisplay(e));
 	private JTextField tfElapsedTime;
 	private JTextField tfFlag;
 	private JPanel infoPanel;
@@ -57,9 +53,8 @@ public class LapCounterFrame extends JFrame {
 	private JTextField tfDelay;
 	private JCheckBox chckbxCountUpwards;
 
-	/**
-	 * Create the dialog.
-	 */
+	private static LapCounterFrame instance;
+
 	public LapCounterFrame() {
 		ConfigurationManager configManager = ConfigurationManager.getInstance();
 
@@ -77,7 +72,7 @@ public class LapCounterFrame extends JFrame {
 		contentPanel.setLayout(new BorderLayout(0, 0));
 
 		tfLaps = new JTextField();
-		Font theFont = new Font("Tahoma", Font.PLAIN, (int) (getHeight() * .85));// 400
+		Font theFont = new Font(FONT_NAME, Font.PLAIN, (int) (getHeight() * .85));// 400
 		tfLaps.setFont(theFont);
 		tfLaps.setEditable(false);
 		tfLaps.setHorizontalAlignment(SwingConstants.CENTER);
@@ -95,7 +90,7 @@ public class LapCounterFrame extends JFrame {
 		buttonPane.setLayout(new BorderLayout(0, 0));
 
 		cancelButton = new JButton("X");
-		cancelButton.setFont(new Font("Tahoma", Font.BOLD, 11));
+		cancelButton.setFont(new Font(FONT_NAME, Font.BOLD, 11));
 		cancelButton.setMnemonic('x');
 		cancelButton.setBackground(Color.BLACK);
 		cancelButton.setForeground(Color.RED);
@@ -177,7 +172,7 @@ public class LapCounterFrame extends JFrame {
 		@Override
 		public void componentResized(ComponentEvent e) {
 			// Recalculate the variable you mentioned
-			Font theFont = new Font("Tahoma", Font.PLAIN, (int) (e.getComponent().getHeight() * .85));// 400
+			Font theFont = new Font(FONT_NAME, Font.PLAIN, (int) (e.getComponent().getHeight() * .85));// 400
 			tfLaps.setFont(theFont);
 		}
 	}

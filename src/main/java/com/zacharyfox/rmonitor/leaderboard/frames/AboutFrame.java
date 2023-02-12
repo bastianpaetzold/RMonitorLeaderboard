@@ -23,7 +23,13 @@ public class AboutFrame extends JFrame {
 		aboutText.setBackground(null);
 		aboutText.setContentType("text/html");
 		aboutText.setText(
-				"<strong>KHRMonitorLeaderboard</strong>\n\n<p>copyright &copy; 2017 Kai Höfler</p>\n\n<p>Based on RMonitorLeaderboard</p>\n\n<p>copyright &copy; 2013 Zachary Fox, 2017 Kai Höfler</p>\n\n<p>Project Located at: <a href=\"https://github.com/zacharyfox/RMonitorLeaderboard\">https://github.com/zacharyfox/RMonitorLeaderboard</a></p>");
+				"""
+						<strong>RMonitorLeaderboard</strong>
+
+						<p>copyright &copy; 2013 Zachary Fox, 2017 Kai Höfler, 2023 Bastian Pätzold</p>
+
+						<p>Project: <a href="https://github.com/bastianpaetzold/RMonitorLeaderboard">https://github.com/bastianpaetzold/RMonitorLeaderboard</a></p>
+						""");
 		getContentPane().add(aboutText, "cell 0 0 2 1,grow");
 
 		okButton = new JButton("OK");

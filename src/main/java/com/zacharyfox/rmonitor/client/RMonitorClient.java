@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.zacharyfox.rmonitor.config.ConfigurationManager;
 import com.zacharyfox.rmonitor.entities.Race;
-import com.zacharyfox.rmonitor.message.Factory;
+import com.zacharyfox.rmonitor.message.MessageFactory;
 import com.zacharyfox.rmonitor.utils.Estimator;
 import com.zacharyfox.rmonitor.utils.Recorder;
 
@@ -154,7 +154,7 @@ public class RMonitorClient {
 	}
 
 	private void processMessage(String message) {
-		currentRace.update(Factory.getMessage(message));
+		currentRace.update(MessageFactory.createMessage(message));
 		recorder.push(message);
 		estimator.update(currentRace);
 	}

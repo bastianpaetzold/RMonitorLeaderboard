@@ -14,7 +14,7 @@ public class FinishlineLogTableModel extends AbstractTableModel {
 
 	private String[] columnNames = { "No.", "Laps", "Name", "Pos" };
 
-	private List<Object[]> data;
+	private transient List<Object[]> data;
 
 	public FinishlineLogTableModel() {
 		data = new ArrayList<>();
@@ -46,7 +46,7 @@ public class FinishlineLogTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int row, int col) {
-		if (data.size() > row) {
+		if (row < data.size()) {
 			return data.get(row)[col];
 		}
 		return null;

@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import com.zacharyfox.rmonitor.message.LapInfo;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 
 class LapInfoTest {

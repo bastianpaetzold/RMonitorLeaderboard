@@ -5,8 +5,6 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.time.Duration;
@@ -32,17 +30,17 @@ import com.zacharyfox.rmonitor.utils.DurationUtil;
 @SuppressWarnings("serial")
 public class StartSignalFrame extends JFrame {
 
-	private static StartSignalFrame instance;
-
-	static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()[0];
+	private static final String FONT_NAME = "Tahoma";
 
 	private JPanel contentPanel;
 	private JTextField tfRaceName;
 	private JTextArea tfFlag;
 	private JTextField tfRaceTime;
-
 	private JButton cancelButton;
-	private PropertyChangeListener propertyChangeListener = e -> SwingUtilities.invokeLater(() -> updateDisplay(e));
+	private transient PropertyChangeListener propertyChangeListener = e -> SwingUtilities
+			.invokeLater(() -> updateDisplay(e));
+
+	private static StartSignalFrame instance;
 
 	/**
 	 * Create the dialog.
@@ -63,7 +61,7 @@ public class StartSignalFrame extends JFrame {
 		tfRaceName.setHorizontalAlignment(SwingConstants.CENTER);
 		tfRaceName.setForeground(Color.WHITE);
 		tfRaceName.setBackground(Color.BLACK);
-		tfRaceName.setFont(new Font("Tahoma", Font.PLAIN, 80));
+		tfRaceName.setFont(new Font(FONT_NAME, Font.PLAIN, 80));
 		tfRaceName.setText(race.getName());
 		tfRaceName.setColumns(50);
 		contentPanel.add(tfRaceName, BorderLayout.NORTH);
@@ -73,7 +71,7 @@ public class StartSignalFrame extends JFrame {
 		tfFlag.setWrapStyleWord(true);
 		tfFlag.setLineWrap(true);
 		tfFlag.setForeground(Color.WHITE);
-		tfFlag.setFont(new Font("Tahoma", Font.PLAIN, 80));
+		tfFlag.setFont(new Font(FONT_NAME, Font.PLAIN, 80));
 		tfFlag.setRows(5);
 		tfFlag.setBackground(Color.BLACK);
 		tfFlag.setColumns(20);
@@ -86,7 +84,7 @@ public class StartSignalFrame extends JFrame {
 		tfRaceTime.setHorizontalAlignment(SwingConstants.CENTER);
 		tfRaceTime.setBackground(Color.BLACK);
 		tfRaceTime.setForeground(Color.WHITE);
-		tfRaceTime.setFont(new Font("Tahoma", Font.PLAIN, 100));
+		tfRaceTime.setFont(new Font(FONT_NAME, Font.PLAIN, 100));
 		tfRaceTime.setColumns(10);
 		contentPanel.add(tfRaceTime, BorderLayout.SOUTH);
 
@@ -96,7 +94,7 @@ public class StartSignalFrame extends JFrame {
 		getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
 		cancelButton = new JButton("X");
-		cancelButton.setFont(new Font("Tahoma", Font.BOLD, 11));
+		cancelButton.setFont(new Font(FONT_NAME, Font.BOLD, 11));
 		cancelButton.setMnemonic('x');
 		cancelButton.setBackground(Color.BLACK);
 		cancelButton.setForeground(Color.RED);

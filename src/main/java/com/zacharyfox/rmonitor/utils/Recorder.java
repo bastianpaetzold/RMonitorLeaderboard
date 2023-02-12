@@ -12,9 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.zacharyfox.rmonitor.config.ConfigurationManager;
 
 public class Recorder {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(Recorder.class);
 
 	public static final String DEFAULT_FILE_PATH = "";
 	public static final String DEFAULT_FILE_ENCODING = Charset.defaultCharset().name();
@@ -57,10 +62,10 @@ public class Recorder {
 		try {
 			encoding = Charset.forName(encodingString);
 		} catch (IllegalCharsetNameException e) {
-			System.err.println("Illegal charset defined as client stream encoding: " + encodingString);
+			LOGGER.error("Illegal charset defined as client stream encoding: {}", encodingString);
 			encoding = Charset.defaultCharset();
 		} catch (UnsupportedCharsetException e) {
-			System.err.println("Unsupported charset defined as client stream encoding: " + encodingString);
+			LOGGER.error("Unsupported charset defined as client stream encoding: {}", encodingString);
 			encoding = Charset.defaultCharset();
 		}
 	}

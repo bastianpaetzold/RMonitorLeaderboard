@@ -1,6 +1,7 @@
 package com.zacharyfox.rmonitor.leaderboard;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -14,9 +15,10 @@ public class LeaderBoardTableModel extends AbstractTableModel {
 	private String[] columnNames = { "Pos", "PIC", "#", "Class", "Name", "Laps", "Total Time", "Last Time", "Best Time",
 			"Avg. Time" };
 
-	private ArrayList<Object[]> data = new ArrayList<>();
+	private transient List<Object[]> data;
 
 	public LeaderBoardTableModel() {
+		data = new ArrayList<>();
 		data.add(new Object[] { "", "", "", "", "", "", "", "", "", "" });
 	}
 
@@ -45,20 +47,15 @@ public class LeaderBoardTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int row, int col) {
-		if (data.size() > row) {
+		if (row < data.size()) {
 			return data.get(row)[col];
 		}
 		return null;
 	}
 
 	void updateData() {
-		ArrayList<Object[]> rows = new ArrayList<>();
+		data = Competitors.getCompetitors().stream().map(this::getRow).toList();
 
-		for (Competitor competitor : Competitors.getCompetitors()) {
-			rows.add(getRow(competitor));
-		}
-
-		data = rows;
 		if (!data.isEmpty()) {
 			fireTableDataChanged();
 		}
