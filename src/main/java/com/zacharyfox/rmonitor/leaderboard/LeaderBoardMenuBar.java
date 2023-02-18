@@ -130,28 +130,4 @@ public class LeaderBoardMenuBar extends JMenuBar {
 
 		setVisible(true);
 	}
-
-	public void disableStartSignalMenu() {
-		startSignalMenuItem.setEnabled(false);
-	}
-
-	public void enableStartSignalMenu() {
-		startSignalMenuItem.setEnabled(true);
-	}
-
-	public void disableLapCounterMenu() {
-		lapCounterMenuItem.setEnabled(false);
-	}
-
-	public void enableLapCounterMenu() {
-		lapCounterMenuItem.setEnabled(true);
-	}
-
-	public void disableFinishLineLogMenu() {
-		finishLineLogMenuItem.setEnabled(false);
-	}
-
-	public void enableFinishLineLogMenu() {
-		finishLineLogMenuItem.setEnabled(true);
-	}
 }

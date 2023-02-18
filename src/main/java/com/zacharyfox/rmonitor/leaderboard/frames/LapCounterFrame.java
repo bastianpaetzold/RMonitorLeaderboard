@@ -226,7 +226,6 @@ public class LapCounterFrame extends JFrame {
 				tfLaps.setText("-");
 			}
 		} else {
-			System.out.println(lapSwitchDelay);
 			lapUpdateDelayTimer = new Timer(lapSwitchDelay * 1000, e -> tfLaps.setText(Integer.toString(newLaps)));
 			lapUpdateDelayTimer.setRepeats(false);
 			lapUpdateDelayTimer.start();
@@ -251,7 +250,7 @@ public class LapCounterFrame extends JFrame {
 	}
 
 	private void updateFlagColor(FlagStatus flagStatus) {
-		Color color = switch (raceManager.getCurrentRace().getFlagStatus()) {
+		Color color = switch (flagStatus) {
 		case GREEN -> Color.GREEN;
 		case YELLOW -> Color.YELLOW;
 		case RED -> Color.RED;

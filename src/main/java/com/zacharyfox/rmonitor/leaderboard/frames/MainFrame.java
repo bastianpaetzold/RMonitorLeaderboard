@@ -35,8 +35,8 @@ import javax.swing.WindowConstants;
 
 import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.entities.Race;
-import com.zacharyfox.rmonitor.entities.RaceManager;
 import com.zacharyfox.rmonitor.entities.Race.FlagStatus;
+import com.zacharyfox.rmonitor.entities.RaceManager;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardMenuBar;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardTable;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
@@ -160,8 +160,6 @@ public class MainFrame extends JFrame {
 		resultsScrollPane.setViewportView(leaderBoardTable);
 
 		leaderBoardMenuBar = new LeaderBoardMenuBar(this);
-		leaderBoardMenuBar.disableStartSignalMenu();
-		leaderBoardMenuBar.disableLapCounterMenu();
 		setJMenuBar(leaderBoardMenuBar);
 
 		RMonitorClient client = RMonitorClient.getInstance();
@@ -173,16 +171,9 @@ public class MainFrame extends JFrame {
 			case CONNECTED:
 				RaceManager.getInstance()
 						.addPropertyChangeListener(e -> SwingUtilities.invokeLater(() -> updateDisplay(e)));
-
-				leaderBoardMenuBar.enableStartSignalMenu();
-				leaderBoardMenuBar.enableLapCounterMenu();
-				leaderBoardMenuBar.enableFinishLineLogMenu();
 				break;
 
 			case STOPPED:
-				leaderBoardMenuBar.disableStartSignalMenu();
-				leaderBoardMenuBar.disableLapCounterMenu();
-				leaderBoardMenuBar.disableFinishLineLogMenu();
 				break;
 
 			default:
