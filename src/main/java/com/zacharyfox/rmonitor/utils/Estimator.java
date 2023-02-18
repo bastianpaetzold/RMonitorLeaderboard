@@ -10,16 +10,18 @@ import com.zacharyfox.rmonitor.entities.RaceManager;
 
 public class Estimator {
 
+	public static final String PROPERTY_ESTIMATED_LAPS_BY_AVG = "estimatedLapsByAvg";
+	public static final String PROPERTY_ESTIMATED_LAPS_BY_BEST = "estimatedLapsByBest";
+	public static final String PROPERTY_ESTIMATED_TIME_BY_BEST = "estimatedTimeByBest";
+	public static final String PROPERTY_ESTIMATED_TIME_BY_AVG = "estimatedTimeBAvg";
+
 	private static final RaceManager raceManager = RaceManager.getInstance();
 
 	private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
-	private int estimatedLapsAvg = 0;
-	private int estimatedLapsBest = 0;
-	private Duration estimatedTimeAvg = Duration.ZERO;
-	private Duration estimatedTimeBest = Duration.ZERO;
-	private int lapsComplete = 0;
-	private int lapsToGo = 0;
-	private int scheduledLaps = 0;
+	private int estimatedLapsByAvg = 0;
+	private int estimatedLapsByBest = 0;
+	private Duration estimatedTimeByAvg = Duration.ZERO;
+	private Duration estimatedTimeByBest = Duration.ZERO;
 
 	private Duration scheduledTime = Duration.ZERO;
 
@@ -40,143 +42,120 @@ public class Estimator {
 		changeSupport.addPropertyChangeListener(l);
 	}
 
-	public int getEstimatedLapsAvg() {
-		return estimatedLapsAvg;
+	public int getEstimatedLapsByAvg() {
+		return estimatedLapsByAvg;
 	}
 
-	public int getEstimatedLapsBest() {
-		return estimatedLapsBest;
+	public int getEstimatedLapsByBest() {
+		return estimatedLapsByBest;
 	}
 
-	public Duration getEstimatedTimeAvg() {
-		return estimatedTimeAvg;
+	public Duration getEstimatedTimeByAvg() {
+		return estimatedTimeByAvg;
 	}
 
-	public Duration getEstimatedTimeBest() {
-		return estimatedTimeBest;
-	}
-
-	public int getLapsComplete() {
-		return lapsComplete;
-	}
-
-	public int getScheduledLaps() {
-		return scheduledLaps;
-	}
-
-	public Duration getScheduledTime() {
-		return scheduledTime;
+	public Duration getEstimatedTimeByBest() {
+		return estimatedTimeByBest;
 	}
 
 	public void update() {
-		Race race = raceManager.getCurrentRace();
-		setScheduledTime(race.getScheduledTime());
-		setScheduledLaps(race.getScheduledLaps());
-		setLapsComplete(race.getLapsComplete());
-		setLapsToGo(race.getLapsToGo());
-
 		calculateEstimatedLapsByBest();
 		calculateEstimatedLapsByAvg();
 	}
 
 	private void calculateEstimatedLapsByAvg() {
-		int oldEstimatedLapsAvg = estimatedLapsAvg;
-		Duration oldEstimatedTimeAvg = estimatedTimeAvg;
-		Competitor competitor = raceManager.getCurrentRace().getCompetitorByPosition(1);
+		Race race = raceManager.getCurrentRace();
+		Competitor competitor = race.getCompetitorByPosition(1);
 
-		if (competitor == null) {
-			estimatedLapsAvg = lapsToGo;
-			return;
-		}
-
-		int laps = competitor.getLapsComplete();
-
-		if (laps == 0) {
-			estimatedLapsAvg = lapsToGo;
-			return;
-		}
-
-		Duration time = competitor.getTotalTime();
-		Duration avgLapTime = competitor.calcAvgLap();
-
-		do {
-			time = time.plus(avgLapTime);
-			laps++;
-		} while (time.compareTo(scheduledTime) < 0);
-
-		if (lapsToGo == 0 || laps < lapsToGo + competitor.getLapsComplete()) {
-			estimatedLapsAvg = laps;
+		if (race.getTimeToGo().isZero() || competitor == null || competitor.getLapsComplete() == 0) {
+			setEstimatedLapsByAvg(race.getScheduledLaps());
 		} else {
-			estimatedLapsAvg = scheduledLaps;
+			Duration avgLapTime = competitor.calcAvgLap();
+
+			if (avgLapTime.isZero()) {
+				setEstimatedLapsByAvg(race.getScheduledLaps());
+			} else {
+				Duration time = competitor.getTotalTime();
+				int laps = competitor.getLapsComplete();
+
+				do {
+					time = time.plus(avgLapTime);
+					laps++;
+				} while (time.compareTo(scheduledTime) < 0);
+
+				int lapsToGo = race.getLapsToGo();
+				if (lapsToGo == 0 || laps < competitor.getLapsComplete() + lapsToGo) {
+					setEstimatedLapsByAvg(laps);
+				} else {
+					setEstimatedLapsByAvg(race.getScheduledLaps());
+				}
+
+				setEstimatedTimeByAvg(time);
+
+			}
 		}
-
-		estimatedTimeAvg = time;
-
-		changeSupport.firePropertyChange("estimatedLapsAvg", oldEstimatedLapsAvg, Integer.toString(estimatedLapsAvg));
-		changeSupport.firePropertyChange("estimatedTimeAvg", oldEstimatedTimeAvg, estimatedTimeAvg);
 	}
 
 	private void calculateEstimatedLapsByBest() {
-		int oldEstimatedLapsBest = estimatedLapsBest;
-		Duration oldEstimatedTimeBest = estimatedTimeBest;
-		Competitor competitor = raceManager.getCurrentRace().getCompetitorByPosition(1);
-		if (competitor == null) {
-			this.estimatedLapsBest = lapsToGo;
-			return;
-		}
+		Race race = raceManager.getCurrentRace();
+		Competitor competitor = race.getCompetitorByPosition(1);
 
-		int laps = competitor.getLapsComplete();
-		if (laps == 0) {
-			estimatedLapsBest = lapsToGo;
-			return;
-		}
-		Duration time = competitor.getTotalTime();
-		Duration bestLapTime = competitor.getBestLap();
-
-		if (bestLapTime.isZero()) {
-			estimatedLapsBest = lapsToGo;
-			return;
-		}
-
-		do {
-			time = time.plus(bestLapTime);
-			laps++;
-		} while (time.compareTo(scheduledTime) < 0);
-
-		if (lapsToGo == 0 || laps < lapsToGo + competitor.getLapsComplete()) {
-			estimatedLapsBest = laps;
+		if (race.getTimeToGo().isZero() || competitor == null || competitor.getLapsComplete() == 0) {
+			setEstimatedLapsByBest(race.getScheduledLaps());
 		} else {
-			estimatedLapsBest = scheduledLaps;
+			Duration bestLapTime = competitor.getBestLap();
+
+			if (bestLapTime.isZero()) {
+				setEstimatedLapsByBest(race.getScheduledLaps());
+			} else {
+				Duration time = competitor.getTotalTime();
+				int laps = competitor.getLapsComplete();
+
+				do {
+					time = time.plus(bestLapTime);
+					laps++;
+				} while (time.compareTo(scheduledTime) < 0);
+
+				int lapsToGo = race.getLapsToGo();
+				if (lapsToGo == 0 || laps < competitor.getLapsComplete() + lapsToGo) {
+					setEstimatedLapsByBest(laps);
+				} else {
+					setEstimatedLapsByBest(race.getScheduledLaps());
+				}
+
+				setEstimatedTimeByBest(time);
+			}
 		}
-
-		estimatedTimeBest = time;
-
-		changeSupport.firePropertyChange("estimatedLapsBest", oldEstimatedLapsBest,
-				Integer.toString(estimatedLapsBest));
-		changeSupport.firePropertyChange("estimatedTimeBest", oldEstimatedTimeBest, estimatedTimeBest);
 	}
 
-	private void setLapsComplete(int lapsComplete) {
-		int oldLapsComplete = this.lapsComplete;
-		this.lapsComplete = lapsComplete;
-		changeSupport.firePropertyChange("lapsComplete", oldLapsComplete, Integer.toString(lapsComplete));
+	private void setEstimatedLapsByAvg(int newEstimatedLapsByAvg) {
+		int oldEstimatedLapsByAvg = estimatedLapsByAvg;
+		estimatedLapsByAvg = newEstimatedLapsByAvg;
+
+		changeSupport.firePropertyChange(PROPERTY_ESTIMATED_LAPS_BY_AVG, oldEstimatedLapsByAvg,
+				Integer.toString(newEstimatedLapsByAvg));
 	}
 
-	private void setLapsToGo(int lapsToGo) {
-		int oldLapsToGo = this.lapsToGo;
-		this.lapsToGo = lapsToGo;
-		changeSupport.firePropertyChange("lapsToGo", oldLapsToGo, Integer.toString(lapsToGo));
+	private void setEstimatedLapsByBest(int newEstimatedLapsByBest) {
+		int oldEstimatedLapsByBest = estimatedLapsByBest;
+		estimatedLapsByBest = newEstimatedLapsByBest;
+
+		changeSupport.firePropertyChange(PROPERTY_ESTIMATED_LAPS_BY_BEST, oldEstimatedLapsByBest,
+				Integer.toString(newEstimatedLapsByBest));
 	}
 
-	private void setScheduledLaps(int scheduledLaps) {
-		int oldScheduledLaps = this.scheduledLaps;
-		this.scheduledLaps = scheduledLaps;
-		changeSupport.firePropertyChange("scheduledLaps", oldScheduledLaps, Integer.toString(scheduledLaps));
+	private void setEstimatedTimeByAvg(Duration newEstimatedTimeByAvg) {
+		Duration oldEstimatedTimeByAvg = estimatedTimeByAvg;
+		estimatedTimeByAvg = newEstimatedTimeByAvg;
+
+		changeSupport.firePropertyChange(PROPERTY_ESTIMATED_TIME_BY_AVG, oldEstimatedTimeByAvg, newEstimatedTimeByAvg);
 	}
 
-	private void setScheduledTime(Duration scheduledTime) {
-		Duration oldScheduledTime = this.scheduledTime;
-		this.scheduledTime = scheduledTime;
-		changeSupport.firePropertyChange("scheduledTime", oldScheduledTime, this.scheduledTime);
+	private void setEstimatedTimeByBest(Duration newEstimatedTimeByBest) {
+		Duration oldEstimatedTimeByBest = estimatedTimeByBest;
+		estimatedTimeByBest = newEstimatedTimeByBest;
+
+		changeSupport.firePropertyChange(PROPERTY_ESTIMATED_TIME_BY_BEST, oldEstimatedTimeByBest,
+				newEstimatedTimeByBest);
 	}
 }
