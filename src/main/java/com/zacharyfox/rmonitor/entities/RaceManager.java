@@ -98,7 +98,7 @@ public class RaceManager {
 				processInitRecord();
 			} else if (message instanceof RaceInfo raceInfo) {
 				currentRace.getOrCreateCompetitor(raceInfo.getRegNumber()).update(raceInfo);
-				processRunInfo(raceInfo);
+				processRaceInfo(raceInfo);
 				currentRace.incrementCompetitorsVersion();
 			} else if (message instanceof CompInfo compInfo) {
 				currentRace.getOrCreateCompetitor(compInfo.getRegNumber()).update(compInfo);
@@ -127,7 +127,7 @@ public class RaceManager {
 		currentRace.setScheduledTime(currentRace.getElapsedTime().plus(currentRace.getTimeToGo()));
 	}
 
-	private void processRunInfo(RaceInfo raceInfo) {
+	private void processRaceInfo(RaceInfo raceInfo) {
 		if (raceInfo.getPosition() == 1) {
 			currentRace.setLapsComplete(raceInfo.getLaps());
 		}
