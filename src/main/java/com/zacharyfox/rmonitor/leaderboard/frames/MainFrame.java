@@ -47,6 +47,7 @@ import net.miginfocom.swing.MigLayout;
 public class MainFrame extends JFrame {
 
 	private static final Color COLOR_GREEN = new Color(0, 150, 0);
+	private static final Color COLOR_PURPLE = new Color(98, 0, 255);
 
 	private final JLabel elapsedTime;
 	private final JPanel flagColor;
@@ -227,6 +228,13 @@ public class MainFrame extends JFrame {
 
 	private void setFlagColor(FlagStatus status) {
 		switch (status) {
+		case NONE:
+			flagColor1.setBackground(null);
+			flagColor2.setBackground(null);
+			flagColor3.setBackground(null);
+			flagColor4.setBackground(null);
+			break;
+
 		case GREEN:
 			flagColor1.setBackground(COLOR_GREEN);
 			flagColor2.setBackground(COLOR_GREEN);
@@ -253,6 +261,13 @@ public class MainFrame extends JFrame {
 			flagColor2.setBackground(Color.WHITE);
 			flagColor3.setBackground(Color.WHITE);
 			flagColor4.setBackground(Color.BLACK);
+			break;
+
+		case PURPLE:
+			flagColor1.setBackground(COLOR_PURPLE);
+			flagColor2.setBackground(COLOR_PURPLE);
+			flagColor3.setBackground(COLOR_PURPLE);
+			flagColor4.setBackground(COLOR_PURPLE);
 			break;
 
 		default:
