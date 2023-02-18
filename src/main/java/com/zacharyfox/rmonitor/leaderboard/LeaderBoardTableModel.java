@@ -66,7 +66,7 @@ public class LeaderBoardTableModel extends AbstractTableModel {
 				competitor.calcPositionInClass(), competitor.getRegNumber(),
 				RaceClass.getClassName(competitor.getClassId()),
 				competitor.getFirstName() + " " + competitor.getLastName(), competitor.getLapsComplete(),
-				competitor.getTotalTime(), competitor.getLastLap(), competitor.getBestLap(), competitor.calcAvgLap(),
+				competitor.getTotalTime(), competitor.getLastLap(), competitor.getBestLap(), competitor.getAvgLap(),
 				"" };
 	}
 }

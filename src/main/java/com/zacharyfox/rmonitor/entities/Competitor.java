@@ -28,6 +28,7 @@ public class Competitor {
 	private Duration totalTime;
 	private Duration bestLap;
 	private Duration lastLap;
+	private Duration avgLap;
 	private int lapsComplete;
 	private int position;
 	private int qualiPosition;
@@ -45,6 +46,7 @@ public class Competitor {
 		bestLap = Duration.ZERO;
 		totalTime = Duration.ZERO;
 		lastLap = Duration.ZERO;
+		avgLap = Duration.ZERO;
 		lapsComplete = 0;
 		position = 0;
 		qualiPosition = 0;
@@ -95,6 +97,10 @@ public class Competitor {
 		return lastLap;
 	}
 
+	public Duration getAvgLap() {
+		return avgLap;
+	}
+
 	public int getLapsComplete() {
 		return lapsComplete;
 	}
@@ -112,19 +118,6 @@ public class Competitor {
 	 */
 	List<Lap> getLaps() {
 		return laps;
-	}
-
-	public Duration calcAvgLap() {
-		// @formatter:off
-		return laps.stream()
-				.filter(l -> l.getLapNumber() > 0)
-				.map(Lap::getLapTime)
-				.filter(Objects::nonNull)
-				.collect(Collectors.teeing(
-						Collectors.reducing(Duration.ZERO, Duration::plus),
-						Collectors.counting(),
-						(sum, count) -> count > 0 ? sum.dividedBy(count) : Duration.ZERO));
-		// @formatter:on
 	}
 
 	public long calcPositionInClass() {
@@ -198,6 +191,7 @@ public class Competitor {
 		totalTime = passingInfo.getTotalTime();
 
 		updateBestLap(passingInfo.getLapTime());
+		updateAvgLap();
 	}
 
 	void update(RaceInfo raceInfo) {
@@ -209,12 +203,14 @@ public class Competitor {
 		position = raceInfo.getPosition();
 		lapsComplete = raceInfo.getLaps();
 		totalTime = raceInfo.getTotalTime();
+
+		updateAvgLap();
 	}
 
 	private void updateOrCreateLap(LapInfo lapInfo) {
 		boolean found = false;
 
-		for (Lap lap : this.laps) {
+		for (Lap lap : laps) {
 			if (lap.getLapNumber() == lapInfo.getLapNumber()) {
 				found = true;
 				lap.setLapTime(lapInfo.getLapTime());
@@ -228,8 +224,10 @@ public class Competitor {
 			lap.setPosition(lapInfo.getPosition());
 			lap.setLapTime(lapInfo.getLapTime());
 
-			this.laps.add(lap);
+			laps.add(lap);
 		}
+
+		updateAvgLap();
 	}
 
 	private Lap findOrCreateLap(Duration totalTime) {
@@ -251,5 +249,18 @@ public class Competitor {
 		if (this.bestLap.isZero() || bestLap.compareTo(this.bestLap) < 0) {
 			this.bestLap = bestLap;
 		}
+	}
+
+	private void updateAvgLap() {
+		// @formatter:off
+		avgLap = laps.stream()
+				.filter(l -> l.getLapNumber() > 0)
+				.map(Lap::getLapTime)
+				.filter(Objects::nonNull)
+				.collect(Collectors.teeing(
+								Collectors.reducing(Duration.ZERO, Duration::plus),
+								Collectors.counting(),
+								(sum, count) -> count > 0 ? sum.dividedBy(count) : Duration.ZERO));
+		// @formatter:on
 	}
 }

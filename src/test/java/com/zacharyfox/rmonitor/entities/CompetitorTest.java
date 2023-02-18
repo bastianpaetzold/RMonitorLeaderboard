@@ -53,11 +53,11 @@ class CompetitorTest {
 	void testCalcAvgLap() {
 		final Competitor competitor = getTestCompetitor();
 
-		assertEquals(Duration.ZERO, competitor.calcAvgLap());
+		assertEquals(Duration.ZERO, competitor.getAvgLap());
 
 		playLapMessages();
 
-		assertEquals(DurationUtil.parse("00:01:47.3105"), competitor.calcAvgLap());
+		assertEquals(DurationUtil.parse("00:01:47.3105"), competitor.getAvgLap());
 	}
 
 	@Test

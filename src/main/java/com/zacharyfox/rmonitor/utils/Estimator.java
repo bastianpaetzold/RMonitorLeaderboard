@@ -70,7 +70,7 @@ public class Estimator {
 		if (race.getTimeToGo().isZero() || competitor == null || competitor.getLapsComplete() == 0) {
 			setEstimatedLapsByAvg(race.getScheduledLaps());
 		} else {
-			Duration avgLapTime = competitor.calcAvgLap();
+			Duration avgLapTime = competitor.getAvgLap();
 
 			if (avgLapTime.isZero()) {
 				setEstimatedLapsByAvg(race.getScheduledLaps());
