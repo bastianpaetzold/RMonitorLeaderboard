@@ -5,10 +5,12 @@ import java.beans.PropertyChangeSupport;
 import java.time.Duration;
 
 import com.zacharyfox.rmonitor.entities.Competitor;
-import com.zacharyfox.rmonitor.entities.Competitors;
 import com.zacharyfox.rmonitor.entities.Race;
+import com.zacharyfox.rmonitor.entities.RaceManager;
 
 public class Estimator {
+
+	private static final RaceManager raceManager = RaceManager.getInstance();
 
 	private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
 	private int estimatedLapsAvg = 0;
@@ -66,7 +68,8 @@ public class Estimator {
 		return scheduledTime;
 	}
 
-	public void update(Race race) {
+	public void update() {
+		Race race = raceManager.getCurrentRace();
 		setScheduledTime(race.getScheduledTime());
 		setScheduledLaps(race.getScheduledLaps());
 		setLapsComplete(race.getLapsComplete());
@@ -79,7 +82,7 @@ public class Estimator {
 	private void calculateEstimatedLapsByAvg() {
 		int oldEstimatedLapsAvg = estimatedLapsAvg;
 		Duration oldEstimatedTimeAvg = estimatedTimeAvg;
-		Competitor competitor = Competitors.getCompetitorByPosition(1);
+		Competitor competitor = raceManager.getCurrentRace().getCompetitorByPosition(1);
 
 		if (competitor == null) {
 			estimatedLapsAvg = lapsToGo;
@@ -116,7 +119,7 @@ public class Estimator {
 	private void calculateEstimatedLapsByBest() {
 		int oldEstimatedLapsBest = estimatedLapsBest;
 		Duration oldEstimatedTimeBest = estimatedTimeBest;
-		Competitor competitor = Competitors.getCompetitorByPosition(1);
+		Competitor competitor = raceManager.getCurrentRace().getCompetitorByPosition(1);
 		if (competitor == null) {
 			this.estimatedLapsBest = lapsToGo;
 			return;

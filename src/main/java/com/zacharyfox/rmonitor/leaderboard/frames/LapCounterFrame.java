@@ -23,9 +23,9 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.config.ConfigurationManager;
 import com.zacharyfox.rmonitor.entities.Race;
+import com.zacharyfox.rmonitor.entities.RaceManager;
 import com.zacharyfox.rmonitor.entities.Race.FlagStatus;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 
@@ -53,9 +53,12 @@ public class LapCounterFrame extends JFrame {
 	private JTextField tfDelay;
 	private JCheckBox chckbxCountUpwards;
 
+	private RaceManager raceManager;
+
 	private static LapCounterFrame instance;
 
 	public LapCounterFrame() {
+		raceManager = RaceManager.getInstance();
 		ConfigurationManager configManager = ConfigurationManager.getInstance();
 
 		lapSwitchDelay = Integer.parseInt(configManager.getConfig(PROP_LAP_SWITCH_DELAY, "5"));
@@ -97,7 +100,7 @@ public class LapCounterFrame extends JFrame {
 		cancelButton.setActionCommand("Cancel");
 		cancelButton.addActionListener(e -> {
 			instance.setVisible(false);
-			RMonitorClient.getInstance().getRace().removePropertyChangeListener(propertyChangeListener);
+			raceManager.removePropertyChangeListener(propertyChangeListener);
 			instance.dispose();
 		});
 
@@ -164,7 +167,7 @@ public class LapCounterFrame extends JFrame {
 		lastLapCountChangeTime = Duration.ZERO;
 		lastLapsToGo = 0;
 
-		RMonitorClient.getInstance().getRace().addPropertyChangeListener(propertyChangeListener);
+		raceManager.addPropertyChangeListener(propertyChangeListener);
 	}
 
 	class ResizeListener extends ComponentAdapter {
@@ -179,7 +182,7 @@ public class LapCounterFrame extends JFrame {
 
 	private void updateDisplay(PropertyChangeEvent evt) {
 		String propertyName = evt.getPropertyName();
-		Duration elapsedTime = RMonitorClient.getInstance().getRace().getElapsedTime();
+		Duration elapsedTime = raceManager.getCurrentRace().getElapsedTime();
 
 		if (propertyName.equals(Race.PROPERTY_LAPS_COMPLETE)) {
 			lastLapsComplete = ((int) evt.getNewValue());
@@ -210,8 +213,9 @@ public class LapCounterFrame extends JFrame {
 	}
 
 	private void updateDisplayedLapCount() {
-		FlagStatus flagStatus = RMonitorClient.getInstance().getRace().getFlagStatus();
-		Duration elapsedTime = RMonitorClient.getInstance().getRace().getElapsedTime();
+		Race race = raceManager.getCurrentRace();
+		FlagStatus flagStatus = race.getFlagStatus();
+		Duration elapsedTime = race.getElapsedTime();
 		long secondsSinceLastLapCountUpdate = elapsedTime.minus(lastLapCountChangeTime).getSeconds();
 
 		if (chckbxCountUpwards.isSelected()) {

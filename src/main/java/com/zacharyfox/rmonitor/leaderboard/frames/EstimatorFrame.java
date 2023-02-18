@@ -11,8 +11,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import com.zacharyfox.rmonitor.entities.Competitor;
-import com.zacharyfox.rmonitor.entities.Competitors;
 import com.zacharyfox.rmonitor.entities.RaceClass;
+import com.zacharyfox.rmonitor.entities.RaceManager;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 import com.zacharyfox.rmonitor.utils.Estimator;
 
@@ -102,7 +102,7 @@ public class EstimatorFrame extends JFrame {
 		builder.append("<html><body>");
 
 		for (int i = 1; i <= 3; i++) {
-			Competitor comp = Competitors.getCompetitorByPosition(i);
+			Competitor comp = RaceManager.getInstance().getCurrentRace().getCompetitorByPosition(i);
 			if (comp != null) {
 				builder.append(comp.getNumber());
 				builder.append(" ");

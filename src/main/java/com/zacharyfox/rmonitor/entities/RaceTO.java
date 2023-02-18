@@ -63,7 +63,7 @@ public class RaceTO {
 		raceTO.raceName = race.getName();
 		raceTO.timeOfDay = DurationUtil.format(race.getTimeOfDay());
 		raceTO.trackName = race.getTrackName();
-		raceTO.competitors = Competitors.getCompetitorsAsTO();
+		raceTO.competitors = race.getCompetitors().stream().map(CompetitorTO::from).toArray(CompetitorTO[]::new);
 
 		return raceTO;
 	}

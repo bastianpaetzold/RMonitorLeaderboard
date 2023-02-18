@@ -19,13 +19,15 @@ class CompetitorTest {
 
 	private static final String TEST_COMPETITOR_REG_NUMBER = "1234BE";
 
+	private static RaceManager manager;
+
 	@BeforeEach
-	void prepareCompetitors() {
-		Competitors.reset();
+	void prepare() {
+		manager = new RaceManager();
 
 		String[] tokens = { "$A", TEST_COMPETITOR_REG_NUMBER, "12X", "52474", "John", "Johnson", "USA", "5" };
 		CompInfo message = new CompInfo(tokens);
-		Competitors.updateOrCreate(message);
+		manager.processMessage(message);
 	}
 
 	@Test
@@ -63,13 +65,13 @@ class CompetitorTest {
 		final Competitor competitor = getTestCompetitor();
 		playLapMessages();
 
-		assertEquals(competitor, Competitors.getCompetitorByPosition(2));
+		assertEquals(competitor, manager.getCurrentRace().getCompetitorByPosition(2));
 	}
 
 	@Test
 	void testGetFastestLap() {
 		playLapMessages();
-		assertEquals(DurationUtil.parse("00:01:46.749"), Competitors.getFastestLap());
+		assertEquals(DurationUtil.parse("00:01:46.749"), manager.getCurrentRace().getFastestLap());
 	}
 
 	@Test
@@ -87,7 +89,7 @@ class CompetitorTest {
 		String[] tokens = { "$A", TEST_COMPETITOR_REG_NUMBER, "123", "54321", "Jack", "Jackson", "MX", "6" };
 		CompInfo message = new CompInfo(tokens);
 
-		Competitors.updateOrCreate(message);
+		manager.processMessage(message);
 
 		assertEquals("123", competitor.getNumber());
 		assertEquals("54321", competitor.getTransNumber());
@@ -104,7 +106,7 @@ class CompetitorTest {
 		String[] tokens1 = { "$SP", "3", TEST_COMPETITOR_REG_NUMBER, "2", "00:01:33.894", "76682" };
 		LapInfo message1 = new LapInfo(tokens1);
 
-		Competitors.updateOrCreate(message1);
+		manager.processMessage(message1);
 
 		for (Lap lap : competitor.getLaps()) {
 			if (lap.getLapNumber() == 2) {
@@ -115,7 +117,7 @@ class CompetitorTest {
 		String[] tokens2 = { "$SP", "3", TEST_COMPETITOR_REG_NUMBER, "3", "00:01:31.123", "76682" };
 		LapInfo message2 = new LapInfo(tokens2);
 
-		Competitors.updateOrCreate(message2);
+		manager.processMessage(message2);
 
 		assertEquals(DurationUtil.parse("00:01:31.123"), competitor.getBestLap());
 	}
@@ -127,7 +129,7 @@ class CompetitorTest {
 		String[] tokens = { "$J", TEST_COMPETITOR_REG_NUMBER, "01:12:47.872", "01:12:47.872" };
 		PassingInfo message = new PassingInfo(tokens);
 
-		Competitors.updateOrCreate(message);
+		manager.processMessage(message);
 
 		assertEquals(DurationUtil.parse("01:12:47.872"), competitor.getLastLap());
 		assertEquals(DurationUtil.parse("01:12:47.872"), competitor.getTotalTime());
@@ -140,7 +142,7 @@ class CompetitorTest {
 		String[] tokens = { "$H", "1", TEST_COMPETITOR_REG_NUMBER, "1", "01:12:47.872" };
 		QualInfo message = new QualInfo(tokens);
 
-		Competitors.updateOrCreate(message);
+		manager.processMessage(message);
 
 		assertEquals(DurationUtil.parse("01:12:47.872"), competitor.getBestLap());
 	}
@@ -152,7 +154,7 @@ class CompetitorTest {
 		String[] tokens = { "$G", "3", TEST_COMPETITOR_REG_NUMBER, "14", "01:12:47.872" };
 		RaceInfo message = new RaceInfo(tokens);
 
-		Competitors.updateOrCreate(message);
+		manager.processMessage(message);
 
 		assertEquals(3, competitor.getPosition());
 		assertEquals(14, competitor.getLapsComplete());
@@ -160,7 +162,7 @@ class CompetitorTest {
 	}
 
 	private Competitor getTestCompetitor() {
-		return Competitors.getCompetitor(TEST_COMPETITOR_REG_NUMBER);
+		return manager.getCurrentRace().getCompetitor(TEST_COMPETITOR_REG_NUMBER);
 	}
 
 	private void playLapMessages() {
@@ -176,9 +178,9 @@ class CompetitorTest {
 		String[] tokens4 = { "$G", "2", TEST_COMPETITOR_REG_NUMBER, "2", "00:03:34.621" };
 		RaceInfo message4 = new RaceInfo(tokens4);
 
-		Competitors.updateOrCreate(message);
-		Competitors.updateOrCreate(message2);
-		Competitors.updateOrCreate(message3);
-		Competitors.updateOrCreate(message4);
+		manager.processMessage(message);
+		manager.processMessage(message2);
+		manager.processMessage(message3);
+		manager.processMessage(message4);
 	}
 }

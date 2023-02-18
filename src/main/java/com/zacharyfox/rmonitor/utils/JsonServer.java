@@ -17,10 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.config.ConfigurationManager;
+import com.zacharyfox.rmonitor.entities.Race;
+import com.zacharyfox.rmonitor.entities.RaceManager;
 import com.zacharyfox.rmonitor.entities.RaceTO;
-import com.zacharyfox.rmonitor.entities.Races;
 
 public class JsonServer {
 
@@ -134,10 +134,12 @@ public class JsonServer {
 
 	private static class JsonHandler extends AbstractHandler {
 
+		private RaceManager raceManager;
+
 		private Gson gson;
-		private RaceTO lastRaceTO;
 
 		public JsonHandler() {
+			raceManager = RaceManager.getInstance();
 			gson = new Gson();
 		}
 
@@ -154,9 +156,6 @@ public class JsonServer {
 				response.addHeader("Access-Control-Allow-Origin", "*");
 			}
 
-			// Declare response status code
-			response.setStatus(HttpServletResponse.SC_OK);
-
 			Object resultTO;
 
 			LOGGER.info("Path Info: {}", request.getPathInfo());
@@ -169,16 +168,22 @@ public class JsonServer {
 				if (pathInfoParts.length > 2 && pathInfoParts[2].matches("\\d+")) {
 					int raceID = Integer.parseInt(pathInfoParts[2]);
 					LOGGER.trace("Returning race with ID: {}", raceID);
-					resultTO = getRaceToReturn(raceID);
+					resultTO = getRaceTO(raceID);
 				} else {
 					LOGGER.trace("Returning current race");
 					resultTO = getRaceToReturn();
 				}
 			} else if (pathInfoParts.length > 1 && pathInfoParts[1].equals("races")) {
 				// default we return the race
-				resultTO = getRacesToReturn();
+				resultTO = getAllRaceTOs();
 			} else {
 				resultTO = getRaceToReturn();
+			}
+
+			if (resultTO != null) {
+				response.setStatus(HttpServletResponse.SC_OK);
+			} else {
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			}
 
 			// Write back response
@@ -191,26 +196,35 @@ public class JsonServer {
 		private RaceTO getRaceToReturn() {
 			RaceTO raceTO;
 
-			int raceId = RMonitorClient.getInstance().getRace().getId();
-			if (raceId > 0) {
-				raceTO = Races.getRaceTOById(raceId);
-				lastRaceTO = raceTO;
-			} else if (lastRaceTO != null) {
-				// if the current race has ID = 0 we try to get the lastRaceTO from the history
-				raceTO = Races.getRaceTOById(lastRaceTO.getRaceID());
+			Race currentRace = raceManager.getCurrentRace();
+			if (currentRace.getId() >= 0) {
+				raceTO = RaceTO.from(currentRace);
 			} else {
-				raceTO = RaceTO.from(RMonitorClient.getInstance().getRace());
+				Race previousRace = raceManager.getPreviousRace();
+
+				if (previousRace != null) {
+					raceTO = RaceTO.from(previousRace);
+				} else {
+					raceTO = RaceTO.from(currentRace);
+				}
 			}
 
 			return raceTO;
+
 		}
 
-		private RaceTO getRaceToReturn(int id) {
-			return Races.getRaceTOById(id);
+		private RaceTO getRaceTO(int id) {
+			Race race = raceManager.getRace(id);
+
+			if (race != null) {
+				return RaceTO.from(race);
+			}
+
+			return null;
 		}
 
-		private RaceTO[] getRacesToReturn() {
-			return Races.getAllRaceTOs();
+		private RaceTO[] getAllRaceTOs() {
+			return raceManager.getAllRaces().stream().map(RaceTO::from).toArray(RaceTO[]::new);
 		}
 	}
 }

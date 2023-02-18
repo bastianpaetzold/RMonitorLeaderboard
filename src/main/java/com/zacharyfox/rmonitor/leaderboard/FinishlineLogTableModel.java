@@ -7,7 +7,7 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import com.zacharyfox.rmonitor.entities.Competitor;
-import com.zacharyfox.rmonitor.entities.Competitors;
+import com.zacharyfox.rmonitor.entities.RaceManager;
 
 @SuppressWarnings("serial")
 public class FinishlineLogTableModel extends AbstractTableModel {
@@ -54,7 +54,7 @@ public class FinishlineLogTableModel extends AbstractTableModel {
 
 	void updateData() {
 		// @formatter:off
-		data = Competitors.getCompetitors().stream()
+		data = RaceManager.getInstance().getCurrentRace().getCompetitors().stream()
 				.filter(c -> c.getLapsComplete() > 0)
 				.sorted(Comparator.comparing(Competitor::getTotalTime))
 				.map(this::createRow)

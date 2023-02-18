@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.zacharyfox.rmonitor.config.ConfigurationManager;
-import com.zacharyfox.rmonitor.entities.Race;
+import com.zacharyfox.rmonitor.entities.RaceManager;
 import com.zacharyfox.rmonitor.message.MessageFactory;
 import com.zacharyfox.rmonitor.utils.Estimator;
 import com.zacharyfox.rmonitor.utils.Recorder;
@@ -51,7 +51,6 @@ public class RMonitorClient {
 	private List<BiConsumer<State, State>> listenerList;
 	private ConfigurationManager configManager;
 
-	private Race currentRace;
 	private Recorder recorder;
 	private Estimator estimator;
 
@@ -62,7 +61,6 @@ public class RMonitorClient {
 	private RMonitorClient() {
 		listenerList = new ArrayList<>();
 		currentState = State.STOPPED;
-		currentRace = new Race();
 
 		recorder = Recorder.getInstance();
 		estimator = Estimator.getInstance();
@@ -102,7 +100,6 @@ public class RMonitorClient {
 
 	private void run() {
 		updateCurrentState(State.STARTED);
-		currentRace = new Race();
 
 		int retryCounter = 0;
 		while (canConnect(retryCounter)) {
@@ -154,9 +151,9 @@ public class RMonitorClient {
 	}
 
 	private void processMessage(String message) {
-		currentRace.update(MessageFactory.createMessage(message));
+		RaceManager.getInstance().processMessage(MessageFactory.createMessage(message));
 		recorder.push(message);
-		estimator.update(currentRace);
+		estimator.update();
 	}
 
 	public synchronized void stop() {
@@ -215,10 +212,6 @@ public class RMonitorClient {
 
 	public void setRetryTimeout(int retryTimeout) {
 		this.retryTimeout = retryTimeout;
-	}
-
-	public Race getRace() {
-		return currentRace;
 	}
 
 	public State getCurrentState() {

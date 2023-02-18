@@ -32,8 +32,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
-import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.entities.Race;
+import com.zacharyfox.rmonitor.entities.RaceManager;
 import com.zacharyfox.rmonitor.leaderboard.FinishLineLogTable;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 
@@ -126,8 +126,7 @@ public class FinishLineLogFrame extends JFrame {
 		resultsTablePanel.add(finishLineLogTable.getTableHeader(), BorderLayout.NORTH);
 		resultsTablePanel.add(finishLineLogTable, BorderLayout.CENTER);
 
-		RMonitorClient.getInstance().getRace()
-				.addPropertyChangeListener(e -> SwingUtilities.invokeLater(() -> updateDisplay(e)));
+		RaceManager.getInstance().addPropertyChangeListener(e -> SwingUtilities.invokeLater(() -> updateDisplay(e)));
 
 	}
 

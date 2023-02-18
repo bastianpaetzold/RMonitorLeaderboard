@@ -128,7 +128,8 @@ public class Competitor {
 	}
 
 	public long calcPositionInClass() {
-		return Competitors.calcPositionInClass(this);
+		// TODO the position is wrong if the competitor is not part of the current race
+		return RaceManager.getInstance().getCurrentRace().calcPositionInClass(this);
 	}
 
 	@Override

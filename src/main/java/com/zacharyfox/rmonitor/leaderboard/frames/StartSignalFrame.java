@@ -8,7 +8,6 @@ import java.awt.Frame;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.time.Duration;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.swing.JButton;
@@ -20,11 +19,10 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.entities.Competitor;
-import com.zacharyfox.rmonitor.entities.Competitors;
 import com.zacharyfox.rmonitor.entities.Race;
 import com.zacharyfox.rmonitor.entities.Race.FlagStatus;
+import com.zacharyfox.rmonitor.entities.RaceManager;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 
 @SuppressWarnings("serial")
@@ -40,13 +38,16 @@ public class StartSignalFrame extends JFrame {
 	private transient PropertyChangeListener propertyChangeListener = e -> SwingUtilities
 			.invokeLater(() -> updateDisplay(e));
 
+	private RaceManager raceManager;
+
 	private static StartSignalFrame instance;
 
 	/**
 	 * Create the dialog.
 	 */
 	public StartSignalFrame() {
-		Race race = RMonitorClient.getInstance().getRace();
+		raceManager = RaceManager.getInstance();
+		Race race = raceManager.getCurrentRace();
 
 		setBounds(100, 100, 698, 590);
 		setExtendedState(Frame.MAXIMIZED_BOTH);
@@ -101,13 +102,13 @@ public class StartSignalFrame extends JFrame {
 		cancelButton.setActionCommand("Cancel");
 		cancelButton.addActionListener(e -> {
 			instance.setVisible(false);
-			race.removePropertyChangeListener(propertyChangeListener);
+			raceManager.removePropertyChangeListener(propertyChangeListener);
 			instance.dispose();
 		});
 
 		buttonPane.add(cancelButton);
 
-		race.addPropertyChangeListener(propertyChangeListener);
+		raceManager.addPropertyChangeListener(propertyChangeListener);
 	}
 
 	private void updateDisplay(PropertyChangeEvent evt) {
@@ -126,8 +127,8 @@ public class StartSignalFrame extends JFrame {
 			break;
 
 		case Race.PROPERTY_COMPETITORS_VERSION:
-			if (RMonitorClient.getInstance().getRace().getFlagStatus() == Race.FlagStatus.PURPLE) {
-				tfFlag.setText(createRegNumberString(Competitors.getCompetitors()));
+			if (raceManager.getCurrentRace().getFlagStatus() == Race.FlagStatus.PURPLE) {
+				tfFlag.setText(createRegNumberString());
 			}
 			break;
 
@@ -136,8 +137,9 @@ public class StartSignalFrame extends JFrame {
 		}
 	}
 
-	private String createRegNumberString(List<Competitor> competitors) {
-		return competitors.stream().map(Competitor::getRegNumber).collect(Collectors.joining(", "));
+	private String createRegNumberString() {
+		return raceManager.getCurrentRace().getCompetitors().stream().map(Competitor::getRegNumber)
+				.collect(Collectors.joining(", "));
 	}
 
 	private void setFlagColor(FlagStatus flagStatus) {

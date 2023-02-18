@@ -6,8 +6,8 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import com.zacharyfox.rmonitor.entities.Competitor;
-import com.zacharyfox.rmonitor.entities.Competitors;
 import com.zacharyfox.rmonitor.entities.RaceClass;
+import com.zacharyfox.rmonitor.entities.RaceManager;
 
 @SuppressWarnings("serial")
 public class LeaderBoardTableModel extends AbstractTableModel {
@@ -54,7 +54,7 @@ public class LeaderBoardTableModel extends AbstractTableModel {
 	}
 
 	void updateData() {
-		data = Competitors.getCompetitors().stream().map(this::getRow).toList();
+		data = RaceManager.getInstance().getCurrentRace().getCompetitors().stream().map(this::getRow).toList();
 
 		if (!data.isEmpty()) {
 			fireTableDataChanged();

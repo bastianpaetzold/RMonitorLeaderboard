@@ -8,11 +8,13 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import com.zacharyfox.rmonitor.entities.Competitor;
-import com.zacharyfox.rmonitor.entities.Competitors;
+import com.zacharyfox.rmonitor.entities.RaceManager;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 
 @SuppressWarnings("serial")
 public class LeaderBoardTableCellRenderer extends DefaultTableCellRenderer {
+
+	private static final RaceManager raceManager = RaceManager.getInstance();
 
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
@@ -20,7 +22,7 @@ public class LeaderBoardTableCellRenderer extends DefaultTableCellRenderer {
 		Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 		// TODO: This breaks if you reorder columns!!! Need to figure out how to do this
 		// with rowSorter and getModel
-		Competitor currentComp = Competitors.getCompetitor((String) table.getValueAt(row, 2));
+		Competitor currentComp = raceManager.getCurrentRace().getCompetitor((String) table.getValueAt(row, 2));
 
 		Duration competitorBestLap;
 		if (currentComp != null) {
@@ -29,7 +31,7 @@ public class LeaderBoardTableCellRenderer extends DefaultTableCellRenderer {
 			competitorBestLap = Duration.ZERO;
 		}
 
-		Duration fastestLap = Competitors.getFastestLap();
+		Duration fastestLap = raceManager.getCurrentRace().getFastestLap();
 		if ((column == 7 || column == 8) && value.equals(fastestLap)) {
 			c.setBackground(new Color(150, 0, 150));
 			c.setForeground(Color.WHITE);

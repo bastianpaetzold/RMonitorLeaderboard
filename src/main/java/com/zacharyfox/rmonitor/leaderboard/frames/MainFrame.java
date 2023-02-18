@@ -35,6 +35,7 @@ import javax.swing.WindowConstants;
 
 import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.entities.Race;
+import com.zacharyfox.rmonitor.entities.RaceManager;
 import com.zacharyfox.rmonitor.entities.Race.FlagStatus;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardMenuBar;
 import com.zacharyfox.rmonitor.leaderboard.LeaderBoardTable;
@@ -170,7 +171,8 @@ public class MainFrame extends JFrame {
 				break;
 
 			case CONNECTED:
-				client.getRace().addPropertyChangeListener(e -> SwingUtilities.invokeLater(() -> updateDisplay(e)));
+				RaceManager.getInstance()
+						.addPropertyChangeListener(e -> SwingUtilities.invokeLater(() -> updateDisplay(e)));
 
 				leaderBoardMenuBar.enableStartSignalMenu();
 				leaderBoardMenuBar.enableLapCounterMenu();
