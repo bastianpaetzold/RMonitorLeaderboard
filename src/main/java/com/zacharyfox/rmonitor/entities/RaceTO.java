@@ -12,6 +12,7 @@ public class RaceTO {
 	private int lapsComplete;
 	private int lapsToGo;
 	private String trackName;
+	private Float trackLength;
 	private CompetitorTO[] competitors;
 
 	private RaceTO() {
@@ -49,6 +50,10 @@ public class RaceTO {
 		return trackName;
 	}
 
+	public Float getTrackLength() {
+		return trackLength;
+	}
+
 	public CompetitorTO[] getCompetitors() {
 		return competitors;
 	}
@@ -63,6 +68,7 @@ public class RaceTO {
 		raceTO.raceName = race.getName();
 		raceTO.timeOfDay = DurationUtil.format(race.getTimeOfDay());
 		raceTO.trackName = race.getTrackName();
+		raceTO.trackLength = race.getTrackLength();
 		raceTO.competitors = race.getCompetitors().stream().map(CompetitorTO::from).toArray(CompetitorTO[]::new);
 
 		return raceTO;
