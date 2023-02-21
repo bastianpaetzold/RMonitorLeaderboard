@@ -56,7 +56,7 @@ public class FinishlineLogTableModel extends AbstractTableModel {
 		// @formatter:off
 		data = RaceManager.getInstance().getCurrentRace().getCompetitors().stream()
 				.filter(c -> c.getLapsComplete() > 0)
-				.sorted(Comparator.comparing(Competitor::getTotalTime))
+				.sorted(Comparator.comparing(Competitor::getTotalTime).reversed())
 				.map(this::createRow)
 				.toList();
 		// @formatter:on
