@@ -13,8 +13,11 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.time.Duration;
 
 import javax.swing.AbstractAction;
@@ -42,92 +45,119 @@ import net.miginfocom.swing.MigLayout;
 @SuppressWarnings("serial")
 public class FinishLineLogFrame extends JFrame {
 
-	private final JLabel elapsedTime;
-	private final JLabel lblNewLabel1;
-	private final JLabel lblNewLabel2;
-	private final FinishLineLogTable finishLineLogTable;
-	private final JPanel resultsTablePanel;
-	private final JLabel runName;
-	private final JSeparator separator;
-	private final JPanel timeBar;
-	private final JLabel timeToGo;
-	private final JPanel titleBar;
-	private final JLabel trackName;
+	private JLabel labelRaceName;
+	private JLabel labelTrackName;
+	private JLabel labelElapsedTime;
+	private JLabel labelToGoTime;
+	private FinishLineLogTable finishLineLogTable;
+
+	private Font fontLabelBold;
 
 	public FinishLineLogFrame(int rowHeight) {
-		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		Font fontLabelSystem = UIManager.getFont("Label.font");
+		fontLabelBold = fontLabelSystem.deriveFont(Font.BOLD, fontLabelSystem.getSize() + 3F);
 
-		Font systemLabelFont = UIManager.getFont("Label.font");
-		this.setBounds(100, 100, 870, 430);
-		this.getContentPane().setLayout(new MigLayout("", "[grow][grow]", "[][10:10:10][][][grow]"));
+		initContent(rowHeight);
 
-		titleBar = new JPanel();
-		this.getContentPane().add(titleBar, "cell 0 0 2 1,grow");
-		titleBar.setLayout(new GridLayout(1, 0, 0, 0));
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		setBounds(100, 100, 870, 430);
 
-		runName = new JLabel("-");
-		runName.setFont(new Font(systemLabelFont.getName(), Font.BOLD, systemLabelFont.getSize() + 3));
-		titleBar.add(runName);
+		PropertyChangeListener listener = e -> SwingUtilities.invokeLater(() -> updateDisplay(e));
+		addWindowListener(new WindowAdapter() {
 
-		trackName = new JLabel("-");
-		trackName.setFont(new Font(systemLabelFont.getName(), Font.BOLD, systemLabelFont.getSize() + 3));
-		trackName.setHorizontalAlignment(SwingConstants.RIGHT);
-		titleBar.add(trackName);
+			@Override
+			public void windowClosed(WindowEvent e) {
+				RaceManager.getInstance().removePropertyChangeListener(listener);
+			}
+		});
+		RaceManager.getInstance().addPropertyChangeListener(listener);
+	}
 
-		separator = new JSeparator();
+	private void initContent(int rowHeight) {
+		getContentPane().setLayout(new MigLayout("", "[grow][grow]", "[][10:10:10][][][grow]"));
+		getContentPane().add(createPanelTitleBar(), "cell 0 0 2 1,grow");
+
+		JSeparator separator = new JSeparator();
 		separator.setForeground(Color.BLACK);
-		separator.setBorder(null);
 		getContentPane().add(separator, "cell 0 1 2 1,growx,aligny top");
 
-		timeBar = new JPanel();
-		getContentPane().add(timeBar, "cell 0 3 2 1,growx");
-		timeBar.setLayout(new MigLayout("", "[][grow]50[][grow]", "[]"));
+		getContentPane().add(createPanelTimeBar(), "cell 0 3 2 1,growx");
+		getContentPane().add(createPanelResultsTable(rowHeight), "cell 0 4 2 1,grow");
+	}
 
-		lblNewLabel1 = new JLabel("Elapsed:");
-		lblNewLabel1.setHorizontalTextPosition(SwingConstants.RIGHT);
-		lblNewLabel1.setHorizontalAlignment(SwingConstants.RIGHT);
-		timeBar.add(lblNewLabel1, "cell 1 0");
+	private JPanel createPanelTitleBar() {
+		JPanel panelTitleBar = new JPanel();
+		panelTitleBar.setLayout(new GridLayout(1, 0));
 
-		lblNewLabel2 = new JLabel("To Go:");
-		lblNewLabel2.setHorizontalAlignment(SwingConstants.RIGHT);
-		timeBar.add(lblNewLabel2, "cell 3 0");
+		String raceName = RaceManager.getInstance().getCurrentRace().getName();
+		labelRaceName = new JLabel("".equals(raceName) ? "-" : raceName);
+		labelRaceName.setFont(fontLabelBold);
+		panelTitleBar.add(labelRaceName);
 
-		elapsedTime = new JLabel(DurationUtil.format(Duration.ZERO));
-		elapsedTime.setHorizontalTextPosition(SwingConstants.LEFT);
-		elapsedTime.setHorizontalAlignment(SwingConstants.LEFT);
-		elapsedTime.setFont(new Font(systemLabelFont.getName(), Font.BOLD, systemLabelFont.getSize() + 3));
-		timeBar.add(elapsedTime, "cell 2 0");
+		String trackName = RaceManager.getInstance().getCurrentRace().getTrackName();
+		labelTrackName = new JLabel("".equals(trackName) ? "-" : trackName);
+		labelTrackName.setFont(fontLabelBold);
+		labelTrackName.setHorizontalAlignment(SwingConstants.RIGHT);
+		panelTitleBar.add(labelTrackName);
 
-		timeToGo = new JLabel(DurationUtil.format(Duration.ZERO));
-		timeToGo.setHorizontalTextPosition(SwingConstants.LEFT);
-		timeToGo.setHorizontalAlignment(SwingConstants.LEFT);
-		timeToGo.setFont(new Font(systemLabelFont.getName(), Font.BOLD, systemLabelFont.getSize() + 3));
-		timeBar.add(timeToGo, "cell 4 0");
+		return panelTitleBar;
+	}
 
-		resultsTablePanel = new JPanel();
-		getContentPane().add(resultsTablePanel, "cell 0 4 2 1,grow");
-		resultsTablePanel.setLayout(new BorderLayout());
+	private JPanel createPanelTimeBar() {
+		JPanel panelTimeBar = new JPanel();
+		panelTimeBar.setLayout(new MigLayout("", "[][grow]50[][grow]", "[]"));
+
+		JLabel labelElapsed = new JLabel("Elapsed:");
+		labelElapsed.setHorizontalTextPosition(SwingConstants.RIGHT);
+		labelElapsed.setHorizontalAlignment(SwingConstants.RIGHT);
+		panelTimeBar.add(labelElapsed, "cell 1 0");
+
+		JLabel labelToGo = new JLabel("To Go:");
+		labelToGo.setHorizontalAlignment(SwingConstants.RIGHT);
+		panelTimeBar.add(labelToGo, "cell 3 0");
+
+		labelElapsedTime = new JLabel(DurationUtil.format(Duration.ZERO));
+		labelElapsedTime.setHorizontalTextPosition(SwingConstants.LEFT);
+		labelElapsedTime.setHorizontalAlignment(SwingConstants.LEFT);
+		labelElapsedTime.setFont(fontLabelBold);
+		panelTimeBar.add(labelElapsedTime, "cell 2 0");
+
+		labelToGoTime = new JLabel(DurationUtil.format(Duration.ZERO));
+		labelToGoTime.setHorizontalTextPosition(SwingConstants.LEFT);
+		labelToGoTime.setHorizontalAlignment(SwingConstants.LEFT);
+		labelToGoTime.setFont(fontLabelBold);
+		panelTimeBar.add(labelToGoTime, "cell 4 0");
+
+		return panelTimeBar;
+	}
+
+	private JPanel createPanelResultsTable(int rowHeight) {
+		Font fontTable = new Font("Lucida Console", Font.BOLD, rowHeight);
+
+		JPanel panelResultsTable = new JPanel();
+		panelResultsTable.setLayout(new BorderLayout());
+
 		finishLineLogTable = new FinishLineLogTable(rowHeight);
-		finishLineLogTable.setIntercellSpacing(new Dimension(10, 1));
+		finishLineLogTable.getTableHeader().setFont(fontTable);
+		finishLineLogTable.getTableHeader().setBackground(Color.BLACK);
+		finishLineLogTable.getTableHeader().setForeground(Color.YELLOW);
+		finishLineLogTable.getTableHeader().setOpaque(false);
+		panelResultsTable.add(finishLineLogTable.getTableHeader(), BorderLayout.NORTH);
+
+		finishLineLogTable.setFont(fontTable);
+		finishLineLogTable.setBackground(Color.BLACK);
+		finishLineLogTable.setForeground(Color.YELLOW);
 		finishLineLogTable.setFillsViewportHeight(true);
 		finishLineLogTable.setShowVerticalLines(false);
 		finishLineLogTable.setShowHorizontalLines(false);
 		finishLineLogTable.setShowGrid(false);
 		finishLineLogTable.setRowMargin(2);
-		finishLineLogTable.setFont(new Font("Lucida Console", Font.BOLD, rowHeight));
-		finishLineLogTable.setBackground(Color.BLACK);
-		finishLineLogTable.setForeground(Color.YELLOW);
+		finishLineLogTable.setIntercellSpacing(new Dimension(10, 1));
 		finishLineLogTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		finishLineLogTable.setRowSelectionAllowed(false);
-		finishLineLogTable.getTableHeader().setFont(new Font("Lucida Console", Font.BOLD, rowHeight));
-		finishLineLogTable.getTableHeader().setOpaque(false);
-		finishLineLogTable.getTableHeader().setBackground(Color.BLACK);
-		finishLineLogTable.getTableHeader().setForeground(Color.YELLOW);
-		resultsTablePanel.add(finishLineLogTable.getTableHeader(), BorderLayout.NORTH);
-		resultsTablePanel.add(finishLineLogTable, BorderLayout.CENTER);
+		panelResultsTable.add(finishLineLogTable, BorderLayout.CENTER);
 
-		RaceManager.getInstance().addPropertyChangeListener(e -> SwingUtilities.invokeLater(() -> updateDisplay(e)));
-
+		return panelResultsTable;
 	}
 
 	public void goFullScreen() {
@@ -174,19 +204,19 @@ public class FinishLineLogFrame extends JFrame {
 	private void updateDisplay(PropertyChangeEvent evt) {
 		switch (evt.getPropertyName()) {
 		case Race.PROPERTY_RACE_NAME:
-			runName.setText((String) evt.getNewValue());
+			labelRaceName.setText((String) evt.getNewValue());
 			break;
 
 		case Race.PROPERTY_ELAPSED_TIME:
-			elapsedTime.setText(DurationUtil.format((Duration) evt.getNewValue()));
+			labelElapsedTime.setText(DurationUtil.format((Duration) evt.getNewValue()));
 			break;
 
 		case Race.PROPERTY_TIME_TO_GO:
-			timeToGo.setText(DurationUtil.format((Duration) evt.getNewValue()));
+			labelToGoTime.setText(DurationUtil.format((Duration) evt.getNewValue()));
 			break;
 
 		case Race.PROPERTY_LAPS_TO_GO:
-			timeToGo.setText(String.valueOf(((int) evt.getNewValue())));
+			labelToGoTime.setText(String.valueOf(((int) evt.getNewValue())));
 			break;
 
 		case Race.PROPERTY_COMPETITORS_VERSION:
@@ -194,7 +224,7 @@ public class FinishLineLogFrame extends JFrame {
 			break;
 
 		case Race.PROPERTY_TRACK_NAME:
-			trackName.setText(evt.getNewValue().toString());
+			labelTrackName.setText(evt.getNewValue().toString());
 			break;
 
 		case Race.PROPERTY_TRACK_LENGTH:

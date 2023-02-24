@@ -2,15 +2,15 @@ package com.zacharyfox.rmonitor.leaderboard.frames;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.time.Duration;
 import java.util.stream.Collectors;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
@@ -30,105 +30,88 @@ public class StartSignalFrame extends JFrame {
 
 	private static final String FONT_NAME = "Tahoma";
 
-	private JPanel contentPanel;
-	private JTextField tfRaceName;
-	private JTextArea tfFlag;
-	private JTextField tfRaceTime;
-	private JButton cancelButton;
-	private transient PropertyChangeListener propertyChangeListener = e -> SwingUtilities
-			.invokeLater(() -> updateDisplay(e));
+	private JTextField textFieldRaceName;
+	private JTextArea textFieldFlag;
+	private JTextField textFieldRaceTime;
 
-	private RaceManager raceManager;
-
-	private static StartSignalFrame instance;
-
-	/**
-	 * Create the dialog.
-	 */
 	public StartSignalFrame() {
-		raceManager = RaceManager.getInstance();
-		Race race = raceManager.getCurrentRace();
-
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 698, 590);
 		setExtendedState(Frame.MAXIMIZED_BOTH);
 
-		contentPanel = new JPanel();
-		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new BorderLayout(0, 0));
+		initContent();
 
-		tfRaceName = new JTextField();
-		tfRaceName.setHorizontalAlignment(SwingConstants.CENTER);
-		tfRaceName.setForeground(Color.WHITE);
-		tfRaceName.setBackground(Color.BLACK);
-		tfRaceName.setFont(new Font(FONT_NAME, Font.PLAIN, 80));
-		tfRaceName.setText(race.getName());
-		tfRaceName.setColumns(50);
-		contentPanel.add(tfRaceName, BorderLayout.NORTH);
+		PropertyChangeListener listener = e -> SwingUtilities.invokeLater(() -> updateDisplay(e));
+		addWindowListener(new WindowAdapter() {
 
-		tfFlag = new JTextArea();
-		tfFlag.setEditable(false);
-		tfFlag.setWrapStyleWord(true);
-		tfFlag.setLineWrap(true);
-		tfFlag.setForeground(Color.WHITE);
-		tfFlag.setFont(new Font(FONT_NAME, Font.PLAIN, 80));
-		tfFlag.setRows(5);
-		tfFlag.setBackground(Color.BLACK);
-		tfFlag.setColumns(20);
-		contentPanel.add(tfFlag, BorderLayout.CENTER);
-
-		setFlagColor(race.getFlagStatus());
-
-		tfRaceTime = new JTextField();
-		tfRaceTime.setText("00:00:00");
-		tfRaceTime.setHorizontalAlignment(SwingConstants.CENTER);
-		tfRaceTime.setBackground(Color.BLACK);
-		tfRaceTime.setForeground(Color.WHITE);
-		tfRaceTime.setFont(new Font(FONT_NAME, Font.PLAIN, 100));
-		tfRaceTime.setColumns(10);
-		contentPanel.add(tfRaceTime, BorderLayout.SOUTH);
-
-		JPanel buttonPane = new JPanel();
-		buttonPane.setBackground(Color.BLACK);
-		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		getContentPane().add(buttonPane, BorderLayout.SOUTH);
-
-		cancelButton = new JButton("X");
-		cancelButton.setFont(new Font(FONT_NAME, Font.BOLD, 11));
-		cancelButton.setMnemonic('x');
-		cancelButton.setBackground(Color.BLACK);
-		cancelButton.setForeground(Color.RED);
-		cancelButton.setActionCommand("Cancel");
-		cancelButton.addActionListener(e -> {
-			instance.setVisible(false);
-			raceManager.removePropertyChangeListener(propertyChangeListener);
-			instance.dispose();
+			@Override
+			public void windowClosed(WindowEvent e) {
+				RaceManager.getInstance().removePropertyChangeListener(listener);
+			}
 		});
+		RaceManager.getInstance().addPropertyChangeListener(listener);
+	}
 
-		buttonPane.add(cancelButton);
+	private void initContent() {
+		Race race = RaceManager.getInstance().getCurrentRace();
+		getContentPane().setLayout(new BorderLayout());
 
-		raceManager.addPropertyChangeListener(propertyChangeListener);
+		JPanel panelMain = new JPanel();
+		panelMain.setBorder(new EmptyBorder(5, 5, 5, 5));
+		panelMain.setLayout(new BorderLayout(0, 0));
+		getContentPane().add(panelMain, BorderLayout.CENTER);
+
+		textFieldRaceName = new JTextField();
+		textFieldRaceName.setHorizontalAlignment(SwingConstants.CENTER);
+		textFieldRaceName.setBackground(Color.BLACK);
+		textFieldRaceName.setForeground(Color.WHITE);
+		textFieldRaceName.setFont(new Font(FONT_NAME, Font.PLAIN, 80));
+		textFieldRaceName.setColumns(50);
+		textFieldRaceName.setText(race.getName());
+		panelMain.add(textFieldRaceName, BorderLayout.NORTH);
+
+		textFieldFlag = new JTextArea();
+		textFieldFlag.setBackground(Color.BLACK);
+		textFieldFlag.setForeground(Color.WHITE);
+		textFieldFlag.setFont(new Font(FONT_NAME, Font.PLAIN, 80));
+		textFieldFlag.setColumns(20);
+		textFieldFlag.setRows(5);
+		textFieldFlag.setEditable(false);
+		textFieldFlag.setLineWrap(true);
+		textFieldFlag.setWrapStyleWord(true);
+		panelMain.add(textFieldFlag, BorderLayout.CENTER);
+
+		textFieldRaceTime = new JTextField();
+		textFieldRaceTime.setHorizontalAlignment(SwingConstants.CENTER);
+		textFieldRaceTime.setBackground(Color.BLACK);
+		textFieldRaceTime.setForeground(Color.WHITE);
+		textFieldRaceTime.setFont(new Font(FONT_NAME, Font.PLAIN, 100));
+		textFieldRaceTime.setColumns(10);
+		textFieldRaceTime.setText("00:00:00");
+		panelMain.add(textFieldRaceTime, BorderLayout.SOUTH);
+
+		updateFlagColor(race.getFlagStatus());
 	}
 
 	private void updateDisplay(PropertyChangeEvent evt) {
 		switch (evt.getPropertyName()) {
 		case Race.PROPERTY_RACE_NAME:
-			tfRaceName.setText((String) evt.getNewValue());
+			textFieldRaceName.setText((String) evt.getNewValue());
 			break;
 
 		case Race.PROPERTY_ELAPSED_TIME:
-			tfRaceTime.setText(DurationUtil.format((Duration) evt.getNewValue()));
+			textFieldRaceTime.setText(DurationUtil.format((Duration) evt.getNewValue()));
 			break;
 
 		case Race.PROPERTY_FLAG_STATUS:
-			setFlagColor((FlagStatus) evt.getNewValue());
-			tfFlag.setText("");
+			updateFlagColor((FlagStatus) evt.getNewValue());
+			textFieldFlag.setText("");
 			break;
 
 		case Race.PROPERTY_COMPETITORS_VERSION:
-			if (raceManager.getCurrentRace().getFlagStatus() == Race.FlagStatus.PURPLE) {
-				tfFlag.setText(createRegNumberString());
+			Race race = RaceManager.getInstance().getCurrentRace();
+			if (race.getFlagStatus() == Race.FlagStatus.PURPLE) {
+				textFieldFlag.setText(createRegNumberString(race));
 			}
 			break;
 
@@ -137,12 +120,7 @@ public class StartSignalFrame extends JFrame {
 		}
 	}
 
-	private String createRegNumberString() {
-		return raceManager.getCurrentRace().getCompetitors().stream().map(Competitor::getRegNumber)
-				.collect(Collectors.joining(", "));
-	}
-
-	private void setFlagColor(FlagStatus flagStatus) {
+	private void updateFlagColor(FlagStatus flagStatus) {
 		Color color = switch (flagStatus) {
 		case GREEN -> Color.GREEN;
 		case YELLOW -> Color.YELLOW;
@@ -151,14 +129,10 @@ public class StartSignalFrame extends JFrame {
 		case PURPLE -> new Color(98, 0, 255);
 		default -> Color.BLACK;
 		};
-		tfFlag.setBackground(color);
+		textFieldFlag.setBackground(color);
 	}
 
-	public static StartSignalFrame getInstance() {
-		if (instance == null || !instance.isDisplayable()) {
-			instance = new StartSignalFrame();
-		}
-
-		return instance;
+	private String createRegNumberString(Race race) {
+		return race.getCompetitors().stream().map(Competitor::getRegNumber).collect(Collectors.joining(", "));
 	}
 }

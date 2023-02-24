@@ -7,11 +7,12 @@ import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.time.Duration;
 
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -37,138 +38,126 @@ public class LapCounterFrame extends JFrame {
 
 	private static final String PROP_LAP_SWITCH_DELAY = "lapCounter.lapSwitchDelay";
 
-	private JPanel contentPanel;
-	private JTextField tfLaps;
-	private JButton cancelButton;
-	private int lapSwitchDelay;
-	private transient PropertyChangeListener propertyChangeListener = e -> SwingUtilities
-			.invokeLater(() -> updateDisplay(e));
-	private JTextField tfElapsedTime;
-	private JTextField tfFlag;
-	private JPanel infoPanel;
-	private JLabel lblElapsedTime;
-	private JLabel lblDelay;
-	private JTextField tfDelay;
-	private JCheckBox chckbxCountUpwards;
+	private JTextField textFieldLaps;
+	private JTextField textFieldFlag;
+	private JTextField textFieldElapsedTime;
+	private JTextField textFieldDelay;
+	private JCheckBox checkBoxCountUpwards;
 
 	private Timer lapUpdateDelayTimer;
-
-	private RaceManager raceManager;
-	private ConfigurationManager configManager;
-
-	private static LapCounterFrame instance;
+	private int lapSwitchDelay;
 
 	public LapCounterFrame() {
-		raceManager = RaceManager.getInstance();
-		configManager = ConfigurationManager.getInstance();
+		lapSwitchDelay = Integer.parseInt(ConfigurationManager.getInstance().getConfig(PROP_LAP_SWITCH_DELAY, "5"));
 
-		lapSwitchDelay = Integer.parseInt(configManager.getConfig(PROP_LAP_SWITCH_DELAY, "5"));
-
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 1446, 840);
 		setExtendedState(Frame.MAXIMIZED_BOTH);
 
-		contentPanel = new JPanel();
+		initContent();
+
+		PropertyChangeListener listener = e -> SwingUtilities.invokeLater(() -> updateDisplay(e));
+		addWindowListener(new WindowAdapter() {
+
+			@Override
+			public void windowClosed(WindowEvent e) {
+				RaceManager.getInstance().removePropertyChangeListener(listener);
+			}
+		});
+		RaceManager.getInstance().addPropertyChangeListener(listener);
+	}
+
+	private void initContent() {
 		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new BorderLayout(0, 0));
+		getContentPane().add(createPanelLaps(), BorderLayout.CENTER);
 
-		tfLaps = new JTextField();
-		Font theFont = new Font(FONT_NAME, Font.PLAIN, (int) (getHeight() * .85));// 400
-		tfLaps.setFont(theFont);
-		tfLaps.setEditable(false);
-		tfLaps.setHorizontalAlignment(SwingConstants.CENTER);
-		tfLaps.setForeground(Color.WHITE);
-		tfLaps.setText(Integer.toString(raceManager.getCurrentRace().getLapsToGo()));
-		tfLaps.setBackground(Color.BLACK);
-		contentPanel.add(tfLaps, BorderLayout.CENTER);
-		tfLaps.setColumns(3);
+		JPanel panelSouth = new JPanel(new BorderLayout());
+		panelSouth.add(createPanelInfo(), BorderLayout.WEST);
 
-		contentPanel.addComponentListener(new ComponentAdapter() {
+		textFieldFlag = new JTextField();
+		textFieldFlag.setBackground(Color.BLACK);
+		textFieldFlag.setColumns(30);
+		panelSouth.add(textFieldFlag, BorderLayout.CENTER);
+
+		getContentPane().add(panelSouth, BorderLayout.SOUTH);
+
+		updateFlagColor(RaceManager.getInstance().getCurrentRace().getFlagStatus());
+	}
+
+	private JPanel createPanelLaps() {
+		JPanel panelLaps = new JPanel();
+		panelLaps.setLayout(new BorderLayout(0, 0));
+		panelLaps.setBorder(new EmptyBorder(5, 5, 5, 5));
+
+		textFieldLaps = new JTextField();
+		textFieldLaps.setBackground(Color.BLACK);
+		textFieldLaps.setForeground(Color.WHITE);
+		textFieldLaps.setFont(new Font(FONT_NAME, Font.PLAIN, (int) (getHeight() * .85)));
+		textFieldLaps.setEditable(false);
+		textFieldLaps.setHorizontalAlignment(SwingConstants.CENTER);
+		textFieldLaps.setColumns(3);
+		textFieldLaps.setText(Integer.toString(RaceManager.getInstance().getCurrentRace().getLapsToGo()));
+		panelLaps.add(textFieldLaps, BorderLayout.CENTER);
+		panelLaps.addComponentListener(new ComponentAdapter() {
 
 			@Override
 			public void componentResized(ComponentEvent e) {
-				// Recalculate the variable you mentioned
-				Font theFont = new Font(FONT_NAME, Font.PLAIN, (int) (e.getComponent().getHeight() * .85));// 400
-				tfLaps.setFont(theFont);
+				Font font = new Font(FONT_NAME, Font.PLAIN, (int) (e.getComponent().getHeight() * .85));
+				textFieldLaps.setFont(font);
 			}
 		});
 
-		JPanel buttonPane = new JPanel();
-		buttonPane.setBackground(Color.BLACK);
-		getContentPane().add(buttonPane, BorderLayout.SOUTH);
-		buttonPane.setLayout(new BorderLayout(0, 0));
+		return panelLaps;
+	}
 
-		cancelButton = new JButton("X");
-		cancelButton.setFont(new Font(FONT_NAME, Font.BOLD, 11));
-		cancelButton.setMnemonic('x');
-		cancelButton.setBackground(Color.BLACK);
-		cancelButton.setForeground(Color.RED);
-		cancelButton.setActionCommand("Cancel");
-		cancelButton.addActionListener(e -> {
-			instance.setVisible(false);
-			raceManager.removePropertyChangeListener(propertyChangeListener);
-			instance.dispose();
-		});
+	private JPanel createPanelInfo() {
+		JPanel panelInfo = new JPanel();
+		panelInfo.setBackground(Color.BLACK);
+		panelInfo.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-		buttonPane.add(cancelButton, BorderLayout.EAST);
+		JLabel labelElapsedTime = new JLabel("Elapsed Time:");
+		labelElapsedTime.setForeground(Color.WHITE);
+		panelInfo.add(labelElapsedTime);
 
-		tfFlag = new JTextField();
-		tfFlag.setBackground(Color.BLACK);
-		buttonPane.add(tfFlag, BorderLayout.CENTER);
-		tfFlag.setColumns(30);
+		textFieldElapsedTime = new JTextField();
+		textFieldElapsedTime.setEditable(false);
+		textFieldElapsedTime.setEnabled(false);
+		textFieldElapsedTime.setColumns(8);
+		panelInfo.add(textFieldElapsedTime);
 
-		infoPanel = new JPanel();
-		infoPanel.setBackground(Color.BLACK);
-		FlowLayout flowLayout = (FlowLayout) infoPanel.getLayout();
-		flowLayout.setAlignment(FlowLayout.LEFT);
-		buttonPane.add(infoPanel, BorderLayout.WEST);
+		JLabel labelDelay = new JLabel("Delay:");
+		labelDelay.setForeground(Color.WHITE);
+		panelInfo.add(labelDelay);
 
-		lblElapsedTime = new JLabel("Elapsed Time:");
-		lblElapsedTime.setForeground(Color.WHITE);
-		infoPanel.add(lblElapsedTime);
-
-		tfElapsedTime = new JTextField();
-		tfElapsedTime.setEditable(false);
-		tfElapsedTime.setEnabled(false);
-		tfElapsedTime.setColumns(8);
-		infoPanel.add(tfElapsedTime);
-
-		lblDelay = new JLabel("Delay:");
-		lblDelay.setForeground(Color.WHITE);
-		infoPanel.add(lblDelay);
-
-		tfDelay = new JTextField();
-		tfDelay.setColumns(4);
-		tfDelay.setText(Integer.toString(lapSwitchDelay));
-		infoPanel.add(tfDelay);
-
-		chckbxCountUpwards = new JCheckBox("Count Laps upwards");
-		chckbxCountUpwards.setBackground(Color.BLACK);
-		chckbxCountUpwards.setForeground(Color.WHITE);
-		chckbxCountUpwards.setSelected(false);
-		infoPanel.add(chckbxCountUpwards);
-
-		tfDelay.getDocument().addDocumentListener(new DocumentListener() {
+		textFieldDelay = new JTextField();
+		textFieldDelay.setColumns(4);
+		textFieldDelay.setText(Integer.toString(lapSwitchDelay));
+		textFieldDelay.getDocument().addDocumentListener(new DocumentListener() {
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				updateLapSwitchDelay(tfDelay.getText());
+				updateLapSwitchDelay(textFieldDelay.getText());
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				updateLapSwitchDelay(tfDelay.getText());
+				updateLapSwitchDelay(textFieldDelay.getText());
 			}
 
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				updateLapSwitchDelay(tfDelay.getText());
+				updateLapSwitchDelay(textFieldDelay.getText());
 			}
 		});
+		panelInfo.add(textFieldDelay);
 
-		updateFlagColor(raceManager.getCurrentRace().getFlagStatus());
-		raceManager.addPropertyChangeListener(propertyChangeListener);
+		checkBoxCountUpwards = new JCheckBox("Count Laps upwards");
+		checkBoxCountUpwards.setBackground(Color.BLACK);
+		checkBoxCountUpwards.setForeground(Color.WHITE);
+		checkBoxCountUpwards.setSelected(false);
+		panelInfo.add(checkBoxCountUpwards);
+
+		return panelInfo;
 	}
 
 	private void updateLapSwitchDelay(String delayText) {
@@ -177,7 +166,7 @@ public class LapCounterFrame extends JFrame {
 
 			if (newDelay != lapSwitchDelay) {
 				lapSwitchDelay = newDelay;
-				configManager.setConfig(PROP_LAP_SWITCH_DELAY, delayText);
+				ConfigurationManager.getInstance().setConfig(PROP_LAP_SWITCH_DELAY, delayText);
 			}
 		}
 	}
@@ -185,20 +174,20 @@ public class LapCounterFrame extends JFrame {
 	private void updateDisplay(PropertyChangeEvent e) {
 		switch (e.getPropertyName()) {
 		case Race.PROPERTY_LAPS_COMPLETE:
-			if (chckbxCountUpwards.isSelected() && !e.getOldValue().equals(e.getNewValue())) {
+			if (checkBoxCountUpwards.isSelected() && !e.getOldValue().equals(e.getNewValue())) {
 				updateDisplayedLapsCompleted((int) e.getOldValue(), (int) e.getNewValue());
 			}
 			break;
 
 		case Race.PROPERTY_LAPS_TO_GO:
-			if (!chckbxCountUpwards.isSelected() && !e.getOldValue().equals(e.getNewValue())) {
+			if (!checkBoxCountUpwards.isSelected() && !e.getOldValue().equals(e.getNewValue())) {
 				updateDisplayedLapsToGo((int) e.getOldValue(), (int) e.getNewValue());
 			}
 			break;
 
 		case Race.PROPERTY_ELAPSED_TIME:
-			Duration elapsedTime = raceManager.getCurrentRace().getElapsedTime();
-			tfElapsedTime.setText(DurationUtil.format(elapsedTime));
+			Duration elapsedTime = RaceManager.getInstance().getCurrentRace().getElapsedTime();
+			textFieldElapsedTime.setText(DurationUtil.format(elapsedTime));
 			break;
 
 		case Race.PROPERTY_FLAG_STATUS:
@@ -211,22 +200,23 @@ public class LapCounterFrame extends JFrame {
 	}
 
 	private void updateDisplayedLapsToGo(int oldLaps, int newLaps) {
-		Race race = raceManager.getCurrentRace();
+		Race race = RaceManager.getInstance().getCurrentRace();
 		FlagStatus flagStatus = race.getFlagStatus();
 
 		if (lapUpdateDelayTimer != null) {
 			lapUpdateDelayTimer.stop();
-			tfLaps.setText(Integer.toString(oldLaps));
+			textFieldLaps.setText(Integer.toString(oldLaps));
 		}
 
 		if (flagStatus == Race.FlagStatus.PURPLE || flagStatus == Race.FlagStatus.NONE) {
 			if (newLaps > 0) {
-				tfLaps.setText(Integer.toString(newLaps));
+				textFieldLaps.setText(Integer.toString(newLaps));
 			} else {
-				tfLaps.setText("-");
+				textFieldLaps.setText("-");
 			}
 		} else {
-			lapUpdateDelayTimer = new Timer(lapSwitchDelay * 1000, e -> tfLaps.setText(Integer.toString(newLaps)));
+			lapUpdateDelayTimer = new Timer(lapSwitchDelay * 1000,
+					e -> textFieldLaps.setText(Integer.toString(newLaps)));
 			lapUpdateDelayTimer.setRepeats(false);
 			lapUpdateDelayTimer.start();
 		}
@@ -235,14 +225,14 @@ public class LapCounterFrame extends JFrame {
 	private void updateDisplayedLapsCompleted(int oldLaps, int newLaps) {
 		if (lapUpdateDelayTimer != null) {
 			lapUpdateDelayTimer.stop();
-			tfLaps.setText(Integer.toString(oldLaps));
+			textFieldLaps.setText(Integer.toString(oldLaps));
 		}
 
 		lapUpdateDelayTimer = new Timer(lapSwitchDelay * 1000, e -> {
 			if (newLaps >= 0) {
-				tfLaps.setText(Integer.toString(newLaps));
+				textFieldLaps.setText(Integer.toString(newLaps));
 			} else {
-				tfLaps.setText("-");
+				textFieldLaps.setText("-");
 			}
 		});
 		lapUpdateDelayTimer.setRepeats(false);
@@ -258,14 +248,6 @@ public class LapCounterFrame extends JFrame {
 		case PURPLE -> new Color(98, 0, 255);
 		default -> Color.BLACK;
 		};
-		tfFlag.setBackground(color);
-	}
-
-	public static LapCounterFrame getInstance() {
-		if (instance == null || !instance.isDisplayable()) {
-			instance = new LapCounterFrame();
-		}
-
-		return instance;
+		textFieldFlag.setBackground(color);
 	}
 }

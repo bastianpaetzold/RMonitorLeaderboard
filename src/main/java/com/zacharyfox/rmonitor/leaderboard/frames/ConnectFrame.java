@@ -20,53 +20,57 @@ public class ConnectFrame extends JFrame {
 	private static final String ACTION_DISCONNECT = "Disconnect";
 	private static final String ACTION_CONNECT = "Connect";
 
+	private JTextField textFieldIP;
+	private JTextField textFieldPort;
+	private JButton buttonConnect;
+
 	private static ConnectFrame instance;
 
-	private JButton connectButton;
-	private JTextField ip;
-	private JTextField port;
-	private JLabel ipLabel;
-	private JLabel portLabel;
-
 	private ConnectFrame() {
-		RMonitorClient client = RMonitorClient.getInstance();
-
-		getContentPane().setLayout(new MigLayout("", "[][grow]", "[][][]"));
-
-		ipLabel = new JLabel("Scoreboard IP:");
-		ipLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		getContentPane().add(ipLabel, "cell 0 0,alignx trailing");
 		setBounds(100, 100, 400, 150);
 
-		ip = new JTextField();
-		ip.setText(client.getHost());
-		getContentPane().add(ip, "cell 1 0,growx");
-		ip.setColumns(10);
+		initContent();
 
-		portLabel = new JLabel("Scoreboard Port:");
-		portLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		getContentPane().add(portLabel, "cell 0 1,alignx trailing");
-
-		port = new JTextField();
-		port.setText(Integer.toString(client.getPort()));
-		getContentPane().add(port, "cell 1 1,growx");
-		port.setColumns(10);
-
-		connectButton = new JButton(ACTION_CONNECT);
-		connectButton.setHorizontalAlignment(SwingConstants.RIGHT);
-		connectButton.addActionListener(e -> handleClientAction(e, client));
-		getContentPane().add(connectButton, "cell 1 2,alignx right");
-
+		RMonitorClient client = RMonitorClient.getInstance();
 		client.addStateChangeListener(
 				(oldState, newState) -> SwingUtilities.invokeLater(() -> handleClientState(newState)));
 		handleClientState(client.getCurrentState());
 	}
 
-	private void handleClientAction(ActionEvent event, RMonitorClient client) {
+	private void initContent() {
+		RMonitorClient client = RMonitorClient.getInstance();
+		getContentPane().setLayout(new MigLayout("", "[][grow]", "[][][]"));
+
+		JLabel labelIP = new JLabel("Scoreboard IP:");
+		labelIP.setHorizontalAlignment(SwingConstants.RIGHT);
+		getContentPane().add(labelIP, "cell 0 0,alignx trailing");
+
+		textFieldIP = new JTextField();
+		textFieldIP.setText(client.getHost());
+		textFieldIP.setColumns(10);
+		getContentPane().add(textFieldIP, "cell 1 0,growx");
+
+		JLabel labelPort = new JLabel("Scoreboard Port:");
+		labelPort.setHorizontalAlignment(SwingConstants.RIGHT);
+		getContentPane().add(labelPort, "cell 0 1,alignx trailing");
+
+		textFieldPort = new JTextField();
+		textFieldPort.setText(Integer.toString(client.getPort()));
+		textFieldPort.setColumns(10);
+		getContentPane().add(textFieldPort, "cell 1 1,growx");
+
+		buttonConnect = new JButton(ACTION_CONNECT);
+		buttonConnect.setHorizontalAlignment(SwingConstants.RIGHT);
+		buttonConnect.addActionListener(this::handleClientAction);
+		getContentPane().add(buttonConnect, "cell 1 2,alignx right");
+	}
+
+	private void handleClientAction(ActionEvent event) {
+		RMonitorClient client = RMonitorClient.getInstance();
 		switch (event.getActionCommand()) {
 		case ACTION_CONNECT:
-			client.setHost(ip.getText());
-			client.setPort(Integer.parseInt(port.getText()));
+			client.setHost(textFieldIP.getText());
+			client.setPort(Integer.parseInt(textFieldPort.getText()));
 			client.start();
 			break;
 
@@ -83,30 +87,30 @@ public class ConnectFrame extends JFrame {
 		switch (state) {
 		case STARTED, CONNECTING:
 			setTitle("Connecting...");
-			connectButton.setText(ACTION_DISCONNECT);
-			ip.setEnabled(false);
-			port.setEnabled(false);
+			buttonConnect.setText(ACTION_DISCONNECT);
+			textFieldIP.setEnabled(false);
+			textFieldPort.setEnabled(false);
 			break;
 
 		case CONNECTED:
 			setTitle("Connected");
-			ip.setEnabled(false);
-			port.setEnabled(false);
+			textFieldIP.setEnabled(false);
+			textFieldPort.setEnabled(false);
 
 			ConnectFrame.this.setVisible(false);
 			break;
 
 		case STOPPING:
 			setTitle("Disconnecting...");
-			ip.setEnabled(false);
-			port.setEnabled(false);
+			textFieldIP.setEnabled(false);
+			textFieldPort.setEnabled(false);
 			break;
 
 		case STOPPED:
 			setTitle("Disconnected");
-			connectButton.setText(ACTION_CONNECT);
-			ip.setEnabled(true);
-			port.setEnabled(true);
+			buttonConnect.setText(ACTION_CONNECT);
+			textFieldIP.setEnabled(true);
+			textFieldPort.setEnabled(true);
 			break;
 
 		default:

@@ -23,92 +23,79 @@ import net.miginfocom.swing.MigLayout;
 @SuppressWarnings("serial")
 public class EstimatorFrame extends JFrame {
 
-	private static final RaceManager raceManager = RaceManager.getInstance();
-
-	private final JLabel estimatedLapsAvg;
-	private final JLabel estimatedLapsBest;
-	private final JLabel estimatedTimeAvg;
-	private final JLabel estimatedTimeBest;
-	private final JLabel lapsComplete;
-	private final JLabel lblEstimatedLapsAvg;
-	private final JLabel lblEstimatedLapsBest;
-	private final JLabel lblLapsComplete;
-	private final JLabel lblScheduledLaps;
-	private final JLabel lblScheduledTime;
-	private final JLabel lblTopThree;
-	private final JLabel scheduledLaps;
-	private final JLabel scheduledTime;
-	private final JSeparator separator = new JSeparator();
-	private final JLabel topThree;
+	private JLabel labelScheduledLapsValue;
+	private JLabel labelScheduledTimeValue;
+	private JLabel labelLapsCompletedValue;
+	private JLabel labelEstimatedLapsByAvgValue;
+	private JLabel labelEstimatedTimeByAvgValue;
+	private JLabel labelEstimatedLapsByBestValue;
+	private JLabel labelEstimatedTimeByBestValue;
+	private JLabel labelTopThreeValue;
 
 	private static EstimatorFrame instance;
 
 	private EstimatorFrame() {
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		setBounds(100, 100, 450, 200);
+
+		initContent();
+
+		PropertyChangeListener listener = e -> SwingUtilities.invokeLater(() -> updateDisplay(e));
+		Estimator.getInstance().addPropertyChangeListener(listener);
+		RaceManager.getInstance().addPropertyChangeListener(listener);
+	}
+
+	private void initContent() {
 		Estimator estimator = Estimator.getInstance();
-		Race race = raceManager.getCurrentRace();
+		Race race = RaceManager.getInstance().getCurrentRace();
 
 		getContentPane().setLayout(new MigLayout("", "[grow][]", "[100.00,grow][][][][][]"));
 
-		lblScheduledLaps = new JLabel("Scheduled Laps:");
-		getContentPane().add(lblScheduledLaps, "cell 0 0,alignx left,aligny bottom");
-		scheduledLaps = new JLabel("");
-		getContentPane().add(scheduledLaps, "cell 1 0,alignx left,aligny bottom");
+		JLabel labelScheduledLaps = new JLabel("Scheduled Laps:");
+		getContentPane().add(labelScheduledLaps, "cell 0 0,alignx left,aligny bottom");
+		labelScheduledLapsValue = new JLabel(Integer.toString(race.getScheduledLaps()));
+		getContentPane().add(labelScheduledLapsValue, "cell 1 0,alignx left,aligny bottom");
 
-		lblScheduledTime = new JLabel("Scheduled Time:");
-		getContentPane().add(lblScheduledTime, "cell 0 1,alignx left,aligny bottom");
-		scheduledTime = new JLabel("");
-		getContentPane().add(scheduledTime, "cell 1 1,alignx left,aligny bottom");
+		JLabel labelScheduledTime = new JLabel("Scheduled Time:");
+		getContentPane().add(labelScheduledTime, "cell 0 1,alignx left,aligny bottom");
+		labelScheduledTimeValue = new JLabel(DurationUtil.format(race.getScheduledTime()));
+		getContentPane().add(labelScheduledTimeValue, "cell 1 1,alignx left,aligny bottom");
 
-		lblLapsComplete = new JLabel("Laps Complete:");
-		getContentPane().add(lblLapsComplete, "cell 0 2,alignx left,aligny bottom");
-		lapsComplete = new JLabel("");
-		getContentPane().add(lapsComplete, "cell 1 2,alignx left,aligny bottom");
+		JLabel labelLapsCompleted = new JLabel("Laps Complete:");
+		getContentPane().add(labelLapsCompleted, "cell 0 2,alignx left,aligny bottom");
+		labelLapsCompletedValue = new JLabel(Integer.toString(race.getLapsComplete()));
+		getContentPane().add(labelLapsCompletedValue, "cell 1 2,alignx left,aligny bottom");
 
-		lblEstimatedLapsBest = new JLabel("Estimated Laps (by best):");
-		getContentPane().add(lblEstimatedLapsBest, "cell 0 3,alignx left,aligny bottom");
-		estimatedLapsBest = new JLabel("");
-		getContentPane().add(estimatedLapsBest, "cell 1 3,alignx left,aligny bottom");
-		estimatedTimeBest = new JLabel("");
-		getContentPane().add(estimatedTimeBest, "cell 1 3,alignx left,aligny bottom");
+		JLabel labelEstimatedLapsBest = new JLabel("Estimated Laps (by best):");
+		getContentPane().add(labelEstimatedLapsBest, "cell 0 3,alignx left,aligny bottom");
+		labelEstimatedLapsByBestValue = new JLabel(Integer.toString(estimator.getEstimatedLapsByBest()));
+		getContentPane().add(labelEstimatedLapsByBestValue, "cell 1 3,alignx left,aligny bottom");
+		labelEstimatedTimeByBestValue = new JLabel(" @ " + DurationUtil.format(estimator.getEstimatedTimeByBest()));
+		getContentPane().add(labelEstimatedTimeByBestValue, "cell 1 3,alignx left,aligny bottom");
 
-		lblEstimatedLapsAvg = new JLabel("Estimated Laps (by average):");
-		getContentPane().add(lblEstimatedLapsAvg, "cell 0 4,alignx left,aligny bottom");
-		estimatedLapsAvg = new JLabel("");
-		getContentPane().add(estimatedLapsAvg, "cell 1 4,alignx left,aligny bottom");
-		estimatedTimeAvg = new JLabel("");
-		getContentPane().add(estimatedTimeAvg, "cell 1 4,alignx left,aligny bottom");
+		JLabel labelEstimatedLapsAvg = new JLabel("Estimated Laps (by average):");
+		getContentPane().add(labelEstimatedLapsAvg, "cell 0 4,alignx left,aligny bottom");
+		labelEstimatedLapsByAvgValue = new JLabel(Integer.toString(estimator.getEstimatedLapsByAvg()));
+		getContentPane().add(labelEstimatedLapsByAvgValue, "cell 1 4,alignx left,aligny bottom");
+		labelEstimatedTimeByAvgValue = new JLabel(" @ " + DurationUtil.format(estimator.getEstimatedTimeByAvg()));
+		getContentPane().add(labelEstimatedTimeByAvgValue, "cell 1 4,alignx left,aligny bottom");
 
+		JSeparator separator = new JSeparator();
 		separator.setForeground(Color.BLACK);
 		separator.setBorder(null);
 		getContentPane().add(separator, "cell 0 5 2 1,growx,aligny top");
 
-		lblTopThree = new JLabel("Top Three:");
-		getContentPane().add(lblTopThree, "cell 0 6,alignx left,aligny top");
-		topThree = new JLabel("");
-		getContentPane().add(topThree, "cell 1 6,alignx left,aligny top");
-
-		setBounds(100, 100, 450, 200);
-		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-		PropertyChangeListener listener = e -> SwingUtilities.invokeLater(() -> updateDisplay(e));
-		estimator.addPropertyChangeListener(listener);
-		raceManager.addPropertyChangeListener(listener);
-
-		estimatedLapsBest.setText(Integer.toString(estimator.getEstimatedLapsByBest()));
-		estimatedTimeBest.setText(" @ " + DurationUtil.format(estimator.getEstimatedTimeByBest()));
-		estimatedLapsAvg.setText(Integer.toString(estimator.getEstimatedLapsByAvg()));
-		estimatedTimeAvg.setText(" @ " + DurationUtil.format(estimator.getEstimatedTimeByAvg()));
-		scheduledLaps.setText(Integer.toString(race.getScheduledLaps()));
-		scheduledTime.setText(DurationUtil.format(race.getScheduledTime()));
-		lapsComplete.setText(Integer.toString(race.getLapsComplete()));
-		topThree.setText(createTopThreeText());
+		JLabel labelTopThree = new JLabel("Top Three:");
+		getContentPane().add(labelTopThree, "cell 0 6,alignx left,aligny top");
+		labelTopThreeValue = new JLabel(createTopThreeText());
+		getContentPane().add(labelTopThreeValue, "cell 1 6,alignx left,aligny top");
 	}
 
 	private String createTopThreeText() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("<html><body>");
 
-		Race race = raceManager.getCurrentRace();
+		Race race = RaceManager.getInstance().getCurrentRace();
 		for (int i = 1; i <= 3; i++) {
 			Competitor comp = race.getCompetitorByPosition(i);
 			if (comp != null) {
@@ -127,38 +114,38 @@ public class EstimatorFrame extends JFrame {
 	private void updateDisplay(PropertyChangeEvent evt) {
 		switch (evt.getPropertyName()) {
 		case Estimator.PROPERTY_ESTIMATED_LAPS_BY_AVG:
-			estimatedLapsAvg.setText((String) evt.getNewValue());
+			labelEstimatedLapsByAvgValue.setText((String) evt.getNewValue());
 			break;
 
 		case Estimator.PROPERTY_ESTIMATED_LAPS_BY_BEST:
-			estimatedLapsBest.setText((String) evt.getNewValue());
+			labelEstimatedLapsByBestValue.setText((String) evt.getNewValue());
 			break;
 
 		case Estimator.PROPERTY_ESTIMATED_TIME_BY_AVG:
-			estimatedTimeAvg.setText(" @ " + DurationUtil.format((Duration) evt.getNewValue()));
+			labelEstimatedTimeByAvgValue.setText(" @ " + DurationUtil.format((Duration) evt.getNewValue()));
 			break;
 
 		case Estimator.PROPERTY_ESTIMATED_TIME_BY_BEST:
-			estimatedTimeBest.setText(" @ " + DurationUtil.format((Duration) evt.getNewValue()));
+			labelEstimatedTimeByBestValue.setText(" @ " + DurationUtil.format((Duration) evt.getNewValue()));
 			break;
 
 		case Race.PROPERTY_SCHEDULED_LAPS:
-			scheduledLaps.setText((String) evt.getNewValue());
+			labelScheduledLapsValue.setText((String) evt.getNewValue());
 			break;
 
 		case Race.PROPERTY_SCHEDULED_TIME:
-			scheduledTime.setText(DurationUtil.format((Duration) evt.getNewValue()));
+			labelScheduledTimeValue.setText(DurationUtil.format((Duration) evt.getNewValue()));
 			break;
 
 		case Race.PROPERTY_LAPS_COMPLETE:
-			lapsComplete.setText(evt.getNewValue().toString());
+			labelLapsCompletedValue.setText(evt.getNewValue().toString());
 			break;
 
 		default:
 			break;
 		}
 
-		topThree.setText(createTopThreeText());
+		labelTopThreeValue.setText(createTopThreeText());
 	}
 
 	public static EstimatorFrame getInstance() {

@@ -1,11 +1,8 @@
 package com.zacharyfox.rmonitor.leaderboard;
 
-import java.awt.SystemColor;
-
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.UIManager;
 
 import com.zacharyfox.rmonitor.leaderboard.frames.AboutFrame;
 import com.zacharyfox.rmonitor.leaderboard.frames.ConnectFrame;
@@ -21,113 +18,74 @@ import com.zacharyfox.rmonitor.leaderboard.frames.StartSignalFrame;
 @SuppressWarnings("serial")
 public class LeaderBoardMenuBar extends JMenuBar {
 
-	private final JMenuItem aboutMenuItem;
-	private final JMenuItem connectMenuItem;
-	private final JMenuItem estimatorMenuItem;
-	private final JMenu fileMenu;
-	private final JMenuItem fullScreenMenuItem;
-	private final JMenu helpMenu;
-	private final JMenuItem playerMenuItem;
-	private final JMenuItem recorderMenuItem;
-	private final JMenuItem startSignalMenuItem;
-	private final JMenuItem lapCounterMenuItem;
-	private final JMenuItem finishLineLogMenuItem;
-	private final JMenuItem webServerMenuItem;
+	public LeaderBoardMenuBar(MainFrame mainFrame) {
+		add(createMenuFile());
+		add(createMenuView(mainFrame));
+		add(createMenuTools());
+		add(createMenuHelp());
+	}
 
-	private final JMenu toolsMenu;
-	private final JMenu viewMenu;
+	private JMenu createMenuFile() {
+		JMenu menuFile = new JMenu("File");
 
-	public LeaderBoardMenuBar(final MainFrame mainFrame) {
-		setBackground(SystemColor.menu);
-		setBorder(UIManager.getBorder("Menu.border"));
+		JMenuItem menuItemConnection = new JMenuItem("Connection");
+		menuItemConnection.addActionListener(e -> ConnectFrame.getInstance().setVisible(true));
+		menuFile.add(menuItemConnection);
 
-		fileMenu = new JMenu("File");
-		add(fileMenu);
+		return menuFile;
+	}
 
-		connectMenuItem = new JMenuItem("Connection");
-		connectMenuItem.addActionListener(evt -> {
-			ConnectFrame newFrame = ConnectFrame.getInstance();
-			newFrame.setVisible(true);
-		});
+	private JMenu createMenuTools() {
+		JMenu menuTools = new JMenu("Tools");
 
-		fileMenu.add(connectMenuItem);
+		JMenuItem menuItemRecorder = new JMenuItem("Recorder");
+		menuItemRecorder.addActionListener(e -> RecorderFrame.getInstance().setVisible(true));
+		menuTools.add(menuItemRecorder);
 
-		viewMenu = new JMenu("View");
-		add(viewMenu);
+		JMenuItem menuItemPlayer = new JMenuItem("Player");
+		menuItemPlayer.addActionListener(e -> PlayerFrame.getInstance().setVisible(true));
+		menuTools.add(menuItemPlayer);
 
-		fullScreenMenuItem = new JMenuItem("Full Screen");
-		fullScreenMenuItem.addActionListener(e -> mainFrame.goFullScreen());
-		viewMenu.add(fullScreenMenuItem);
+		JMenuItem menuItemEstimator = new JMenuItem("Estimator");
+		menuItemEstimator.addActionListener(e -> EstimatorFrame.getInstance().setVisible(true));
+		menuTools.add(menuItemEstimator);
 
-		toolsMenu = new JMenu("Tools");
-		add(toolsMenu);
+		JMenuItem menuItemStartSignal = new JMenuItem("Start Signal");
+		menuItemStartSignal.addActionListener(e -> new StartSignalFrame().setVisible(true));
+		menuTools.add(menuItemStartSignal);
 
-		recorderMenuItem = new JMenuItem("Recorder");
-		recorderMenuItem.addActionListener(evt -> {
-			RecorderFrame newFrame = RecorderFrame.getInstance();
-			newFrame.setVisible(true);
-		});
+		JMenuItem menuItemLapCounter = new JMenuItem("Lap Counter");
+		menuItemLapCounter.addActionListener(e -> new LapCounterFrame().setVisible(true));
+		menuTools.add(menuItemLapCounter);
 
-		toolsMenu.add(recorderMenuItem);
+		JMenuItem menuItemFinishLineLog = new JMenuItem("Finish Line Log");
+		menuItemFinishLineLog.addActionListener(e -> FinishLineLogConfigFrame.getInstance().setVisible(true));
+		menuTools.add(menuItemFinishLineLog);
 
-		playerMenuItem = new JMenuItem("Player");
-		playerMenuItem.addActionListener(evt -> {
-			PlayerFrame newFrame = PlayerFrame.getInstance();
-			newFrame.setVisible(true);
-		});
+		JMenuItem menuItemWebServer = new JMenuItem("Web Server");
+		menuItemWebServer.addActionListener(e -> ServerFrame.getInstance().setVisible(true));
+		menuTools.add(menuItemWebServer);
 
-		toolsMenu.add(playerMenuItem);
+		return menuTools;
+	}
 
-		estimatorMenuItem = new JMenuItem("Estimator");
-		estimatorMenuItem.addActionListener(evt -> {
-			EstimatorFrame newFrame = EstimatorFrame.getInstance();
-			newFrame.setVisible(true);
-		});
-		toolsMenu.add(estimatorMenuItem);
+	private JMenu createMenuView(MainFrame mainFrame) {
+		JMenu menuView = new JMenu("View");
 
-		startSignalMenuItem = new JMenuItem("Start Signal");
-		startSignalMenuItem.addActionListener(evt -> {
-			StartSignalFrame newFrame = StartSignalFrame.getInstance();
-			newFrame.setVisible(true);
-		});
-		toolsMenu.add(startSignalMenuItem);
+		JMenuItem menuItemFullScreen = new JMenuItem("Full Screen");
+		menuItemFullScreen.addActionListener(e -> mainFrame.enterFullScreen());
+		menuView.add(menuItemFullScreen);
 
-		lapCounterMenuItem = new JMenuItem("Lap Counter");
-		lapCounterMenuItem.addActionListener(evt -> {
-			LapCounterFrame newFrame = LapCounterFrame.getInstance();
-			newFrame.setVisible(true);
-		});
-		toolsMenu.add(lapCounterMenuItem);
+		return menuView;
+	}
 
-		finishLineLogMenuItem = new JMenuItem("Finish Line Log");
-		finishLineLogMenuItem.addActionListener(evt -> {
-			FinishLineLogConfigFrame newFrame = FinishLineLogConfigFrame.getInstance();
-			newFrame.setVisible(true);
-		});
-		toolsMenu.add(finishLineLogMenuItem);
+	private JMenu createMenuHelp() {
+		JMenu menuHelp = new JMenu("Help");
 
-		webServerMenuItem = new JMenuItem("Web Server");
-		webServerMenuItem.addActionListener(evt -> {
-			ServerFrame newFrame = ServerFrame.getInstance();
-			newFrame.setVisible(true);
-		});
-		toolsMenu.add(webServerMenuItem);
+		JMenuItem menuItemAbout = new JMenuItem("About");
+		menuItemAbout.addActionListener(e -> new AboutFrame().setVisible(true));
+		menuHelp.add(menuItemAbout);
 
-		helpMenu = new JMenu("Help");
-		helpMenu.setBorder(UIManager.getBorder("MenuItem.border"));
-		helpMenu.setBackground(SystemColor.menu);
-		add(helpMenu);
-
-		aboutMenuItem = new JMenuItem("About");
-		aboutMenuItem.setBorder(UIManager.getBorder("MenuItem.border"));
-		aboutMenuItem.setBackground(SystemColor.menu);
-		aboutMenuItem.addActionListener(e -> {
-			AboutFrame newFrame = new AboutFrame();
-			newFrame.setVisible(true);
-		});
-
-		helpMenu.add(aboutMenuItem);
-
-		setVisible(true);
+		return menuHelp;
 	}
 }

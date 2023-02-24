@@ -20,45 +20,46 @@ public class FinishLineLogConfigFrame extends JFrame {
 	private static final String ACTION_START = "Start";
 	private static final String ACTION_STOP = "Stop";
 
+	private JTextField textFieldRowHeight;
+	private JButton buttonStartStop;
+
 	private static FinishLineLogConfigFrame instance;
 
-	private JButton startButton;
-	private JTextField rowHeight;
-	private JLabel rowHeightLabel;
-
 	private FinishLineLogConfigFrame() {
-		ConfigurationManager configManager = ConfigurationManager.getInstance();
+		initContent();
+	}
 
+	private void initContent() {
 		getContentPane().setLayout(new MigLayout("", "[][grow]", "[][]"));
 		setBounds(100, 100, 400, 150);
 
-		rowHeightLabel = new JLabel("Row Height:");
-		rowHeightLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		getContentPane().add(rowHeightLabel, "cell 0 0,alignx trailing");
+		JLabel labelRowHeight = new JLabel("Row Height:");
+		labelRowHeight.setHorizontalAlignment(SwingConstants.RIGHT);
+		getContentPane().add(labelRowHeight, "cell 0 0,alignx trailing");
 
-		rowHeight = new JTextField();
-		rowHeight.setText(configManager.getConfig(PROP_ROW_HEIGHT, "24"));
-		getContentPane().add(rowHeight, "cell 1 0,growx");
-		rowHeight.setColumns(5);
+		textFieldRowHeight = new JTextField();
+		textFieldRowHeight.setText(ConfigurationManager.getInstance().getConfig(PROP_ROW_HEIGHT, "24"));
+		textFieldRowHeight.setColumns(5);
+		getContentPane().add(textFieldRowHeight, "cell 1 0,growx");
 
-		startButton = new JButton(ACTION_START);
-		startButton.setHorizontalAlignment(SwingConstants.RIGHT);
-		startButton.addActionListener(this::handleAction);
-		getContentPane().add(startButton, "cell 1 1,alignx right");
+		buttonStartStop = new JButton(ACTION_START);
+		buttonStartStop.setHorizontalAlignment(SwingConstants.RIGHT);
+		buttonStartStop.addActionListener(this::handleAction);
+		getContentPane().add(buttonStartStop, "cell 1 1,alignx right");
 	}
 
 	private void handleAction(ActionEvent evt) {
 		switch (evt.getActionCommand()) {
 		case ACTION_START:
-			int height = Integer.parseInt(rowHeight.getText());
+			int height = Integer.parseInt(textFieldRowHeight.getText());
 			ConfigurationManager.getInstance().setConfig(PROP_ROW_HEIGHT, height);
-			FinishLineLogFrame newFrame = new FinishLineLogFrame(height);
-			newFrame.setVisible(true);
-			this.setVisible(false);
+			FinishLineLogFrame finishLineLogFrame = new FinishLineLogFrame(height);
+			finishLineLogFrame.setVisible(true);
+			setVisible(false);
 			break;
 
 		case ACTION_STOP:
-			startButton.setText(ACTION_START);
+			buttonStartStop.setText(ACTION_START);
 			break;
 
 		default:

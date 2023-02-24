@@ -10,19 +10,20 @@ import net.miginfocom.swing.MigLayout;
 @SuppressWarnings("serial")
 public class AboutFrame extends JFrame {
 
-	private JTextPane aboutText;
-	private JButton okButton;
+	private JTextPane textAbout;
+	private JButton buttonOk;
 
 	public AboutFrame() {
-		getContentPane().setLayout(new MigLayout("", "[grow][]", "[100.00,grow][]"));
-		setBounds(100, 100, 450, 175);
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-		aboutText = new JTextPane();
-		aboutText.setBorder(null);
-		aboutText.setBackground(null);
-		aboutText.setContentType("text/html");
-		aboutText.setText(
+		getContentPane().setLayout(new MigLayout("", "[grow][]", "[100.00,grow][]"));
+		setBounds(100, 100, 450, 175);
+
+		textAbout = new JTextPane();
+		textAbout.setBorder(null);
+		textAbout.setBackground(null);
+		textAbout.setContentType("text/html");
+		textAbout.setText(
 				"""
 						<strong>RMonitorLeaderboard</strong>
 
@@ -30,14 +31,14 @@ public class AboutFrame extends JFrame {
 
 						<p>Project: <a href="https://github.com/bastianpaetzold/RMonitorLeaderboard">https://github.com/bastianpaetzold/RMonitorLeaderboard</a></p>
 						""");
-		getContentPane().add(aboutText, "cell 0 0 2 1,grow");
+		getContentPane().add(textAbout, "cell 0 0 2 1,grow");
 
-		okButton = new JButton("OK");
-		okButton.addActionListener(evt -> {
+		buttonOk = new JButton("OK");
+		buttonOk.addActionListener(evt -> {
 			setVisible(false); // you can't see me!
 			dispose();
 		});
 
-		getContentPane().add(okButton, "cell 1 1");
+		getContentPane().add(buttonOk, "cell 1 1");
 	}
 }

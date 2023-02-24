@@ -21,48 +21,52 @@ public class RecorderFrame extends JFrame {
 	private static final String ACTION_START = "Start";
 	private static final String ACTION_STOP = "Stop";
 
-	private final JTextField recorderFile;
-	private final JButton selectFileButton;
-	private final JButton startStop;
+	private JTextField textFieldFilePath;
+	private JButton buttonSelectFile;
+	private JButton buttonStartStop;
+
 	private static RecorderFrame instance;
 
 	private RecorderFrame() {
-		Recorder recorder = Recorder.getInstance();
-
-		getContentPane().setLayout(new MigLayout("", "[grow][][]", "[][]"));
 		setBounds(100, 100, 400, 150);
 
-		recorderFile = new JTextField();
-		recorderFile.setText(recorder.getFilePath().toString());
-		getContentPane().add(recorderFile, "cell 0 0,growx");
-		recorderFile.setColumns(10);
+		initContent();
 
-		selectFileButton = new JButton(ACTION_SAVE_AS);
-		selectFileButton.addActionListener(this::handleRecorderAction);
-		getContentPane().add(selectFileButton, "cell 1 0");
-
-		startStop = new JButton(ACTION_START);
-		startStop.setEnabled(true);
-		startStop.addActionListener(this::handleRecorderAction);
-		getContentPane().add(startStop, "cell 2 0");
-
+		Recorder recorder = Recorder.getInstance();
 		recorder.addStateChangeListener(
 				(oldState, newState) -> SwingUtilities.invokeLater(() -> handleRecorderState(newState)));
 		handleRecorderState(recorder.getCurrentState());
 	}
 
+	private void initContent() {
+		getContentPane().setLayout(new MigLayout("", "[grow][][]", "[][]"));
+
+		textFieldFilePath = new JTextField();
+		textFieldFilePath.setText(Recorder.getInstance().getFilePath().toString());
+		textFieldFilePath.setColumns(10);
+		getContentPane().add(textFieldFilePath, "cell 0 0,growx");
+
+		buttonSelectFile = new JButton(ACTION_SAVE_AS);
+		buttonSelectFile.addActionListener(this::handleRecorderAction);
+		getContentPane().add(buttonSelectFile, "cell 1 0");
+
+		buttonStartStop = new JButton(ACTION_START);
+		buttonStartStop.addActionListener(this::handleRecorderAction);
+		getContentPane().add(buttonStartStop, "cell 2 0");
+	}
+
 	private void handleRecorderState(State state) {
 		switch (state) {
 		case STARTED:
-			startStop.setText(ACTION_STOP);
-			recorderFile.setEnabled(false);
-			selectFileButton.setEnabled(false);
+			buttonStartStop.setText(ACTION_STOP);
+			textFieldFilePath.setEnabled(false);
+			buttonSelectFile.setEnabled(false);
 			break;
 
 		case STOPPED:
-			startStop.setText(ACTION_START);
-			recorderFile.setEnabled(true);
-			selectFileButton.setEnabled(true);
+			buttonStartStop.setText(ACTION_START);
+			textFieldFilePath.setEnabled(true);
+			buttonSelectFile.setEnabled(true);
 			break;
 
 		default:
@@ -78,12 +82,12 @@ public class RecorderFrame extends JFrame {
 			JFileChooser chooser = new JFileChooser();
 			chooser.setSelectedFile(recorder.getFilePath().toFile());
 			if (chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-				recorderFile.setText(chooser.getSelectedFile().toString());
+				textFieldFilePath.setText(chooser.getSelectedFile().toString());
 			}
 			break;
 
 		case ACTION_START:
-			recorder.setFilePath(Paths.get(recorderFile.getText()));
+			recorder.setFilePath(Paths.get(textFieldFilePath.getText()));
 			recorder.start();
 			break;
 
