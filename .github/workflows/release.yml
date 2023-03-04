@@ -7,6 +7,8 @@ jobs:
   build-on-ubuntu:
     name: Build on Ubuntu
     runs-on: ubuntu-latest
+    outputs:
+      project-version: ${{ steps.get-project-version.outputs.project-version }}
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -26,6 +28,9 @@ jobs:
            target/leaderboard-*.jar
            target/leaderboard-*-app-image.zip
            target/rmonitorleaderboard_*.deb
+    - name: Get project version
+      id: get-project-version
+      run: echo "project-version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
 
   build-on-windows:
     name: Build on Windows
@@ -58,23 +63,21 @@ jobs:
     permissions:
       contents: write
     steps:
-    - name: Get project version
-      id: get-project-version
-      run: echo "PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
     - name: Download artifacts
       uses: actions/download-artifact@v3
-    - name: todo
+    - name: Rename files
+      env:
+        PROJECT_VERSION: ${{ needs.build-on-ubuntu.outputs.project-version }}
       run: |
-        PROJECT_VERSION='${{ steps.get-project-version.outputs.PROJECT_VERSION }}'
-        mv artifacts-linux/leaderboard-*.jar rmonitorleaderboard_${PROJECT_VERSION}.jar
-        mv artifacts-linux/leaderboard-*-app-image.zip rmonitorleaderboard_${PROJECT_VERSION}_linux.zip
-        mv artifacts-linux/rmonitorleaderboard_*.deb rmonitorleaderboard_${PROJECT_VERSION}_linux.deb
-        mv artifacts-windows/leaderboard-*-app-image.zip rmonitorleaderboard_${PROJECT_VERSION}_windows.zip
-        mv artifacts-windows/RMonitorLeaderboard-*.msi rmonitorleaderboard_${PROJECT_VERSION}_windows.msi
+        mv artifacts-linux/leaderboard-*.jar artifacts-linux/rmonitorleaderboard_${PROJECT_VERSION}.jar
+        mv artifacts-linux/leaderboard-*-app-image.zip artifacts-linux/rmonitorleaderboard_${PROJECT_VERSION}_linux.zip
+        mv artifacts-linux/rmonitorleaderboard_*.deb artifacts-linux/rmonitorleaderboard_${PROJECT_VERSION}_linux.deb
+        mv artifacts-windows/leaderboard-*-app-image.zip artifacts-windows/rmonitorleaderboard_${PROJECT_VERSION}_windows.zip
+        mv artifacts-windows/RMonitorLeaderboard-*.msi artifacts-windows/rmonitorleaderboard_${PROJECT_VERSION}_windows.msi
     - uses: marvinpinto/action-automatic-releases@v1.2.1
       with:
-        repo_token: '${{ secrets.GITHUB_TOKEN }}'
-        automatic_release_tag: 'v${{ steps.get-project-version.outputs.PROJECT_VERSION }}'
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        automatic_release_tag: v${{ steps.get-project-version.outputs.PROJECT_VERSION }}
         prerelease: false
         files: artifacts-*/*
         draft: true
