@@ -1,0 +1,81 @@
+name: Build release
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build-on-ubuntu:
+    name: Build on Ubuntu
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: temurin
+        cache: maven
+    - name: Package
+      run: mvn package -B -Prelease
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: artifacts-linux
+        path: |
+           target/leaderboard-*.jar
+           target/leaderboard-*-app-image.zip
+           target/rmonitorleaderboard_*.deb
+
+  build-on-windows:
+    name: Build on Windows
+    runs-on: windows-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: temurin
+        cache: maven
+    - name: Package
+      run: mvn package -B -Prelease
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: artifacts-windows
+        path: |
+           target/leaderboard-*-app-image.zip
+           target/RMonitorLeaderboard-*.msi
+  
+  publish-release:
+    name: Publish release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get project version
+      id: get-project-version
+      run: echo "PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_OUTPUT
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+    - name: todo
+      run: |
+        PROJECT_VERSION='${{ steps.get-project-version.outputs.PROJECT_VERSION }}'
+        mv artifacts-linux/leaderboard-*.jar rmonitorleaderboard_${PROJECT_VERSION}.jar
+        mv artifacts-linux/leaderboard-*-app-image.zip rmonitorleaderboard_${PROJECT_VERSION}_linux.zip
+        mv artifacts-linux/rmonitorleaderboard_*.deb rmonitorleaderboard_${PROJECT_VERSION}_linux.deb
+        mv artifacts-windows/leaderboard-*-app-image.zip rmonitorleaderboard_${PROJECT_VERSION}_windows.zip
+        mv artifacts-windows/RMonitorLeaderboard-*.msi rmonitorleaderboard_${PROJECT_VERSION}_windows.msi
+    - uses: marvinpinto/action-automatic-releases@v1.2.1
+      with:
+        repo_token: '${{ secrets.GITHUB_TOKEN }}'
+        automatic_release_tag: 'v${{ steps.get-project-version.outputs.PROJECT_VERSION }}'
+        prerelease: false
+        files: artifacts-*/*
+        draft: true

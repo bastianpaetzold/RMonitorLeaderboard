@@ -21,7 +21,7 @@ import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "leaderboard", mixinStandardHelpOptions = true, version = "leaderboard 0.0.1-SNAPSHOT")
+@Command(name = "rmonitorleaderboard", mixinStandardHelpOptions = true, version = "rmonitorleaderboard 0.1.0-SNAPSHOT")
 public class LeaderBoard implements Callable<Integer> {
 
 	@Option(names = "--headless", description = "Start the application in headless mode, without GUI.")

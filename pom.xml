@@ -2,9 +2,11 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.zacharyfox.rmonitor</groupId>
 	<artifactId>leaderboard</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1.0-SNAPSHOT</version>
+	<name>RMonitorLeaderboard</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jpackage-plugin.version>1.6.0</jpackage-plugin.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -50,6 +52,11 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M8</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>3.4.1</version>
 				<executions>
@@ -71,34 +78,185 @@
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jlink-plugin</artifactId>
-				<version>3.1.0</version>
-				<extensions>true</extensions>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.5.0</version>
 				<executions>
 					<execution>
+						<id>copy-dependencies</id>
 						<phase>package</phase>
 						<goals>
-							<goal>jlink</goal>
+							<goal>copy-dependencies</goal>
 						</goals>
+						<configuration>
+							<includeScope>runtime</includeScope>
+							<outputDirectory>${project.build.directory}/jmods</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.panteleyev</groupId>
+				<artifactId>jpackage-maven-plugin</artifactId>
+				<version>${jpackage-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>jpackage-app-image</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jpackage</goal>
+						</goals>
+						<configuration>
+							<type>APP_IMAGE</type>
+							<module>com.zacharyfox.rmonitor.leaderboard/com.zacharyfox.rmonitor.leaderboard.LeaderBoard</module>
+							<modulePaths>
+								<modulePath>${project.build.directory}/jmods</modulePath>
+								<modulePath>${project.build.directory}/classes</modulePath>
+							</modulePaths>
+						</configuration>
+					</execution>
+					<execution>
+						<id>jpackage-installer</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jpackage</goal>
+						</goals>
+						<configuration>
+							<appImage>${project.build.directory}/${project.name}</appImage>
+							<aboutUrl>https://github.com/bastianpaetzold/RMonitorLeaderboard</aboutUrl>
+							<licenseFile>${project.basedir}/LICENSE</licenseFile>
+						</configuration>
 					</execution>
 				</executions>
 				<configuration>
-					<classifier>jlink</classifier>
-					<launcher>launch_loaderboard=com.zacharyfox.rmonitor.leaderboard/com.zacharyfox.rmonitor.leaderboard.LeaderBoard</launcher>
+					<destination>${project.build.directory}</destination>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M8</version>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.5.0</version>
+				<executions>
+					<execution>
+						<id>assembly-zip</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptors>
+								<descriptor>src/assembly/app-image.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
-	<distributionManagement>
-		<repository>
-			<id>github</id>
-			<name>GitHub Packages</name>
-			<url>https://maven.pkg.github.com/bastianpaetzold/RMonitorLeaderboard</url>
-		</repository>
-	</distributionManagement>
+	<profiles>
+		<profile>
+			<id>linux</id>
+			<activation>
+				<os>
+					<family>linux</family>
+				</os>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.panteleyev</groupId>
+						<artifactId>jpackage-maven-plugin</artifactId>
+						<version>${jpackage-plugin.version}</version>
+						<executions>
+							<execution>
+								<id>jpackage-installer</id>
+								<configuration>
+									<type>DEB</type>
+									<linuxDebMaintainer>rmonitorleaderboard@skate-tools.de</linuxDebMaintainer>
+									<linuxMenuGroup>RMonitorLeaderboard</linuxMenuGroup>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>windows</id>
+			<activation>
+				<os>
+					<family>windows</family>
+				</os>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>3.3.0</version>
+						<executions>
+							<execution>
+								<id>add-source</id>
+								<phase>package</phase>
+								<goals>
+									<goal>parse-version</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.panteleyev</groupId>
+						<artifactId>jpackage-maven-plugin</artifactId>
+						<version>${jpackage-plugin.version}</version>
+						<executions>
+							<execution>
+								<id>jpackage-installer</id>
+								<configuration>
+									<type>MSI</type>
+									<winPerUserInstall>true</winPerUserInstall>
+									<winDirChooser>true</winDirChooser>
+									<winMenu>true</winMenu>
+									<winMenuGroup>RMonitorLeaderboard</winMenuGroup>
+									<winShortcut>true</winShortcut>
+									<winShortcutPrompt>true</winShortcutPrompt>
+									<winHelpUrl>https://github.com/bastianpaetzold/RMonitorLeaderboard</winHelpUrl>
+								</configuration>
+							</execution>
+						</executions>
+						<configuration>
+							<appVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</appVersion>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-enforcer-plugin</artifactId>
+						<version>3.2.1</version>
+						<executions>
+							<execution>
+								<id>enforce-no-snapshots</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>enforce</goal>
+								</goals>
+								<configuration>
+									<rules>
+										<requireReleaseVersion>
+											<message>Building a release requires a release version</message>
+										</requireReleaseVersion>
+									</rules>
+									<fail>true</fail>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
