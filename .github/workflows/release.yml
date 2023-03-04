@@ -55,6 +55,8 @@ jobs:
     needs:
     - build-on-ubuntu
     - build-on-windows
+    permissions:
+      contents: write
     steps:
     - name: Get project version
       id: get-project-version
