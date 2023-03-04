@@ -47,7 +47,7 @@ jobs:
         name: artifacts-windows
         path: |
            target/leaderboard-*-app-image.zip
-           target/RMonitorLeaderboard-*.exe
+           target/RMonitorLeaderboard-*.msi
   
   publish-pre-release:
     name: Publish pre-release
@@ -68,7 +68,7 @@ jobs:
         mv artifacts-linux/leaderboard-*-app-image.zip rmonitorleaderboard_${PROJECT_VERSION}_linux.zip
         mv artifacts-linux/rmonitorleaderboard_*.deb rmonitorleaderboard_${PROJECT_VERSION}_linux.deb
         mv artifacts-windows/leaderboard-*-app-image.zip rmonitorleaderboard_${PROJECT_VERSION}_windows.zip
-        mv artifacts-windows/RMonitorLeaderboard-*.exe rmonitorleaderboard_${PROJECT_VERSION}_windows.exe
+        mv artifacts-windows/RMonitorLeaderboard-*.msi rmonitorleaderboard_${PROJECT_VERSION}_windows.msi
     - uses: marvinpinto/action-automatic-releases@v1.2.1
       with:
         repo_token: '${{ secrets.GITHUB_TOKEN }}'
