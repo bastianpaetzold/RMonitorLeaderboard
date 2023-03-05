@@ -157,7 +157,7 @@
 			<id>linux</id>
 			<activation>
 				<os>
-					<family>linux</family>
+					<name>linux</name>
 				</os>
 			</activation>
 			<build>
@@ -219,6 +219,49 @@
 									<winShortcut>true</winShortcut>
 									<winShortcutPrompt>true</winShortcutPrompt>
 									<winHelpUrl>https://github.com/bastianpaetzold/RMonitorLeaderboard</winHelpUrl>
+								</configuration>
+							</execution>
+						</executions>
+						<configuration>
+							<appVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</appVersion>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>mac</id>
+			<activation>
+				<os>
+					<family>mac</family>
+				</os>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>3.3.0</version>
+						<executions>
+							<execution>
+								<id>add-source</id>
+								<phase>package</phase>
+								<goals>
+									<goal>parse-version</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.panteleyev</groupId>
+						<artifactId>jpackage-maven-plugin</artifactId>
+						<version>${jpackage-plugin.version}</version>
+						<executions>
+							<execution>
+								<id>jpackage-installer</id>
+								<configuration>
+									<type>DMG</type>
+									<macPackageName>RMonLeaderboard</macPackageName>
 								</configuration>
 							</execution>
 						</executions>
