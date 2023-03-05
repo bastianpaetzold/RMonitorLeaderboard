@@ -261,6 +261,7 @@
 								<id>jpackage-installer</id>
 								<configuration>
 									<type>DMG</type>
+									<appImage>${project.build.directory}/${project.name}.app</appImage>
 									<macPackageName>RMonLeaderboard</macPackageName>
 								</configuration>
 							</execution>

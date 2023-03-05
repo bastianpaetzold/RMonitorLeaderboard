@@ -97,8 +97,8 @@ jobs:
         mv artifacts-linux/rmonitorleaderboard_*.deb artifacts-linux/rmonitorleaderboard_${PROJECT_VERSION}_linux.deb
         mv artifacts-windows/leaderboard-*-app-image.zip artifacts-windows/rmonitorleaderboard_${PROJECT_VERSION}_windows.zip
         mv artifacts-windows/RMonitorLeaderboard-*.msi artifacts-windows/rmonitorleaderboard_${PROJECT_VERSION}_windows.msi
-        mv artifacts-macos/leaderboard-*-app-image.zip artifacts-macos/rmonitorleaderboard_${PROJECT_VERSION}_macos.zip
-        mv artifacts-macos/RMonitorLeaderboard-*.dmg artifacts-macos/rmonitorleaderboard_${PROJECT_VERSION}_macos.dmg
+        mv artifacts-macos/leaderboard-*-app-image.zip artifacts-macos/rmonitorleaderboard_${PROJECT_VERSION}_mac.zip
+        mv artifacts-macos/RMonitorLeaderboard-*.dmg artifacts-macos/rmonitorleaderboard_${PROJECT_VERSION}_mac.dmg
     - uses: marvinpinto/action-automatic-releases@v1.2.1
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
