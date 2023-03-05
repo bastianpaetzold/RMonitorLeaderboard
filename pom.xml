@@ -56,6 +56,20 @@
 				<version>3.0.0-M8</version>
 			</plugin>
 			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>build-helper-maven-plugin</artifactId>
+				<version>3.3.0</version>
+				<executions>
+					<execution>
+						<id>add-source</id>
+						<phase>package</phase>
+						<goals>
+							<goal>parse-version</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>3.4.1</version>
@@ -190,20 +204,6 @@
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>build-helper-maven-plugin</artifactId>
-						<version>3.3.0</version>
-						<executions>
-							<execution>
-								<id>add-source</id>
-								<phase>package</phase>
-								<goals>
-									<goal>parse-version</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
 						<groupId>org.panteleyev</groupId>
 						<artifactId>jpackage-maven-plugin</artifactId>
 						<version>${jpackage-plugin.version}</version>
@@ -239,20 +239,6 @@
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>build-helper-maven-plugin</artifactId>
-						<version>3.3.0</version>
-						<executions>
-							<execution>
-								<id>add-source</id>
-								<phase>package</phase>
-								<goals>
-									<goal>parse-version</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
 						<groupId>org.panteleyev</groupId>
 						<artifactId>jpackage-maven-plugin</artifactId>
 						<version>${jpackage-plugin.version}</version>
@@ -269,6 +255,21 @@
 						<configuration>
 							<appVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</appVersion>
 						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-assembly-plugin</artifactId>
+						<version>3.5.0</version>
+						<executions>
+							<execution>
+								<id>assembly-zip</id>
+								<configuration>
+									<descriptors>
+										<descriptor>src/assembly/app-image-mac.xml</descriptor>
+									</descriptors>
+								</configuration>
+							</execution>
+						</executions>
 					</plugin>
 				</plugins>
 			</build>
