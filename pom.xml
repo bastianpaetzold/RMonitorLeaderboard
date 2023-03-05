@@ -142,6 +142,7 @@
 					</execution>
 				</executions>
 				<configuration>
+					<name>${project.name}</name>
 					<destination>${project.build.directory}</destination>
 				</configuration>
 			</plugin>

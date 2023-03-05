@@ -9,7 +9,10 @@
 	<fileSets>
 		<fileSet>
 			<outputDirectory></outputDirectory>
-			<directory>${project.build.directory}/RMonitorLeaderboard.app</directory>
+			<directory>${project.build.directory}</directory>
+			<includes>
+				<include>${project.name}.app/**</include>
+			</includes>
 		</fileSet>
 	</fileSets>
 </assembly>

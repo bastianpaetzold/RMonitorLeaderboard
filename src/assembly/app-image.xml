@@ -9,7 +9,7 @@
 	<fileSets>
 		<fileSet>
 			<outputDirectory></outputDirectory>
-			<directory>${project.build.directory}/RMonitorLeaderboard</directory>
+			<directory>${project.build.directory}/${project.name}</directory>
 		</fileSet>
 	</fileSets>
 </assembly>
