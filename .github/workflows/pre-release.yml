@@ -99,10 +99,21 @@ jobs:
         mv artifacts-windows/RMonitorLeaderboard-*.msi artifacts-windows/rmonitorleaderboard_${PROJECT_VERSION}_windows.msi
         mv artifacts-macos/leaderboard-*-app-image.zip artifacts-macos/rmonitorleaderboard_${PROJECT_VERSION}_mac.zip
         mv artifacts-macos/RMonitorLeaderboard-*.dmg artifacts-macos/rmonitorleaderboard_${PROJECT_VERSION}_mac.dmg
-    - uses: marvinpinto/action-automatic-releases@v1.2.1
+    - uses: actions/github-script@v6
       with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        automatic_release_tag: latest
+        script: |
+          github.rest.git.deleteRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: refs/tags/latest,
+          })
+    - uses: ncipollo/release-action@v1
+      with:
+        tag: latest
+        commit: devlop
+        artifacts: artifacts-*/*
+        makeLatest: false
+        name: Latest Development Build
         prerelease: true
-        title: Latest Development Build
-        files: artifacts-*/*
+        allowUpdates: true
+        removeArtifacts: true

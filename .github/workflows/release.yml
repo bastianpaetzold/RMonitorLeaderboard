@@ -1,7 +1,7 @@
 name: Build release
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build-on-ubuntu:
@@ -99,10 +99,10 @@ jobs:
         mv artifacts-windows/RMonitorLeaderboard-*.msi artifacts-windows/rmonitorleaderboard_${PROJECT_VERSION}_windows.msi
         mv artifacts-macos/leaderboard-*-app-image.zip artifacts-macos/rmonitorleaderboard_${PROJECT_VERSION}_mac.zip
         mv artifacts-macos/RMonitorLeaderboard-*.dmg artifacts-macos/rmonitorleaderboard_${PROJECT_VERSION}_mac.dmg
-    - uses: marvinpinto/action-automatic-releases@v1.2.1
+    - uses: ncipollo/release-action@v1
       with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        automatic_release_tag: v${{ steps.get-project-version.outputs.PROJECT_VERSION }}
-        prerelease: false
-        files: artifacts-*/*
+        tag: ${{ steps.get-project-version.outputs.PROJECT_VERSION }}
+        commit: main
+        makeLatest: true
+        artifacts: artifacts-*/*
         draft: true
