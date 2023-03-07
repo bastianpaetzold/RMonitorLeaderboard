@@ -108,7 +108,7 @@ jobs:
     - name: Create pre-release
       uses: ncipollo/release-action@v1
       with:
-        tag_name: latest
+        tag: latest
         commit: develop
         artifacts: artifacts-*/*
         makeLatest: false
