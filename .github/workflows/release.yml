@@ -99,7 +99,8 @@ jobs:
         mv artifacts-windows/RMonitorLeaderboard-*.msi artifacts-windows/rmonitorleaderboard_${PROJECT_VERSION}_windows.msi
         mv artifacts-macos/leaderboard-*-app-image.zip artifacts-macos/rmonitorleaderboard_${PROJECT_VERSION}_mac.zip
         mv artifacts-macos/RMonitorLeaderboard-*.dmg artifacts-macos/rmonitorleaderboard_${PROJECT_VERSION}_mac.dmg
-    - uses: ncipollo/release-action@v1
+    - name: Create release
+      uses: ncipollo/release-action@v1
       with:
         tag: ${{ steps.get-project-version.outputs.PROJECT_VERSION }}
         commit: main
