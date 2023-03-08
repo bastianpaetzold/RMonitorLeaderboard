@@ -103,7 +103,7 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         tag: ${{ steps.get-project-version.outputs.PROJECT_VERSION }}
-        commit: main
+        commit: ${{ github.sha }}
         makeLatest: true
         artifacts: artifacts-*/*
         draft: true

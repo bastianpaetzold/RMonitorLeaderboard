@@ -43,7 +43,7 @@ public class LeaderBoardTableCellRenderer extends DefaultTableCellRenderer {
 			c.setForeground(table.getForeground());
 		}
 
-		setValue(DurationUtil.format((Duration) value));
+		setValue(DurationUtil.format((Duration) value, true));
 
 		return c;
 	}

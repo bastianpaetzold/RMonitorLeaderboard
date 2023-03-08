@@ -13,6 +13,10 @@ public class DurationUtil {
 	}
 
 	public static String format(Duration duration) {
+		return format(duration, false);
+	}
+
+	public static String format(Duration duration, boolean withMillis) {
 		long hours = duration.toHours();
 		int minutes = duration.toMinutesPart();
 		int seconds = duration.toSecondsPart();
@@ -26,7 +30,7 @@ public class DurationUtil {
 			durationString = String.format("%d:%02d", minutes, seconds);
 		}
 
-		if (millis != 0) {
+		if (withMillis || millis != 0) {
 			durationString += String.format(".%03d", millis);
 		}
 
