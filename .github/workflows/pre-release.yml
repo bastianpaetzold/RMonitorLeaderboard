@@ -100,11 +100,7 @@ jobs:
         mv artifacts-macos/leaderboard-*-app-image.zip artifacts-macos/rmonitorleaderboard_${PROJECT_VERSION}_mac.zip
         mv artifacts-macos/RMonitorLeaderboard-*.dmg artifacts-macos/rmonitorleaderboard_${PROJECT_VERSION}_mac.dmg
     - name: Delete latest tag
-      run: |
-        if git rev-parse latest >/dev/null 2>&1; then
-          git tag -d latest
-          git push origin :refs/tags/latest
-        fi
+      run: git push origin :refs/tags/latest
     - name: Create pre-release
       uses: ncipollo/release-action@v1
       with:
