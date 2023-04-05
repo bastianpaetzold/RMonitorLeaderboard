@@ -118,41 +118,50 @@ public class LeaderBoard implements Callable<Integer> {
 	public Integer call() throws Exception {
 		ConfigurationManager.getInstance().loadConfig();
 
-		if (serverGroup != null && serverGroup.start) {
+		if (serverGroup != null) {
 			JsonServer server = JsonServer.getInstance();
 			serverGroup.host.ifPresent(server::setHost);
 			serverGroup.port.ifPresent(server::setPort);
-			server.start();
+
+			if (serverGroup.start) {
+				server.start();
+			}
 		}
 
-		if (playerGroup != null && playerGroup.start) {
+		if (playerGroup != null) {
 			Player player = Player.getInstance();
 			playerGroup.port.ifPresent(player::setPort);
 			playerGroup.speedup.ifPresent(player::setSpeedup);
 			player.setFilePath(playerGroup.filePath);
 			playerGroup.fileEncoding.ifPresent(player::setFileEncoding);
 			playerGroup.streamEncoding.ifPresent(player::setStreamEncoding);
-			player.start();
+
+			if (playerGroup.start) {
+				player.start();
+			}
 		}
 
-		if (recorderGroup != null && recorderGroup.start) {
+		if (recorderGroup != null) {
 			Recorder recorder = Recorder.getInstance();
 			recorder.setFilePath(recorderGroup.filePath);
 			recorderGroup.fileEncoding.ifPresent(recorder::setEncoding);
-			recorder.start();
+
+			if (recorderGroup.start) {
+				recorder.start();
+			}
 		}
 
-		if (headless || (clientGroup != null && clientGroup.start)) {
+		if (clientGroup != null) {
 			RMonitorClient client = RMonitorClient.getInstance();
+			clientGroup.host.ifPresent(client::setHost);
+			clientGroup.port.ifPresent(client::setPort);
+			clientGroup.streamEncoding.ifPresent(client::setEncoding);
+			clientGroup.maxRetries.ifPresent(client::setMaxRetries);
+			clientGroup.retryTimeout.ifPresent(client::setRetryTimeout);
 
-			if (clientGroup != null) {
-				clientGroup.host.ifPresent(client::setHost);
-				clientGroup.port.ifPresent(client::setPort);
-				clientGroup.streamEncoding.ifPresent(client::setEncoding);
-				clientGroup.maxRetries.ifPresent(client::setMaxRetries);
-				clientGroup.retryTimeout.ifPresent(client::setRetryTimeout);
+			if (clientGroup.start) {
+				client.start();
 			}
-			client.start();
 		}
 
 		if (!headless) {
