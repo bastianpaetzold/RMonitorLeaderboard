@@ -101,16 +101,17 @@ jobs:
         mv artifacts-macos/RMonitorLeaderboard-*.dmg artifacts-macos/rmonitorleaderboard_${PROJECT_VERSION}_mac.dmg
     - name: Delete latest tag
       uses: actions/github-script@v6
-      script: |
-        try {
+      with:
+        script: |
+          try {
             github.git.deleteRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
               ref: "tags/latest"
             })
-        } catch (e) {
-          console.log("The latest tag doesn't exist yet: " + e)
-        }
+          } catch (e) {
+            console.log("The latest tag doesn't exist yet: " + e)
+          }
     - name: Create pre-release
       uses: ncipollo/release-action@v1
       with:
