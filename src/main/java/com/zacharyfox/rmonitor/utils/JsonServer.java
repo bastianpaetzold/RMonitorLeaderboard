@@ -197,7 +197,7 @@ public class JsonServer {
 			RaceTO raceTO;
 
 			Race currentRace = raceManager.getCurrentRace();
-			if (currentRace.getId() >= 0) {
+			if (currentRace.getId() > 0) {
 				raceTO = RaceTO.from(currentRace);
 			} else {
 				Race previousRace = raceManager.getPreviousRace();
