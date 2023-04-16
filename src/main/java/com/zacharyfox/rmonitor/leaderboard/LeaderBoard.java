@@ -8,6 +8,8 @@ import java.util.concurrent.Callable;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
+import org.slf4j.LoggerFactory;
+
 import com.zacharyfox.rmonitor.client.RMonitorClient;
 import com.zacharyfox.rmonitor.config.ConfigurationManager;
 import com.zacharyfox.rmonitor.leaderboard.frames.ConnectFrame;
@@ -16,6 +18,9 @@ import com.zacharyfox.rmonitor.utils.JsonServer;
 import com.zacharyfox.rmonitor.utils.Player;
 import com.zacharyfox.rmonitor.utils.Recorder;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import picocli.CommandLine;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
@@ -26,6 +31,9 @@ public class LeaderBoard implements Callable<Integer> {
 
 	@Option(names = "--headless", description = "Start the application in headless mode, without GUI.")
 	private boolean headless;
+
+	@Option(names = "--loglevel", description = "Log level to use. Possible values are DEBUG, INFO, ERROR, OFF. Default: INFO")
+	private String logLevel;
 
 	@ArgGroup(exclusive = false)
 	private ClientGroup clientGroup;
@@ -117,6 +125,12 @@ public class LeaderBoard implements Callable<Integer> {
 	@Override
 	public Integer call() throws Exception {
 		ConfigurationManager.getInstance().loadConfig();
+
+		if (logLevel != null) {
+			LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+			Logger logger = context.getLogger("root");
+			logger.setLevel(Level.toLevel(logLevel, Level.INFO));
+		}
 
 		if (serverGroup != null) {
 			JsonServer server = JsonServer.getInstance();

@@ -6,6 +6,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.zacharyfox.rmonitor.entities.Race.FlagStatus;
 import com.zacharyfox.rmonitor.message.ClassInfo;
 import com.zacharyfox.rmonitor.message.CompInfo;
@@ -20,6 +23,8 @@ import com.zacharyfox.rmonitor.message.RunInfo;
 import com.zacharyfox.rmonitor.message.SettingInfo;
 
 public class RaceManager {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(RaceManager.class);
 
 	private static final String SETTING_TRACKNAME = "TRACKNAME";
 	private static final String SETTING_TRACK_LENGTH = "TRACKLENGTH";
@@ -55,6 +60,7 @@ public class RaceManager {
 	}
 
 	public void startNewRace() {
+		LOGGER.debug("Starting a new race");
 		currentRace.setFlagStatus(FlagStatus.FINISH.toString());
 
 		if (currentRace.getId() > 0) {

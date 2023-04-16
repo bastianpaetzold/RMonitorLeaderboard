@@ -12,6 +12,7 @@ module com.zacharyfox.rmonitor.leaderboard {
 	requires org.eclipse.jetty.server;
 	requires com.miglayout.swing;
 	requires info.picocli;
+	requires ch.qos.logback.classic;
 
 	opens com.zacharyfox.rmonitor.leaderboard to info.picocli;
 	opens com.zacharyfox.rmonitor.entities to com.google.gson;
