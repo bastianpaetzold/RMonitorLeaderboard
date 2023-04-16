@@ -16,7 +16,7 @@ import com.zacharyfox.rmonitor.message.Heartbeat;
 import com.zacharyfox.rmonitor.message.InitRecord;
 import com.zacharyfox.rmonitor.message.LapInfo;
 import com.zacharyfox.rmonitor.message.PassingInfo;
-import com.zacharyfox.rmonitor.message.QualInfo;
+import com.zacharyfox.rmonitor.message.QualiInfo;
 import com.zacharyfox.rmonitor.message.RMonitorMessage;
 import com.zacharyfox.rmonitor.message.RaceInfo;
 import com.zacharyfox.rmonitor.message.RunInfo;
@@ -112,7 +112,7 @@ public class RaceManager {
 			} else if (message instanceof LapInfo lapInfo) {
 				currentRace.getOrCreateCompetitor(lapInfo.getRegNumber()).update(lapInfo);
 				currentRace.incrementCompetitorsVersion();
-			} else if (message instanceof QualInfo qualiInfo) {
+			} else if (message instanceof QualiInfo qualiInfo) {
 				currentRace.getOrCreateCompetitor(qualiInfo.getRegNumber()).update(qualiInfo);
 				currentRace.incrementCompetitorsVersion();
 			} else if (message instanceof ClassInfo classInfo) {

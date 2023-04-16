@@ -4,14 +4,14 @@ import java.time.Duration;
 
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 
-public class QualInfo implements RMonitorMessage, RegistrationInfo {
+public class QualiInfo implements RMonitorMessage, RegistrationInfo {
 
 	private int bestLap;
 	private Duration bestLapTime;
 	private int position;
 	private String regNumber;
 
-	public QualInfo(String[] tokens) {
+	public QualiInfo(String[] tokens) {
 		position = Integer.parseInt(tokens[1]);
 		regNumber = tokens[2];
 		bestLap = (tokens[3].equals("")) ? 0 : Integer.parseInt(tokens[3]);

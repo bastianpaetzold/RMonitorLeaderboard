@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import com.zacharyfox.rmonitor.message.CompInfo;
 import com.zacharyfox.rmonitor.message.LapInfo;
 import com.zacharyfox.rmonitor.message.PassingInfo;
-import com.zacharyfox.rmonitor.message.QualInfo;
+import com.zacharyfox.rmonitor.message.QualiInfo;
 import com.zacharyfox.rmonitor.message.RaceInfo;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 
@@ -166,7 +166,7 @@ public class Competitor {
 		}
 	}
 
-	void update(QualInfo qualiInfo) {
+	void update(QualiInfo qualiInfo) {
 		regNumber = qualiInfo.getRegNumber();
 		qualiPosition = qualiInfo.getPosition();
 

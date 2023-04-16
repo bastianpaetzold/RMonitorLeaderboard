@@ -56,7 +56,7 @@ class FactoryTest {
 		String line = "$H,2,\"1234BE\",3,\"00:02:17.872\"";
 		RMonitorMessage message = MessageFactory.createMessage(line);
 
-		assertEquals(QualInfo.class, message.getClass());
+		assertEquals(QualiInfo.class, message.getClass());
 	}
 
 	@Test

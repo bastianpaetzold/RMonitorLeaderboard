@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import com.zacharyfox.rmonitor.message.CompInfo;
 import com.zacharyfox.rmonitor.message.LapInfo;
 import com.zacharyfox.rmonitor.message.PassingInfo;
-import com.zacharyfox.rmonitor.message.QualInfo;
+import com.zacharyfox.rmonitor.message.QualiInfo;
 import com.zacharyfox.rmonitor.message.RaceInfo;
 import com.zacharyfox.rmonitor.utils.DurationUtil;
 
@@ -140,7 +140,7 @@ class CompetitorTest {
 		final Competitor competitor = getTestCompetitor();
 
 		String[] tokens = { "$H", "1", TEST_COMPETITOR_REG_NUMBER, "1", "01:12:47.872" };
-		QualInfo message = new QualInfo(tokens);
+		QualiInfo message = new QualiInfo(tokens);
 
 		manager.processMessage(message);
 

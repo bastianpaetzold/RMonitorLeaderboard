@@ -18,7 +18,7 @@ public class MessageFactory {
 			new AbstractMap.SimpleEntry<>("$G", RaceInfo::new),
 			new AbstractMap.SimpleEntry<>("$A", CompInfo::new),
 			new AbstractMap.SimpleEntry<>("$C", ClassInfo::new),
-			new AbstractMap.SimpleEntry<>("$H", QualInfo::new),
+			new AbstractMap.SimpleEntry<>("$H", QualiInfo::new),
 			new AbstractMap.SimpleEntry<>("$E", SettingInfo::new),
 			new AbstractMap.SimpleEntry<>("$I", InitRecord::new),
 			new AbstractMap.SimpleEntry<>("$J", PassingInfo::new),

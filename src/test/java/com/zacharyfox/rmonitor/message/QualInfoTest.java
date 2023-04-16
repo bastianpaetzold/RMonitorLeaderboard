@@ -12,7 +12,7 @@ class QualInfoTest {
 	void test() {
 		String[] tokens = { "$H", "2", "1234BE", "3", "00:02:17.872" };
 
-		QualInfo message = new QualInfo(tokens);
+		QualiInfo message = new QualiInfo(tokens);
 
 		assertEquals(2, message.getPosition());
 		assertEquals("1234BE", message.getRegNumber());
