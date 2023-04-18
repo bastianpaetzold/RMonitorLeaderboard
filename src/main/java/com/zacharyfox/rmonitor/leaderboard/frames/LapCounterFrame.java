@@ -216,7 +216,7 @@ public class LapCounterFrame extends JFrame {
 			}
 		} else {
 			lapUpdateDelayTimer = new Timer(lapSwitchDelay * 1000,
-					e -> textFieldLaps.setText(Integer.toString(newLaps)));
+					e -> textFieldLaps.setText(Integer.toString(newLaps > 0 ? newLaps - 1 : 0)));
 			lapUpdateDelayTimer.setRepeats(false);
 			lapUpdateDelayTimer.start();
 		}
