@@ -181,7 +181,7 @@ public class LapCounterFrame extends JFrame {
 
 		case Race.PROPERTY_LAPS_TO_GO:
 			if (!checkBoxCountUpwards.isSelected() && !e.getOldValue().equals(e.getNewValue())) {
-				updateDisplayedLapsToGo((int) e.getOldValue(), (int) e.getNewValue());
+				updateDisplayedLapsToGo((int) e.getNewValue());
 			}
 			break;
 
@@ -192,6 +192,11 @@ public class LapCounterFrame extends JFrame {
 
 		case Race.PROPERTY_FLAG_STATUS:
 			updateFlagColor((FlagStatus) e.getNewValue());
+			if (!checkBoxCountUpwards.isSelected() && e.getOldValue().equals(FlagStatus.PURPLE)
+					&& e.getNewValue().equals(FlagStatus.GREEN)) {
+				int lapsToGo = RaceManager.getInstance().getCurrentRace().getLapsToGo();
+				textFieldLaps.setText(Integer.toString(lapsToGo > 0 ? lapsToGo - 1 : 0));
+			}
 			break;
 
 		default:
@@ -199,24 +204,30 @@ public class LapCounterFrame extends JFrame {
 		}
 	}
 
-	private void updateDisplayedLapsToGo(int oldLaps, int newLaps) {
+	private void updateDisplayedLapsToGo(int lapsToGo) {
 		Race race = RaceManager.getInstance().getCurrentRace();
 		FlagStatus flagStatus = race.getFlagStatus();
 
 		if (lapUpdateDelayTimer != null) {
 			lapUpdateDelayTimer.stop();
-			textFieldLaps.setText(Integer.toString(oldLaps));
+			// set the current laps to go just in case the delay is longer than the time
+			// since the last update
+			textFieldLaps.setText(Integer.toString(lapsToGo));
 		}
 
+		// no active race -> total laps to go are shown and laps can always be updated
+		// instantly
 		if (flagStatus == Race.FlagStatus.PURPLE || flagStatus == Race.FlagStatus.NONE) {
-			if (newLaps > 0) {
-				textFieldLaps.setText(Integer.toString(newLaps));
+			if (lapsToGo > 0) {
+				textFieldLaps.setText(Integer.toString(lapsToGo));
 			} else {
 				textFieldLaps.setText("-");
 			}
+			// active race -> we need to show 1 lap less because athletes need to see it
+			// before they cross the line
 		} else {
 			lapUpdateDelayTimer = new Timer(lapSwitchDelay * 1000,
-					e -> textFieldLaps.setText(Integer.toString(newLaps > 0 ? newLaps - 1 : 0)));
+					e -> textFieldLaps.setText(Integer.toString(lapsToGo > 0 ? lapsToGo - 1 : 0)));
 			lapUpdateDelayTimer.setRepeats(false);
 			lapUpdateDelayTimer.start();
 		}
