@@ -158,12 +158,12 @@ public class JsonServer {
 
 			Object resultTO;
 
-			LOGGER.info("Path Info: {}", request.getPathInfo());
+			String pathInfo = request.getPathInfo();
+			String queryString = request.getQueryString();
+			LOGGER.debug("Path: {}, Query: {}", pathInfo, queryString);
 			// We split the path of the request
-			String[] pathInfoParts = request.getPathInfo().split("/");
+			String[] pathInfoParts = pathInfo.split("/");
 			if (pathInfoParts.length > 1 && pathInfoParts[1].equals("race")) {
-				// object selected is race
-				LOGGER.debug("Path is race: {}", pathInfoParts[1]);
 				// check for an ID as second part
 				if (pathInfoParts.length > 2 && pathInfoParts[2].matches("\\d+")) {
 					int raceID = Integer.parseInt(pathInfoParts[2]);
@@ -174,8 +174,11 @@ public class JsonServer {
 					resultTO = getRaceToReturn();
 				}
 			} else if (pathInfoParts.length > 1 && pathInfoParts[1].equals("races")) {
-				// default we return the race
-				resultTO = getAllRaceTOs();
+				if ("filter=current".equals(queryString)) {
+					resultTO = new RaceTO[] { getRaceToReturn() };
+				} else {
+					resultTO = getAllRaceTOs();
+				}
 			} else {
 				resultTO = getRaceToReturn();
 			}
