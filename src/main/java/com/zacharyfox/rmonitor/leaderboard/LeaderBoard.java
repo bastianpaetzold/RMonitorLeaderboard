@@ -26,13 +26,19 @@ import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-@Command(name = "rmonitorleaderboard", mixinStandardHelpOptions = true, version = "rmonitorleaderboard 0.1.0-SNAPSHOT")
+@Command(name = "rmonitorleaderboard", mixinStandardHelpOptions = true, version = "rmonitorleaderboard 1.2.0-SNAPSHOT")
 public class LeaderBoard implements Callable<Integer> {
 
 	@Option(names = "--headless", description = "Start the application in headless mode, without GUI.")
 	private boolean headless;
 
-	@Option(names = "--loglevel", description = "Log level to use. Possible values are DEBUG, INFO, ERROR, OFF. Default: INFO")
+	@Option(names = "--disable-console-log", description = "Disable logging to the console.")
+	private boolean disableConsoleLog;
+
+	@Option(names = "--disable-file-log", description = "Disable logging to a file.")
+	private boolean disableFileLog;
+
+	@Option(names = "--loglevel", defaultValue = "INFO", description = "Log level to use. Possible values are DEBUG, INFO, ERROR, OFF. Default: ${DEFAULT-VALUE}")
 	private String logLevel;
 
 	@ArgGroup(exclusive = false)
@@ -126,10 +132,16 @@ public class LeaderBoard implements Callable<Integer> {
 	public Integer call() throws Exception {
 		ConfigurationManager.getInstance().loadConfig();
 
-		if (logLevel != null) {
-			LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-			Logger logger = context.getLogger("root");
-			logger.setLevel(Level.toLevel(logLevel, Level.INFO));
+		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+		Logger logger = context.getLogger("root");
+		logger.setLevel(Level.toLevel(logLevel, Level.INFO));
+
+		if (disableConsoleLog) {
+			logger.detachAppender("CONSOLE");
+		}
+
+		if (disableFileLog) {
+			logger.detachAppender("FILE");
 		}
 
 		if (serverGroup != null) {

@@ -13,6 +13,7 @@ module com.zacharyfox.rmonitor.leaderboard {
 	requires com.miglayout.swing;
 	requires info.picocli;
 	requires ch.qos.logback.classic;
+	requires org.apache.commons.text;
 
 	opens com.zacharyfox.rmonitor.leaderboard to info.picocli;
 	opens com.zacharyfox.rmonitor.entities to com.google.gson;
