@@ -1,6 +1,8 @@
 package com.zacharyfox.rmonitor.message;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -32,13 +34,8 @@ public class MessageFactory {
 
 	public static RMonitorMessage createMessage(String line) {
 		LOGGER.debug("Message: {}", line);
-		// TODO: better tokenizing here - doesn't handle values with commas
-		String[] tokens = line.split(",");
 
-		for (int i = 0; i < tokens.length; i++) {
-			tokens[i] = tokens[i].replace("\"", "");
-		}
-
+		String[] tokens = tokenizeMessage(line);
 		Function<String[], RMonitorMessage> factory = messageFactories.get(tokens[0]);
 
 		if (factory == null) {
@@ -47,5 +44,38 @@ public class MessageFactory {
 		}
 
 		return factory.apply(tokens);
+	}
+
+	static String[] tokenizeMessage(String message) {
+		List<String> tokenList = new ArrayList<>();
+		int currentIndex = 0;
+
+		while (currentIndex < message.length()) {
+			if (message.charAt(currentIndex) == '"' && currentIndex + 1 < message.length()) {
+				int indexQuoteEnd = message.indexOf('"', currentIndex + 1);
+
+				if (indexQuoteEnd != -1) {
+					tokenList.add(message.substring(currentIndex + 1, indexQuoteEnd));
+				} else {
+					indexQuoteEnd = message.indexOf(',', currentIndex + 1);
+
+					if (indexQuoteEnd == -1) {
+						indexQuoteEnd = message.length();
+					}
+					tokenList.add(message.substring(currentIndex, indexQuoteEnd));
+				}
+
+				currentIndex = indexQuoteEnd + 2;
+			} else {
+				int indexComma = message.indexOf(',', currentIndex);
+				if (indexComma == -1) {
+					indexComma = message.length();
+				}
+				tokenList.add(message.substring(currentIndex, indexComma));
+				currentIndex = indexComma + 1;
+			}
+		}
+
+		return tokenList.toArray(new String[tokenList.size()]);
 	}
 }
