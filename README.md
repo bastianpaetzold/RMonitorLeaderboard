@@ -133,7 +133,21 @@ Requirements:
 - Java 17
 - Maven 3
 
-In order to build the application run the following command:
+Before you can build the application you have to patch a few dependencies in your .m2 cache which are not fully compatible with the Java module system.
+
+Windows:
+
+```bash
+.\build\patch-legacy-libs.bat
+```
+
+Linux/Mac:
+
+```bash
+./build/patch-legacy-libs.sh
+```
+
+Afterwards you can build the application:
 
 ```bash
 mvn clean package
