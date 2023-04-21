@@ -151,7 +151,11 @@ public class RMonitorClient {
 	}
 
 	private void processMessage(String message) {
-		RaceManager.getInstance().processMessage(MessageFactory.createMessage(message));
+		try {
+			RaceManager.getInstance().processMessage(MessageFactory.createMessage(message));
+		} catch (Exception e) {
+			LOGGER.error("Error while parsing and processing message \"{}\": {}", message, e.getMessage());
+		}
 		recorder.push(message);
 		estimator.update();
 	}
