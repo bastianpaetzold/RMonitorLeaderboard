@@ -1,5 +1,7 @@
 package com.zacharyfox.rmonitor.utils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.TreeMap;
 
 import org.junit.jupiter.api.Test;
@@ -19,6 +21,6 @@ class ExponentialMovingAverageTest {
 		laps.put(8, (long) 2224);
 		laps.put(9, (long) 2229);
 
-		System.out.println(ExponentialMovingAverage.predictNext(laps));
+		assertEquals(2224, ExponentialMovingAverage.predictNext(laps));
 	}
 }
