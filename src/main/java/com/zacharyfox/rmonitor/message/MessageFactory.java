@@ -39,6 +39,13 @@ public class MessageFactory {
 			tokens[i] = tokens[i].replace("\"", "");
 		}
 
-		return messageFactories.get(tokens[0]).apply(tokens);
+		Function<String[], RMonitorMessage> factory = messageFactories.get(tokens[0]);
+
+		if (factory == null) {
+			LOGGER.warn("Unknown type ({}) in message: \"{}\". Message will be skipped.", tokens[0], line);
+			return null;
+		}
+
+		return factory.apply(tokens);
 	}
 }
