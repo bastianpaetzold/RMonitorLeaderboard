@@ -1,24 +1,17 @@
 package com.zacharyfox.rmonitor.message;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.apache.commons.text.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MessageFactory {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MessageFactory.class);
-
-	// @formatter:off
-	private static final StringTokenizer TOKENIZER = new StringTokenizer()
-			.setDelimiterChar(',')
-			.setQuoteChar('"')
-			.setIgnoreEmptyTokens(false)
-			.setEmptyTokenAsNull(false);
-	// @formatter:on
 
 	// @formatter:off
 	private static Map<String, Function<String[], RMonitorMessage>> messageFactories = Map.ofEntries(
@@ -54,6 +47,35 @@ public class MessageFactory {
 	}
 
 	static String[] tokenizeMessage(String message) {
-		return TOKENIZER.reset(message).getTokenArray();
+		List<String> tokenList = new ArrayList<>();
+		int currentIndex = 0;
+
+		while (currentIndex < message.length()) {
+			if (message.charAt(currentIndex) == '"' && currentIndex + 1 < message.length()) {
+				int indexQuoteEnd = message.indexOf('"', currentIndex + 1);
+
+				if (indexQuoteEnd != -1) {
+					tokenList.add(message.substring(currentIndex + 1, indexQuoteEnd));
+				} else {
+					indexQuoteEnd = message.indexOf(',', currentIndex + 1);
+
+					if (indexQuoteEnd == -1) {
+						indexQuoteEnd = message.length();
+					}
+					tokenList.add(message.substring(currentIndex, indexQuoteEnd));
+				}
+
+				currentIndex = indexQuoteEnd + 2;
+			} else {
+				int indexComma = message.indexOf(',', currentIndex);
+				if (indexComma == -1) {
+					indexComma = message.length();
+				}
+				tokenList.add(message.substring(currentIndex, indexComma));
+				currentIndex = indexComma + 1;
+			}
+		}
+
+		return tokenList.toArray(new String[tokenList.size()]);
 	}
 }
