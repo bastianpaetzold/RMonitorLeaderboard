@@ -4,8 +4,8 @@ set -x
 
 M2_PATH=$(mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout)
 
-mvn dependency:get -DgroupId=org.apache.commons -DartifactId=commons-lang3 -Dversion=3.12.0 -Dpackaging=jar
-mvn dependency:get -DgroupId=org.apache.commons -DartifactId=commons-text -Dversion=1.10.0 -Dpackaging=jar
+mvn dependency:get -DgroupId=org.apache.commons -DartifactId=commons-lang3 -Dversion=3.12.0 -Dpackaging=jar -B
+mvn dependency:get -DgroupId=org.apache.commons -DartifactId=commons-text -Dversion=1.10.0 -Dpackaging=jar -B
 
 COMMONS_LANG_DIR=$M2_PATH/org/apache/commons/commons-lang3/3.12.0
 jdeps --generate-module-info . $COMMONS_LANG_DIR/commons-lang3-3.12.0.jar

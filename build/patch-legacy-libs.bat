@@ -1,7 +1,7 @@
 for /f %%i in ('m2-location.bat') do set M2_PATH=%%i
 
-call mvn dependency:get -DgroupId=org.apache.commons -DartifactId=commons-lang3 -Dversion=3.12.0 -Dpackaging=jar
-call mvn dependency:get -DgroupId=org.apache.commons -DartifactId=commons-text -Dversion=1.10.0 -Dpackaging=jar
+call mvn dependency:get -DgroupId=org.apache.commons -DartifactId=commons-lang3 -Dversion=3.12.0 -Dpackaging=jar -B
+call mvn dependency:get -DgroupId=org.apache.commons -DartifactId=commons-text -Dversion=1.10.0 -Dpackaging=jar -B
 
 @echo on
 
