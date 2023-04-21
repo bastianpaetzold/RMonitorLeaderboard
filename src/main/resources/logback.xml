@@ -1,10 +1,28 @@
 <configuration>
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d %-5level [%thread] %logger{1} - %msg%n</pattern>
+		</encoder>
+	</appender>
+	<appender name="FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>logs/rmonitorleaderboard.log</file>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<fileNamePattern>logs/rmonitorleaderboard.%i.log.zip</fileNamePattern>
+			<minIndex>1</minIndex>
+			<maxIndex>4</maxIndex>
+		</rollingPolicy>
+		<triggeringPolicy
+			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<maxFileSize>100MB</maxFileSize>
+		</triggeringPolicy>
 		<encoder>
 			<pattern>%d %-5level [%thread] %logger{1} - %msg%n</pattern>
 		</encoder>
 	</appender>
 	<root level="info">
-		<appender-ref ref="STDOUT" />
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
 	</root>
 </configuration>

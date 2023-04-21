@@ -61,8 +61,9 @@ Install Java 17 (e.g. from <https://adoptium.net/temurin/releases/>) and downloa
 ## Usage
 
 ```text
-Usage: rmonitorleaderboard [-hV] [--headless] [-c [--host=<host>]
-                           [--port=<port>]
+Usage: rmonitorleaderboard [-hV] [--disable-console-log] [--disable-file-log]
+                           [--headless] [--loglevel=<logLevel>] [-c
+                           [--host=<host>] [--port=<port>]
                            [--client-stream-encoding=<streamEncoding>]
                            [--client-max-retries=<maxRetries>]
                            [--client-retry-timeout=<retryTimeout>]] [-s
@@ -83,11 +84,15 @@ Usage: rmonitorleaderboard [-hV] [--headless] [-c [--host=<host>]
       --client-stream-encoding=<streamEncoding>
                              Encoding of the stream client receives. Default:
                                Default encoding on this system (JVM)
+      --disable-console-log  Disable logging to the console.
+      --disable-file-log     Disable logging to a file.
   -h, --help                 Show this help message and exit.
       --headless             Start the application in headless mode, without
                                GUI.
       --host, --remote-host=<host>
                              Remote host to connect to. Default: 127.0.0.1
+      --loglevel=<logLevel>  Log level to use. Possible values are DEBUG, INFO,
+                               ERROR, OFF. Default: INFO
   -p, --start-player         Start the player.
       --player-file=<filePath>
                              Path to the file which the player should use to
