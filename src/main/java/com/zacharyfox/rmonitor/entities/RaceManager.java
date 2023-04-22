@@ -63,7 +63,7 @@ public class RaceManager {
 		LOGGER.debug("Starting a new race");
 		currentRace.setFlagStatus(FlagStatus.FINISH.toString());
 
-		if (currentRace.getId() > 0) {
+		if (currentRace.getId() != -1) {
 			raceMap.put(currentRace.getId(), currentRace);
 			previousRace = currentRace;
 		}
@@ -148,7 +148,7 @@ public class RaceManager {
 		currentRace.setName(runInfo.getRaceName());
 		currentRace.setFlagStatus("");
 
-		if (currentRace.getId() > 0) {
+		if (currentRace.getId() != -1) {
 			raceMap.put(currentRace.getId(), currentRace);
 		}
 	}
