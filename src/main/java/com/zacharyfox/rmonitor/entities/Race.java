@@ -49,7 +49,7 @@ public class Race {
 	}
 
 	Race() {
-		id = 0;
+		id = -1;
 		name = "";
 		trackName = "";
 		trackLength = 0.0F;
