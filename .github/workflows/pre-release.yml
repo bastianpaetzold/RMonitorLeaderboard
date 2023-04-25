@@ -7,6 +7,8 @@ jobs:
   build-on-ubuntu:
     name: Build on Ubuntu
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     outputs:
       project-version: ${{ steps.get-project-version.outputs.project-version }}
     steps:
@@ -85,6 +87,35 @@ jobs:
            target/leaderboard-*-app-image.zip
            target/RMonitorLeaderboard-*.dmg
   
+  build-container-image:
+    name: Build and publish container image
+    runs-on: ubuntu-latest
+    needs:
+    - build-on-ubuntu
+    permissions:
+      packages: write
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: artifacts-linux
+    - name: Unzip app-image
+      run: unzip -q leaderboard-*-app-image.zip -d container/RMonitorLeaderboard/
+    - name: Log in to the container registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: bastianpaetzold
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build and push container image
+      uses: docker/build-push-action@v4
+      with:
+        context: container
+        push: true
+        tags: ghcr.io/bastianpaetzold/rmonitorleaderboard:latest-dev
+
   publish-pre-release:
     name: Publish pre-release
     runs-on: ubuntu-latest
@@ -108,23 +139,29 @@ jobs:
         mv artifacts-windows/RMonitorLeaderboard-*.msi artifacts-windows/rmonitorleaderboard_${PROJECT_VERSION}_windows.msi
         mv artifacts-macos/leaderboard-*-app-image.zip artifacts-macos/rmonitorleaderboard_${PROJECT_VERSION}_mac.zip
         mv artifacts-macos/RMonitorLeaderboard-*.dmg artifacts-macos/rmonitorleaderboard_${PROJECT_VERSION}_mac.dmg
-    - name: Delete latest tag
+    - name: Delete latest-dev tag
       uses: actions/github-script@v6
       with:
         script: |
-          try {
+          const response = github.rest.git.getRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: "tags/latest-dev"
+          })
+
+          if (response.status == 200) {
             github.rest.git.deleteRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: "tags/latest"
+              ref: "tags/latest-dev"
             })
-          } catch (e) {
-            console.log("The latest tag doesn't exist yet: " + e)
+          } else {
+            console.log("The latest-dev tag doesn't exist yet")
           }
     - name: Create pre-release
       uses: ncipollo/release-action@v1
       with:
-        tag: latest
+        tag: latest-dev
         commit: ${{ github.sha }}
         artifacts: artifacts-*/*
         makeLatest: false
