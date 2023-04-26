@@ -143,21 +143,11 @@ jobs:
       uses: actions/github-script@v6
       with:
         script: |
-          const response = github.rest.git.getRef({
+          github.rest.git.deleteRef({
             owner: context.repo.owner,
             repo: context.repo.repo,
             ref: "tags/latest-dev"
-          })
-
-          if (response.status == 200) {
-            github.rest.git.deleteRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: "tags/latest-dev"
-            })
-          } else {
-            console.log("The latest-dev tag doesn't exist yet")
-          }
+          }).catch(e => console.log("The latest-dev tag couldn't be deleted: " + e))
     - name: Create pre-release
       uses: ncipollo/release-action@v1
       with:
