@@ -85,6 +85,35 @@ jobs:
            target/leaderboard-*-app-image.zip
            target/RMonitorLeaderboard-*.dmg
   
+  build-container-image:
+    name: Build and publish container image
+    runs-on: ubuntu-latest
+    needs:
+    - build-on-ubuntu
+    permissions:
+      packages: write
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Download artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: artifacts-linux
+    - name: Unzip app-image
+      run: unzip -q leaderboard-*-app-image.zip -d container/RMonitorLeaderboard/
+    - name: Log in to the container registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: bastianpaetzold
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Build and push container image
+      uses: docker/build-push-action@v4
+      with:
+        context: container
+        push: true
+        tags: ghcr.io/bastianpaetzold/rmonitorleaderboard:${{ needs.build-on-ubuntu.outputs.project-version }}
+
   publish-release:
     name: Publish release
     runs-on: ubuntu-latest
