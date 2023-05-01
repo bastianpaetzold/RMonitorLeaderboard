@@ -1,0 +1,4 @@
+*
+!pom.xml
+!target/jmods/
+!target/classes/
