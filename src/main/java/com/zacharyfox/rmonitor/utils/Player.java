@@ -144,7 +144,9 @@ public class Player {
 				LOGGER.info("Player waiting for client");
 				clientSocket = serverSocket.accept();
 				updateCurrentState(State.RUNNING);
-				LOGGER.info("Player client connected");
+				if (LOGGER.isInfoEnabled()) {
+					LOGGER.info("Client connected to player: {}", clientSocket.getRemoteSocketAddress());
+				}
 			} catch (IOException e) {
 				LOGGER.info("Player waiting for client cancelled");
 			}
@@ -174,6 +176,9 @@ public class Player {
 		try {
 			if (clientSocket != null) {
 				clientSocket.close();
+				if (LOGGER.isInfoEnabled()) {
+					LOGGER.info("Connection to player closed for client {}", clientSocket.getRemoteSocketAddress());
+				}
 			}
 			if (serverSocket != null) {
 				serverSocket.close();
