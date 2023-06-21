@@ -161,10 +161,10 @@ public class Player {
 				Thread.sleep(1000);
 			} else {
 				String[] tokens = line.split(" ", 2);
-				long timestampe = Integer.parseInt(tokens[0]);
+				long timestamp = Integer.parseInt(tokens[0]);
+				Thread.sleep((int) ((timestamp - lastTimestamp) / speedup));
 				writer.println(tokens[1]);
-				Thread.sleep((int) ((timestampe - lastTimestamp) / speedup));
-				lastTimestamp = timestampe;
+				lastTimestamp = timestamp;
 				line = reader.readLine();
 			}
 		}
