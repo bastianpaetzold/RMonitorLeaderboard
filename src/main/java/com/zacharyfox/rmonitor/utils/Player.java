@@ -144,7 +144,9 @@ public class Player {
 				LOGGER.info("Player waiting for client");
 				clientSocket = serverSocket.accept();
 				updateCurrentState(State.RUNNING);
-				LOGGER.info("Player client connected");
+				if (LOGGER.isInfoEnabled()) {
+					LOGGER.info("Client connected to player: {}", clientSocket.getRemoteSocketAddress());
+				}
 			} catch (IOException e) {
 				LOGGER.info("Player waiting for client cancelled");
 			}
@@ -161,10 +163,10 @@ public class Player {
 				Thread.sleep(1000);
 			} else {
 				String[] tokens = line.split(" ", 2);
-				long timestampe = Integer.parseInt(tokens[0]);
+				long timestamp = Integer.parseInt(tokens[0]);
+				Thread.sleep((int) ((timestamp - lastTimestamp) / speedup));
 				writer.println(tokens[1]);
-				Thread.sleep((int) ((timestampe - lastTimestamp) / speedup));
-				lastTimestamp = timestampe;
+				lastTimestamp = timestamp;
 				line = reader.readLine();
 			}
 		}
@@ -174,6 +176,9 @@ public class Player {
 		try {
 			if (clientSocket != null) {
 				clientSocket.close();
+				if (LOGGER.isInfoEnabled()) {
+					LOGGER.info("Connection to player closed for client {}", clientSocket.getRemoteSocketAddress());
+				}
 			}
 			if (serverSocket != null) {
 				serverSocket.close();

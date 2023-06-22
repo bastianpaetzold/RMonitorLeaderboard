@@ -3,6 +3,7 @@
 .classpath
 /target/
 /logs/
+/container/RMonitorLeaderboard/
 
 LeaderBoard.properties
 recording.txt
