@@ -6,9 +6,9 @@ import com.zacharyfox.rmonitor.utils.DurationUtil;
 
 public class RaceInfo implements RMonitorMessage, RegistrationInfo {
 
-	private int laps;
 	private int position;
 	private String regNumber;
+	private int laps;
 	private Duration totalTime;
 
 	public RaceInfo(String[] tokens) {
@@ -33,5 +33,11 @@ public class RaceInfo implements RMonitorMessage, RegistrationInfo {
 
 	public Duration getTotalTime() {
 		return totalTime;
+	}
+
+	@Override
+	public String toString() {
+		return "position: " + position + ", registration number: " + regNumber + ", laps: " + laps + ", total time: "
+				+ totalTime;
 	}
 }

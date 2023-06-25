@@ -19,6 +19,9 @@ import org.slf4j.LoggerFactory;
 import com.zacharyfox.rmonitor.config.ConfigurationManager;
 import com.zacharyfox.rmonitor.entities.RaceManager;
 import com.zacharyfox.rmonitor.message.MessageFactory;
+import com.zacharyfox.rmonitor.message.PassingInfo;
+import com.zacharyfox.rmonitor.message.RMonitorMessage;
+import com.zacharyfox.rmonitor.message.RaceInfo;
 import com.zacharyfox.rmonitor.utils.Estimator;
 import com.zacharyfox.rmonitor.utils.Recorder;
 
@@ -152,12 +155,35 @@ public class RMonitorClient {
 
 	private void processMessage(String message) {
 		try {
-			RaceManager.getInstance().processMessage(MessageFactory.createMessage(message));
+			RMonitorMessage rMonitorMessage = MessageFactory.createMessage(message);
+
+			if (validateMessage(rMonitorMessage)) {
+				RaceManager.getInstance().processMessage(rMonitorMessage);
+			}
 		} catch (Exception e) {
 			LOGGER.error("Error while parsing and processing message \"{}\": {}", message, e.getMessage());
 		}
+
 		recorder.push(message);
 		estimator.update();
+	}
+
+	private boolean validateMessage(RMonitorMessage message) {
+		boolean valid = true;
+
+		if (message instanceof RaceInfo raceInfo) {
+			if (raceInfo.getTotalTime().isNegative()) {
+				LOGGER.error("RaceInfo message with negative total time found and dropped: {}", raceInfo);
+				valid = false;
+			}
+		} else if (message instanceof PassingInfo passingInfo) {
+			if (passingInfo.getTotalTime().isNegative()) {
+				LOGGER.error("PassingInfo message with negative total time found and dropped: {}", passingInfo);
+				valid = false;
+			}
+		}
+
+		return valid;
 	}
 
 	public synchronized void stop() {
