@@ -118,7 +118,9 @@ jobs:
         context: container
         platforms: linux/amd64,linux/arm/v7,linux/arm64/v8
         push: true
-        tags: ghcr.io/bastianpaetzold/rmonitorleaderboard:${{ needs.build-on-ubuntu.outputs.project-version }}
+        tags: |
+          ghcr.io/bastianpaetzold/rmonitorleaderboard:${{ needs.build-on-ubuntu.outputs.project-version }}
+          ghcr.io/bastianpaetzold/rmonitorleaderboard:latest
 
   publish-release:
     name: Publish release
