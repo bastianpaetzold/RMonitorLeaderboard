@@ -9,7 +9,12 @@ public class DurationUtil {
 	}
 
 	public static Duration parse(String duration) {
-		return Duration.ofNanos(LocalTime.parse(duration).toNanoOfDay());
+		if (duration.contains("-")) {
+			duration = duration.replace("-", "");
+			return Duration.ofNanos(LocalTime.parse(duration).toNanoOfDay()).negated();
+		} else {
+			return Duration.ofNanos(LocalTime.parse(duration).toNanoOfDay());
+		}
 	}
 
 	public static String format(Duration duration) {
