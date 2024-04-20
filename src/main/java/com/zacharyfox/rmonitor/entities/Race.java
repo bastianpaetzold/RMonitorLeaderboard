@@ -260,8 +260,8 @@ public class Race {
 		case "YELLOW" -> FlagStatus.YELLOW;
 		case "RED" -> FlagStatus.RED;
 		case "FINISH" -> FlagStatus.FINISH;
-		// If Race Name is empty and raceID is 0 we have no active Race.
-		default -> "".equals(name) && id == 0 ? FlagStatus.NONE : FlagStatus.PURPLE;
+		// If Race Name is empty and raceID is -1 we have no active Race.
+		default -> "".equals(name) && id == -1 ? FlagStatus.NONE : FlagStatus.PURPLE;
 		};
 	}
 

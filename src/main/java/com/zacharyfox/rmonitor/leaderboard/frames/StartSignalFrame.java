@@ -127,6 +127,7 @@ public class StartSignalFrame extends JFrame {
 		case RED -> Color.RED;
 		case FINISH -> Color.LIGHT_GRAY;
 		case PURPLE -> new Color(98, 0, 255);
+		case NONE -> Color.BLACK;
 		default -> Color.BLACK;
 		};
 		textFieldFlag.setBackground(color);
