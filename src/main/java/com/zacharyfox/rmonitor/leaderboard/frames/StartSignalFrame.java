@@ -2,8 +2,12 @@ package com.zacharyfox.rmonitor.leaderboard.frames;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Frame;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
@@ -50,6 +54,14 @@ public class StartSignalFrame extends JFrame {
 			}
 		});
 		RaceManager.getInstance().addPropertyChangeListener(listener);
+		addComponentListener(new ComponentAdapter() {
+
+			@Override
+			public void componentResized(ComponentEvent e) {
+				adjustTextFieldFlagFontSize(RaceManager.getInstance().getCurrentRace());
+				adjustTextFieldRaceNameFontSize(textFieldRaceName.getText());
+			}
+		});
 	}
 
 	private void initContent() {
@@ -58,7 +70,7 @@ public class StartSignalFrame extends JFrame {
 
 		JPanel panelMain = new JPanel();
 		panelMain.setBorder(new EmptyBorder(5, 5, 5, 5));
-		panelMain.setLayout(new BorderLayout(0, 0));
+		panelMain.setLayout(new BorderLayout());
 		getContentPane().add(panelMain, BorderLayout.CENTER);
 
 		textFieldRaceName = new JTextField();
@@ -66,16 +78,14 @@ public class StartSignalFrame extends JFrame {
 		textFieldRaceName.setBackground(Color.BLACK);
 		textFieldRaceName.setForeground(Color.WHITE);
 		textFieldRaceName.setFont(new Font(FONT_NAME, Font.PLAIN, 80));
-		textFieldRaceName.setColumns(50);
 		textFieldRaceName.setText(race.getName());
-		panelMain.add(textFieldRaceName, BorderLayout.NORTH);
+		textFieldRaceName.setPreferredSize(new Dimension(Integer.MAX_VALUE, getHeight() / 3));
+		panelMain.add(textFieldRaceName, BorderLayout.PAGE_START);
 
 		textFieldFlag = new JTextArea();
 		textFieldFlag.setBackground(Color.BLACK);
 		textFieldFlag.setForeground(Color.WHITE);
 		textFieldFlag.setFont(new Font(FONT_NAME, Font.PLAIN, 80));
-		textFieldFlag.setColumns(20);
-		textFieldFlag.setRows(5);
 		textFieldFlag.setEditable(false);
 		textFieldFlag.setLineWrap(true);
 		textFieldFlag.setWrapStyleWord(true);
@@ -86,9 +96,8 @@ public class StartSignalFrame extends JFrame {
 		textFieldRaceTime.setBackground(Color.BLACK);
 		textFieldRaceTime.setForeground(Color.WHITE);
 		textFieldRaceTime.setFont(new Font(FONT_NAME, Font.PLAIN, 100));
-		textFieldRaceTime.setColumns(10);
 		textFieldRaceTime.setText("00:00:00");
-		panelMain.add(textFieldRaceTime, BorderLayout.SOUTH);
+		panelMain.add(textFieldRaceTime, BorderLayout.PAGE_END);
 
 		updateFlagColor(race.getFlagStatus());
 	}
@@ -96,7 +105,9 @@ public class StartSignalFrame extends JFrame {
 	private void updateDisplay(PropertyChangeEvent evt) {
 		switch (evt.getPropertyName()) {
 		case Race.PROPERTY_RACE_NAME:
-			textFieldRaceName.setText((String) evt.getNewValue());
+			String newValue = (String) evt.getNewValue();
+			adjustTextFieldRaceNameFontSize(newValue);
+			textFieldRaceName.setText(newValue);
 			break;
 
 		case Race.PROPERTY_ELAPSED_TIME:
@@ -111,6 +122,7 @@ public class StartSignalFrame extends JFrame {
 		case Race.PROPERTY_COMPETITORS_VERSION:
 			Race race = RaceManager.getInstance().getCurrentRace();
 			if (race.getFlagStatus() == Race.FlagStatus.PURPLE) {
+				adjustTextFieldFlagFontSize(race);
 				textFieldFlag.setText(createRegNumberString(race));
 			}
 			break;
@@ -118,6 +130,37 @@ public class StartSignalFrame extends JFrame {
 		default:
 			break;
 		}
+	}
+
+	private void adjustTextFieldRaceNameFontSize(String value) {
+		int maxLineHeight = textFieldRaceName.getHeight() - textFieldRaceName.getMargin().top
+				- textFieldRaceName.getMargin().bottom;
+
+		int maxWidth = textFieldRaceName.getWidth() - textFieldRaceName.getMargin().left
+				- textFieldRaceName.getMargin().right;
+		FontMetrics metrics = textFieldRaceName.getFontMetrics(new Font(FONT_NAME, Font.PLAIN, 10));
+		int currentStringWidth = metrics.stringWidth(value);
+		double factor = maxWidth / (double) currentStringWidth;
+
+		int newSize = Math.min(maxLineHeight, (int) (10 * factor));
+		textFieldRaceName.setFont(new Font(FONT_NAME, Font.PLAIN, newSize));
+	}
+
+	private void adjustTextFieldFlagFontSize(Race race) {
+		int preferredNumbersPerLine = 6;
+		FontMetrics metrics = textFieldFlag.getFontMetrics(new Font(FONT_NAME, Font.PLAIN, 10));
+
+		int maxHeight = textFieldFlag.getHeight() - textFieldFlag.getMargin().top - textFieldFlag.getMargin().bottom;
+		double lines = Math.ceil(race.getCompetitors().size() / (double) preferredNumbersPerLine);
+		int maxLineHeight = (int) (maxHeight / lines) - metrics.getAscent() - metrics.getDescent();
+
+		int maxWidth = textFieldFlag.getWidth() - textFieldFlag.getMargin().left - textFieldFlag.getMargin().right;
+		int currentStringWidth = metrics.stringWidth(race.getCompetitors().stream().limit(preferredNumbersPerLine)
+				.map(Competitor::getRegNumber).collect(Collectors.joining(", ")) + ", ");
+		double factor = maxWidth / (double) currentStringWidth;
+
+		int newSize = Math.min(maxLineHeight, (int) (10 * factor));
+		textFieldFlag.setFont(new Font(FONT_NAME, Font.PLAIN, newSize));
 	}
 
 	private void updateFlagColor(FlagStatus flagStatus) {
