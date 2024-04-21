@@ -168,7 +168,7 @@ public class StartSignalFrame extends JFrame {
 		case GREEN -> Color.GREEN;
 		case YELLOW -> Color.YELLOW;
 		case RED -> Color.RED;
-		case FINISH -> Color.LIGHT_GRAY;
+		case FINISH -> Color.BLACK;
 		case PURPLE -> new Color(98, 0, 255);
 		case NONE -> Color.BLACK;
 		default -> Color.BLACK;
