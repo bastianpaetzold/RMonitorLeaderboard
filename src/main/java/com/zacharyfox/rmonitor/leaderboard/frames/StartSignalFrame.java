@@ -99,7 +99,7 @@ public class StartSignalFrame extends JFrame {
 		textFieldRaceTime.setText("00:00:00");
 		panelMain.add(textFieldRaceTime, BorderLayout.PAGE_END);
 
-		updateFlagColor(race.getFlagStatus());
+		updateFlag(race.getFlagStatus());
 	}
 
 	private void updateDisplay(PropertyChangeEvent evt) {
@@ -115,16 +115,11 @@ public class StartSignalFrame extends JFrame {
 			break;
 
 		case Race.PROPERTY_FLAG_STATUS:
-			updateFlagColor((FlagStatus) evt.getNewValue());
-			textFieldFlag.setText("");
+			updateFlag((FlagStatus) evt.getNewValue());
 			break;
 
 		case Race.PROPERTY_COMPETITORS_VERSION:
-			Race race = RaceManager.getInstance().getCurrentRace();
-			if (race.getFlagStatus() == Race.FlagStatus.PURPLE) {
-				adjustTextFieldFlagFontSize(race);
-				textFieldFlag.setText(createRegNumberString(race));
-			}
+			updateTextsOnPurpleFlag();
 			break;
 
 		default:
@@ -163,17 +158,29 @@ public class StartSignalFrame extends JFrame {
 		textFieldFlag.setFont(new Font(FONT_NAME, Font.PLAIN, newSize));
 	}
 
-	private void updateFlagColor(FlagStatus flagStatus) {
+	private void updateFlag(FlagStatus flagStatus) {
 		Color color = switch (flagStatus) {
 		case GREEN -> Color.GREEN;
 		case YELLOW -> Color.YELLOW;
 		case RED -> Color.RED;
-		case FINISH -> Color.BLACK;
 		case PURPLE -> new Color(98, 0, 255);
-		case NONE -> Color.BLACK;
+		case FINISH, NONE -> Color.BLACK;
 		default -> Color.BLACK;
 		};
 		textFieldFlag.setBackground(color);
+		updateTextsOnPurpleFlag();
+	}
+
+	private void updateTextsOnPurpleFlag() {
+		Race race = RaceManager.getInstance().getCurrentRace();
+
+		if (race.getFlagStatus() == Race.FlagStatus.PURPLE) {
+			adjustTextFieldFlagFontSize(race);
+			textFieldFlag.setText(createRegNumberString(race));
+			textFieldRaceTime.setText("");
+		} else {
+			textFieldFlag.setText("");
+		}
 	}
 
 	private String createRegNumberString(Race race) {
