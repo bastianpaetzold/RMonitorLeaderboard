@@ -9,6 +9,7 @@ public class RaceTO {
 	private String flagStatus;
 	private String elapsedTime;
 	private String timeOfDay;
+	private String startTime;
 	private int lapsComplete;
 	private int lapsToGo;
 	private String trackName;
@@ -37,6 +38,8 @@ public class RaceTO {
 	public String getTimeOfDay() {
 		return timeOfDay;
 	}
+
+	public String getStartTime() { return startTime; }
 
 	public int getLapsComplete() {
 		return lapsComplete;
@@ -67,6 +70,7 @@ public class RaceTO {
 		raceTO.lapsComplete = race.getLapsComplete();
 		raceTO.raceName = race.getName();
 		raceTO.timeOfDay = DurationUtil.format(race.getTimeOfDay());
+		raceTO.startTime = DurationUtil.format(race.getStartTime());
 		raceTO.trackName = race.getTrackName();
 		raceTO.trackLength = race.getTrackLength();
 		raceTO.competitors = race.getCompetitors().stream().map(CompetitorTO::from).toArray(CompetitorTO[]::new);

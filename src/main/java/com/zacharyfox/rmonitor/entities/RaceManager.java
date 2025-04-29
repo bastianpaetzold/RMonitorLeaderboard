@@ -131,6 +131,10 @@ public class RaceManager {
 		currentRace.setTimeToGo(heartbeat.getTimeToGo());
 		currentRace.setTimeOfDay(heartbeat.getTimeOfDay());
 		currentRace.setScheduledTime(currentRace.getElapsedTime().plus(currentRace.getTimeToGo()));
+
+		if (heartbeat.getRaceTime().isZero() || currentRace.getStartTime().isZero()) {
+			currentRace.setStartTime(heartbeat.getTimeOfDay().minus(heartbeat.getRaceTime()));
+		}
 	}
 
 	private void processRaceInfo(RaceInfo raceInfo) {

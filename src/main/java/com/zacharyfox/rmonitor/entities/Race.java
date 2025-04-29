@@ -26,6 +26,7 @@ public class Race {
 	public static final String PROPERTY_SCHEDULED_TIME = "scheduledTime";
 	public static final String PROPERTY_TIME_TO_GO = "timeToGo";
 	public static final String PROPERTY_COMPETITORS_VERSION = "competitorsVersion";
+	public static final String PROPERTY_START_TIME = "startTime";
 
 	private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
@@ -43,6 +44,8 @@ public class Race {
 	private Duration scheduledTime;
 	private Map<String, Competitor> competitorMap;
 	private int competitorsVersion;
+
+	private Duration startTime;
 
 	public enum FlagStatus {
 		PURPLE, GREEN, YELLOW, RED, FINISH, NONE
@@ -62,6 +65,9 @@ public class Race {
 		elapsedTime = Duration.ZERO;
 		timeToGo = Duration.ZERO;
 		competitorsVersion = 0;
+
+		startTime = Duration.ZERO;
+
 		competitorMap = new HashMap<>();
 	}
 
@@ -116,6 +122,8 @@ public class Race {
 	public Duration getScheduledTime() {
 		return scheduledTime;
 	}
+
+	public Duration getStartTime() { return startTime; }
 
 	public PropertyChangeSupport getPropertyChangeSupport() {
 		return propertyChangeSupport;
@@ -252,6 +260,12 @@ public class Race {
 		this.competitorsVersion = this.competitorsVersion + 1;
 		propertyChangeSupport.firePropertyChange(PROPERTY_COMPETITORS_VERSION, this.competitorsVersion - 1,
 				this.competitorsVersion);
+	}
+
+	void setStartTime(Duration startTime) {
+		Duration oldStartTime = this.startTime;
+		this.startTime = startTime;
+		propertyChangeSupport.firePropertyChange(PROPERTY_START_TIME, oldStartTime, this.startTime);
 	}
 
 	private FlagStatus convertFlagStatus(String flagStatus) {
