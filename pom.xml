@@ -6,7 +6,7 @@
 	<name>RMonitorLeaderboard</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jpackage-plugin.version>1.6.0</jpackage-plugin.version>
+		<jpackage-plugin.version>1.7.2</jpackage-plugin.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -32,17 +32,17 @@
 		<dependency>
 		    <groupId>org.apache.commons</groupId>
 		    <artifactId>commons-text</artifactId>
-		    <version>1.10.0</version>
+		    <version>1.15.0</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.4.5</version>
+			<version>1.5.25</version>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter</artifactId>
-			<version>5.9.2</version>
+			<version>5.14.2</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -50,7 +50,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
+				<version>3.14.1</version>
 				<configuration>
 					<release>17</release>
 				</configuration>
@@ -58,12 +58,12 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M8</version>
+				<version>3.5.4</version>
 			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>3.3.0</version>
+				<version>3.6.1</version>
 				<executions>
 					<execution>
 						<id>add-source</id>
@@ -77,7 +77,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.4.1</version>
+				<version>3.6.1</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -98,7 +98,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.5.0</version>
+				<version>3.9.0</version>
 				<executions>
 					<execution>
 						<id>copy-dependencies</id>
@@ -154,7 +154,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.5.0</version>
+				<version>3.8.0</version>
 				<executions>
 					<execution>
 						<id>assembly-zip</id>
@@ -287,7 +287,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-enforcer-plugin</artifactId>
-						<version>3.2.1</version>
+						<version>3.6.2</version>
 						<executions>
 							<execution>
 								<id>enforce-no-snapshots</id>

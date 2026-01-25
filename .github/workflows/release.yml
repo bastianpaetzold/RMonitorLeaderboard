@@ -18,9 +18,6 @@ jobs:
         java-version: '17'
         distribution: temurin
         cache: maven
-    - name: Patch legacy libs
-      working-directory: ./build/
-      run: ./patch-legacy-libs.sh
     - name: Package
       run: mvn package -B -Prelease
     - name: Upload artifacts
@@ -47,9 +44,6 @@ jobs:
         java-version: '17'
         distribution: temurin
         cache: maven
-    - name: Patch legacy libs
-      working-directory: ./build/
-      run: ./patch-legacy-libs.bat
     - name: Package
       run: mvn package -B -Prelease
     - name: Upload artifacts
@@ -72,9 +66,6 @@ jobs:
         java-version: '17'
         distribution: temurin
         cache: maven
-    - name: Patch legacy libs
-      working-directory: ./build/
-      run: ./patch-legacy-libs.sh
     - name: Package
       run: mvn package -B
     - name: Upload artifacts
